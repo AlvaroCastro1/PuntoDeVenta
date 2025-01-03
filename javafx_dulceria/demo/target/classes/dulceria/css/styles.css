@@ -1,0 +1,22 @@
+/* Estilos para el Sidebar */
+#sidebar {
+    -fx-background-color: #2E2E2E;
+    -fx-border-color: #CCCCCC;
+    -fx-border-width: 1;
+    -fx-padding: 10;
+    -fx-spacing: 10;
+    -fx-pref-width: 200px;
+}
+
+/* Estilos para los botones dentro del Sidebar */
+#sidebar .button {
+    -fx-background-color: #4A4A4A;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-max-width: Infinity;
+}
+
+/* Hover en los botones */
+#sidebar .button:hover {
+    -fx-background-color: #666666;
+}
