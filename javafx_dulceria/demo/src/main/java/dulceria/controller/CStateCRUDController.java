@@ -32,9 +32,25 @@ public class CStateCRUDController {
     private ObservableList<State> stateList = FXCollections.observableArrayList();
 
     @FXML
+    private TableColumn<State, Integer> columnId;
+
+    @FXML
+    private TableColumn<State, String> columnNombreEstado;
+
+    @FXML
     public void initialize() {
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        nombreEstadoColumn.setCellValueFactory(new PropertyValueFactory<>("nombreEstado"));
+        // Configurar las columnas
+        columnId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        columnNombreEstado.setCellValueFactory(new PropertyValueFactory<>("nombreEstado"));
+    
+        // Establecer ancho fijo para la columna ID
+        columnId.setPrefWidth(100); // Ancho fijo en píxeles
+        columnId.setResizable(false); // Deshabilitar redimensionamiento manual
+    
+        // Configurar la columna Nombre Estado para que ocupe el espacio restante
+        stateTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+    
+        // Cargar datos
         cargarEstados();
     }
 

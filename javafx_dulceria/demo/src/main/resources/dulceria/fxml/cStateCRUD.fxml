@@ -11,9 +11,12 @@
 
     <TableView fx:id="stateTable" prefHeight="300" prefWidth="400">
         <columns>
-            <TableColumn fx:id="idColumn" text="ID"/>
-            <TableColumn fx:id="nombreEstadoColumn" text="Nombre del Estado"/>
+            <TableColumn fx:id="columnId" text="ID"/>
+            <TableColumn fx:id="columnNombreEstado" text="Nombre del Estado"/>
         </columns>
+        <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+        </columnResizePolicy>
     </TableView>
 
     <HBox spacing="10">
