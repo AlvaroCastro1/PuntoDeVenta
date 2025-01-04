@@ -4,5 +4,5 @@
 <?import javafx.scene.control.Label?>
 
 <VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="dulceria.controller.SidebarController">
-    <Label text="Pantalla de Inicio"/>
+    <Label text="Pantalla de Configuración"/>
 </VBox>

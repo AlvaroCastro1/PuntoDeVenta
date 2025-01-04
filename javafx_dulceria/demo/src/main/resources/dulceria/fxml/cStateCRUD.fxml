@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="dulceria.controller.CStateCRUDController" spacing="10" alignment="CENTER">
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+
+    <TableView fx:id="stateTable" prefHeight="300" prefWidth="400">
+        <columns>
+            <TableColumn fx:id="idColumn" text="ID"/>
+            <TableColumn fx:id="nombreEstadoColumn" text="Nombre del Estado"/>
+        </columns>
+    </TableView>
+
+    <HBox spacing="10">
+        <TextField fx:id="nombreEstadoField" promptText="Nombre del estado"/>
+        <Button text="Guardar" onAction="#guardarEstado"/>
+        <Button text="Actualizar" onAction="#actualizarEstado"/>
+        <Button text="Eliminar" onAction="#eliminarEstado"/>
+    </HBox>
+</VBox>

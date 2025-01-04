@@ -22,16 +22,17 @@ public class SidebarController {
     }
 
     @FXML
-    private void navigateToScreen1(ActionEvent event) {
-        System.out.println("Navegando a Pantalla 1");
+    private void navigateToConfiguracion(ActionEvent event) {
+        System.out.println("Navegando a Pantalla Configuración");
         // Lógica de navegación
         app.changeView("/dulceria/fxml/pantallaConfiguracion.fxml");
     }
 
     @FXML
-    private void navigateToScreen2(ActionEvent event) {
-        System.out.println("Navegando a Pantalla 2");
+    private void navigateToEstados(ActionEvent event) {
+        System.out.println("Navegando a Pantalla de Estados");
         // Lógica de navegación
+        app.changeView("/dulceria/fxml/cStateCRUD.fxml");
     }
 
     @FXML
