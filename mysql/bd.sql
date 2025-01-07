@@ -17,6 +17,16 @@ CREATE TABLE producto (
     CONSTRAINT PK_producto PRIMARY KEY CLUSTERED (id ASC)
 );
 
+-- 2.1. Tabla para imagenes del producto
+CREATE TABLE producto_imagen (
+    id INT AUTO_INCREMENT NOT NULL,
+    producto_id INT NOT NULL,
+    imagen LONGBLOB NOT NULL, -- Almacena la imagen como un archivo binario
+    descripcion VARCHAR(255) NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (producto_id) REFERENCES producto(id) ON DELETE CASCADE
+);
+
 -- 3. Tabla para lotes
 CREATE TABLE lote (
     id INT IDENTITY(1,1) NOT NULL,

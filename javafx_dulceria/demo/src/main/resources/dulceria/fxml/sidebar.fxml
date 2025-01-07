@@ -7,5 +7,5 @@
     <Button text="Inicio" fx:id="homeButton" onAction="#navigateToHome" />
     <Button text="Configuración" fx:id="screen1Button" onAction="#navigateToConfiguracion" />
     <Button text="Estados" fx:id="screen2Button" onAction="#navigateToEstados" />
-    <Button text="Pantalla 3" fx:id="screen3Button" onAction="#navigateToScreen3" />
+    <Button text="Productos" fx:id="screen3Button" onAction="#navigateToProductos" />
 </VBox>

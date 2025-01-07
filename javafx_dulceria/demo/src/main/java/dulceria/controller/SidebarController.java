@@ -36,8 +36,9 @@ public class SidebarController {
     }
 
     @FXML
-    private void navigateToScreen3(ActionEvent event) {
-        System.out.println("Navegando a Pantalla 3");
+    private void navigateToProductos(ActionEvent event) {
+        System.out.println("Navegando a Pantalla Productos");
         // Lógica de navegación
+        app.changeView("/dulceria/fxml/ProductoCRUD.fxml");
     }
 }

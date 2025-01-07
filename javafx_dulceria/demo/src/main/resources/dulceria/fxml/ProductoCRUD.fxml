@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="dulceria.controller.ProductoController">
+    <center>
+        <SplitPane orientation="HORIZONTAL">
+            <!-- Tabla de Productos -->
+            <VBox>
+                <Label text="Lista de Productos" style="-fx-font-size: 16; -fx-font-weight: bold;" />
+                <TableView fx:id="tableProductos" prefHeight="400.0" prefWidth="400.0">
+                    <columns>
+                        <TableColumn fx:id="colId" text="ID" prefWidth="80.0" />
+                        <TableColumn fx:id="colNombre" text="Nombre" prefWidth="100.0" />
+                        <TableColumn fx:id="colDescripcion" text="Descripción" prefWidth="150.0" />
+                        <TableColumn fx:id="colCategoria" text="Categoría" prefWidth="100.0" />
+                        <TableColumn fx:id="colPrecio" text="Precio" prefWidth="75.0" />
+                        <TableColumn fx:id="colExistencia" text="Existencia" prefWidth="75.0" />
+                    </columns>
+                </TableView>
+            </VBox>
+
+            <!-- Formulario de Producto -->
+            <VBox spacing="10" alignment="TOP_LEFT" >
+                <Label text="Detalles del Producto" style="-fx-font-size: 16; -fx-font-weight: bold;" />
+
+                <GridPane hgap="10" vgap="10">
+                    <Label text="Nombre:" />
+                    <TextField fx:id="txtNombre" GridPane.columnIndex="1" />
+
+                    <Label text="Descripción:" GridPane.rowIndex="1" />
+                    <TextArea fx:id="txtDescripcion" GridPane.columnIndex="1" GridPane.rowIndex="1" prefRowCount="3" />
+
+                    <Label text="Categoría:" GridPane.rowIndex="2" />
+                    <TextField fx:id="txtCategoria" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                    <Label text="Precio:" GridPane.rowIndex="3" />
+                    <TextField fx:id="txtPrecio" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+                    <Label text="Costo:" GridPane.rowIndex="4" />
+                    <TextField fx:id="txtCosto" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+
+                    <Label text="Existencia:" GridPane.rowIndex="5" />
+                    <TextField fx:id="txtExistencia" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                </GridPane>
+
+                <!-- Galería de Imágenes -->
+                <Label text="Galería de Imágenes:" />
+                <HBox fx:id="galleryContainer" spacing="10" style="-fx-border-color: lightgray; -fx-border-width: 1;">
+                    <children>
+                        <ImageView fitHeight="100" fitWidth="100" preserveRatio="true" />
+                    </children>
+                </HBox>
+
+                <!-- Botones de Acción -->
+                <HBox spacing="10" alignment="CENTER">
+                    <Button text="Guardar" fx:id="btnGuardar" onAction="#onGuardar" />
+                    <Button text="Actualizar" fx:id="btnActualizar" onAction="#onActualizar" />
+                    <Button text="Eliminar" fx:id="btnEliminar" onAction="#onEliminar" />
+                    <Button text="Cancelar" fx:id="btnCancelar" onAction="#onCancelar" />
+                </HBox>
+            </VBox>
+        </SplitPane>
+    </center>
+</BorderPane>
