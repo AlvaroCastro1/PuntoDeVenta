@@ -90,7 +90,7 @@
                 <!-- Botones de Acción -->
                 <HBox alignment="CENTER" spacing="10">
                     <Button fx:id="btnGuardar" onAction="#onGuardar" text="Guardar" />
-                    <Button fx:id="btnActualizar" onAction="#onActualizar" text="Actualizar" />
+                    <!-- <Button fx:id="btnActualizar" onAction="#onActualizar" text="Actualizar" /> -->
                     <Button fx:id="btnEliminar" onAction="#onEliminar" text="Eliminar" />
                     <Button fx:id="btnCancelar" onAction="#onCancelar" text="Cancelar" />
                 </HBox>

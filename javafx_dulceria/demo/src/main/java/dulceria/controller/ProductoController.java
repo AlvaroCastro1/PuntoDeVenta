@@ -18,9 +18,9 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 public class ProductoController {
@@ -41,7 +41,7 @@ public class ProductoController {
     private TableColumn<ProductoImagen, ImageView> colVistaPrevia;
 
     @FXML
-    private TableColumn<Producto, Integer> colId; // Asegúrate de que el tipo sea correcto
+    private TableColumn<Producto, Integer> colId;
 
     @FXML
     private TableColumn<Producto, String> colNombre, colDescripcion, colCategoria;
@@ -77,6 +77,18 @@ public class ProductoController {
         configureTable();
         loadProductos();
 
+    }
+
+    private void configureTable() {
+        // tabla productos
+        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        colNombre.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getNombre()));
+        colDescripcion.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getDescripcion()));
+        colCategoria.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getCategoria()));
+        colPrecio.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getPrecio()));
+        colExistencia.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getExistencia()));
+        
+        //tabla imagenes
         tableProductos.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 loadProductoDetails(newSelection);
@@ -104,15 +116,6 @@ public class ProductoController {
         });
     }
 
-    private void configureTable() {
-        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        colNombre.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getNombre()));
-        colDescripcion.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getDescripcion()));
-        colCategoria.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getCategoria()));
-        colPrecio.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getPrecio()));
-        colExistencia.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getExistencia()));
-    }
-
     private void loadProductos() {
         productos = FXCollections.observableArrayList();
         try (Connection conn = dbConnection.getConnection();
@@ -132,7 +135,7 @@ public class ProductoController {
                 productos.add(producto);
             }
         } catch (SQLException e) {
-            showError("Error cargando productos", e.getMessage());
+            mostrarAlerta("Error", "Error cargando productos", Alert.AlertType.ERROR);
         }
         tableProductos.setItems(productos);
     }
@@ -163,24 +166,15 @@ public class ProductoController {
                 }
 
                 if (!hasImages) {
-                    showInfo("No se encontraron imágenes para este producto.");
+                    mostrarAlerta("Información", "No se encontraron imágenes para este producto.", Alert.AlertType.INFORMATION);
                 }
 
             }
         } catch (SQLException e) {
-            showError("Error cargando imágenes", e.getMessage());
+            mostrarAlerta("Error", "Error cargando imágenes", Alert.AlertType.ERROR);
         }
 
         return imagenes;
-    }
-
-    // Método para mostrar mensaje de información
-    private void showInfo(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Información");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 
     private void loadProductoDetails(Producto producto) {
@@ -197,44 +191,6 @@ public class ProductoController {
         listaImagenes = loadImagenes(producto.getId());  // Cargar las imágenes del producto seleccionado
         tblImagenes.setItems(listaImagenes);  // Cargar las imágenes en la tabla
 
-    }
-
-    private void showError(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    @FXML
-    public void onGuardar() {
-        if (validarCampos()) {
-            String nombre = txtNombre.getText();
-            String descripcion = txtDescripcion.getText();
-            String categoria = txtCategoria.getText();
-            double precio = Double.parseDouble(txtPrecio.getText());
-            double costo = Double.parseDouble(txtCosto.getText());
-            int existencia = Integer.parseInt(txtExistencia.getText());
-
-            String sql = "INSERT INTO producto (nombre, descripcion, categoria, precio, costo, existencia) VALUES (?, ?, ?, ?, ?, ?)";
-
-            try (Connection conn = DatabaseConnection.getConnection();
-                 PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setString(1, nombre);
-                stmt.setString(2, descripcion);
-                stmt.setString(3, categoria);
-                stmt.setDouble(4, precio);
-                stmt.setDouble(5, costo);
-                stmt.setInt(6, existencia);
-
-                stmt.executeUpdate();
-                mostrarAlerta("Éxito", "Producto guardado exitosamente", Alert.AlertType.INFORMATION);
-                cargarProductos();
-                clearForm();
-            } catch (SQLException e) {
-                mostrarAlerta("Error", "Ocurrió un error al guardar el producto: " + e.getMessage(), Alert.AlertType.ERROR);
-            }
-        }
     }
 
     @FXML
@@ -261,7 +217,6 @@ public class ProductoController {
 
                 stmt.executeUpdate();
                 mostrarAlerta("Éxito", "Producto actualizado exitosamente", Alert.AlertType.INFORMATION);
-                cargarProductos();
                 clearForm();
             } catch (SQLException e) {
                 mostrarAlerta("Error", "Ocurrió un error al actualizar el producto: " + e.getMessage(), Alert.AlertType.ERROR);
@@ -282,7 +237,6 @@ public class ProductoController {
 
                 stmt.executeUpdate();
                 mostrarAlerta("Éxito", "Producto eliminado exitosamente", Alert.AlertType.INFORMATION);
-                cargarProductos();
                 clearForm();
             } catch (SQLException e) {
                 mostrarAlerta("Error", "Ocurrió un error al eliminar el producto: " + e.getMessage(), Alert.AlertType.ERROR);
@@ -297,6 +251,250 @@ public class ProductoController {
         clearForm();
     }
 
+    @FXML
+    public void onGuardar() {
+
+        if (validarCampos()) {
+            if (productoSeleccionado != null) { // ACTUALIZAR PRODUCTO
+                actualizarProductoConImagenes(productoSeleccionado, listaImagenes);
+            } else { //GUARDAR PRODUCTO NUEVO
+                Producto nuevoProducto = new Producto(
+                    txtNombre.getText(),
+                    txtDescripcion.getText(),
+                    txtCategoria.getText(),
+                    Double.parseDouble(txtPrecio.getText()),
+                    Double.parseDouble(txtCosto.getText()),
+                    Integer.parseInt(txtExistencia.getText())
+                );
+                guardarProductoConImagenes(nuevoProducto, listaImagenes);
+            }
+        }
+    }
+
+    @FXML
+    private void onAgregarImagen() {
+        // Paso 1: Mostrar un FileChooser para seleccionar una imagen
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Imágenes", "*.png", "*.jpg", "*.jpeg", "*.gif"));
+        
+        File file = fileChooser.showOpenDialog(null);
+        
+        if (file != null) {
+            try {
+                // Paso 2: Convertir la imagen a un arreglo de bytes
+                byte[] imageBytes = Files.readAllBytes(file.toPath());
+
+                // Paso 3: Pedir al usuario una descripción opcional
+                TextInputDialog descripcionDialog = new TextInputDialog();
+                descripcionDialog.setTitle("Descripción de la Imagen");
+                descripcionDialog.setHeaderText("Ingrese una descripción para la imagen (opcional):");
+                descripcionDialog.setContentText("Descripción:");
+
+                Optional<String> result = descripcionDialog.showAndWait();
+                String descripcion = result.orElse("Sin descripción");
+
+                // Paso 4: Mostrar la imagen en la vista previa
+                 // Obtener la URL del archivo seleccionado
+                String fileUrl = file.toURI().toString();
+
+                // Crear la imagen desde la URL del archivo
+                Image image = new Image(fileUrl);
+                ProductoImagen nuevoProductoImagen = new ProductoImagen(0, image, descripcion);
+                
+                // Agregar el nuevo producto imagen a la tabla (TableView)
+                tblImagenes.getItems().add(nuevoProductoImagen);
+
+                // // Paso 5: Guardar la imagen en la base de datos
+                // guardarImagenEnBaseDeDatos(imageBytes, descripcion, productoSeleccionado.getId()); // Asumiendo que productoId está disponible
+
+            } catch (IOException e) {
+                mostrarAlerta("Error", "Ocurrió un error al cargar la imagen " + e.getMessage(), Alert.AlertType.ERROR);
+            }
+        }
+    }
+
+    @FXML
+    private void onEliminarImagen() {
+        ProductoImagen seleccionada = tblImagenes.getSelectionModel().getSelectedItem();
+        if (seleccionada != null) {
+            Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION, "¿Está seguro de eliminar esta imagen?");
+            Optional<ButtonType> resultado = confirmacion.showAndWait();
+            if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
+                listaImagenes.remove(seleccionada);
+                // Eliminar la imagen de la base de datos
+                // eliminarImagenDeBaseDeDatos(seleccionada.getId());
+            }
+        } else {
+            mostrarAlerta("Seleccione una imagen", "Por favor, seleccione una imagen para eliminar.", Alert.AlertType.WARNING);
+        }
+    }
+
+    public void guardarProductoConImagenes(Producto producto, ObservableList<ProductoImagen> listaImagenes) {
+        String sqlProducto = "INSERT INTO producto (nombre, descripcion, categoria, precio, costo, existencia) VALUES (?, ?, ?, ?, ?, ?)";
+        String sqlImagen = "INSERT INTO producto_imagen (producto_id, imagen, descripcion) VALUES (?, ?, ?)";
+    
+        try (Connection conn = dbConnection.getConnection()) {
+            // Desactivar auto-commit para iniciar la transacción
+            conn.setAutoCommit(false);
+    
+            // Guardar el producto
+            int productoId;
+            try (PreparedStatement stmtProducto = conn.prepareStatement(sqlProducto, Statement.RETURN_GENERATED_KEYS)) {
+                stmtProducto.setString(1, producto.getNombre());
+                stmtProducto.setString(2, producto.getDescripcion());
+                stmtProducto.setString(3, producto.getCategoria());
+                stmtProducto.setDouble(4, producto.getPrecio());
+                stmtProducto.setDouble(5, producto.getCosto());
+                stmtProducto.setInt(6, producto.getExistencia());
+    
+                int filasProducto = stmtProducto.executeUpdate();
+                if (filasProducto == 0) {
+                    mostrarAlerta("Error al guardarel producto", "Hay un error al conectar a la base de datos", Alert.AlertType.ERROR);
+                    throw new SQLException("No se pudo insertar el producto.");
+                }
+    
+                // Obtener el ID generado del producto
+                try (ResultSet rs = stmtProducto.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        productoId = rs.getInt(1);
+                    } else {
+                        mostrarAlerta("Error con el ID del producto", "Hay un error al conectar a la base de datos", Alert.AlertType.ERROR);
+                        throw new SQLException("No se pudo obtener el ID del producto.");
+                    }
+                }
+            }
+    
+            // Guardar las imágenes asociadas al producto
+            try (PreparedStatement stmtImagen = conn.prepareStatement(sqlImagen)) {
+                for (ProductoImagen productoImagen : listaImagenes) {
+                    if (productoImagen.getImagen() != null) { // Validar que la imagen no sea nula
+                        Image imagen = productoImagen.getImagen();
+                        byte[] imagenBytes;
+    
+                        // Convertir la imagen a bytes
+                        try {
+                            // Obtener la URL y quitar el prefijo 'file:'
+                            String filePath = imagen.getUrl().replaceFirst("file:", "");
+
+                            // Crear el archivo desde la ruta local
+                            Path path = Paths.get(filePath);
+                            
+                            // Leer los bytes de la imagen
+                            imagenBytes = Files.readAllBytes(path);
+                        } catch (Exception e) {
+                            mostrarAlerta("Error con la imagen del producto", "Hay un error al intentar guardar la imagen\n"+imagen.getUrl(), Alert.AlertType.ERROR);
+                            throw new IOException("Error al leer la imagen desde: " + imagen.getUrl(), e);
+                        }
+    
+                        stmtImagen.setInt(1, productoId);
+                        stmtImagen.setBytes(2, imagenBytes);
+                        stmtImagen.setString(3, productoImagen.getDescripcion());
+                        stmtImagen.addBatch();
+                    } else {
+                        mostrarAlerta("Advertencia", "La imagen esta vacia", Alert.AlertType.WARNING);
+                        System.err.println("Advertencia: La imagen es nula para una de las imágenes.");
+                    }
+                }
+                stmtImagen.executeBatch(); // Ejecutar todas las inserciones de imágenes
+            }
+    
+            // Confirmar la transacción
+            conn.commit();
+            mostrarAlerta("Información", "Producto guardado con éxito", Alert.AlertType.INFORMATION);
+            clearForm();
+
+        } catch (SQLException | IOException e) {
+            try {
+                // Si algo falla, deshacer todos los cambios
+                dbConnection.getConnection().rollback();
+            } catch (SQLException rollbackEx) {
+                System.err.println("Error al hacer rollback: " + rollbackEx.getMessage());
+                mostrarAlerta("Error", "Error al hacer rollback", Alert.AlertType.ERROR);
+            }
+            System.err.println("Error al guardar el producto y las imágenes: " + e.getMessage());
+            mostrarAlerta("Error", "al guardar el producto", Alert.AlertType.ERROR);
+        }
+    }
+    
+    public void actualizarProductoConImagenes(Producto producto, ObservableList<ProductoImagen> listaImagenes) {
+        String sqlActualizarProducto = "UPDATE producto SET nombre = ?, descripcion = ?, categoria = ?, precio = ?, costo = ?, existencia = ? WHERE id = ?";
+        String sqlEliminarImagenes = "DELETE FROM producto_imagen WHERE producto_id = ?";
+        String sqlInsertarImagen = "INSERT INTO producto_imagen (producto_id, imagen, descripcion) VALUES (?, ?, ?)";
+    
+        try (Connection conn = dbConnection.getConnection()) {
+            // Desactivar auto-commit para iniciar la transacción
+            conn.setAutoCommit(false);
+    
+            // Actualizar el producto
+            try (PreparedStatement stmtActualizar = conn.prepareStatement(sqlActualizarProducto)) {
+                stmtActualizar.setString(1, producto.getNombre());
+                stmtActualizar.setString(2, producto.getDescripcion());
+                stmtActualizar.setString(3, producto.getCategoria());
+                stmtActualizar.setDouble(4, producto.getPrecio());
+                stmtActualizar.setDouble(5, producto.getCosto());
+                stmtActualizar.setInt(6, producto.getExistencia());
+                stmtActualizar.setInt(7, producto.getId());
+    
+                int filasActualizadas = stmtActualizar.executeUpdate();
+                if (filasActualizadas == 0) {
+                    mostrarAlerta("Error", "No se pudo actualizar el producto", Alert.AlertType.ERROR);
+                    throw new SQLException("No se encontró el producto con ID: " + producto.getId());
+                }
+            }
+    
+            // Eliminar imágenes existentes del producto
+            try (PreparedStatement stmtEliminar = conn.prepareStatement(sqlEliminarImagenes)) {
+                stmtEliminar.setInt(1, producto.getId());
+                stmtEliminar.executeUpdate();
+            }
+    
+            // Insertar las nuevas imágenes
+            try (PreparedStatement stmtInsertarImagen = conn.prepareStatement(sqlInsertarImagen)) {
+                for (ProductoImagen productoImagen : listaImagenes) {
+                    if (productoImagen.getImagen() != null) { // Validar que la imagen no sea nula
+                        Image imagen = productoImagen.getImagen();
+                        byte[] imagenBytes;
+    
+                        // Convertir la imagen a bytes
+                        try {
+                            String filePath = imagen.getUrl().replaceFirst("file:", "");
+                            Path path = Paths.get(filePath);
+                            imagenBytes = Files.readAllBytes(path);
+                        } catch (Exception e) {
+                            mostrarAlerta("Error con la imagen del producto", "Error al leer la imagen desde: " + productoImagen.getImagen().getUrl(), Alert.AlertType.ERROR);
+                            throw new IOException("Error al leer la imagen desde: " + productoImagen.getImagen().getUrl(), e);
+                        }
+    
+                        stmtInsertarImagen.setInt(1, producto.getId());
+                        stmtInsertarImagen.setBytes(2, imagenBytes);
+                        stmtInsertarImagen.setString(3, productoImagen.getDescripcion());
+                        stmtInsertarImagen.addBatch();
+                    } else {
+                        System.err.println("Advertencia: La imagen es nula para una de las imágenes.");
+                    }
+                }
+                stmtInsertarImagen.executeBatch(); // Ejecutar todas las inserciones de imágenes
+            }
+    
+            // Confirmar la transacción
+            conn.commit();
+            mostrarAlerta("Información", "Producto actualizado con éxito", Alert.AlertType.INFORMATION);
+    
+        } catch (SQLException | IOException e) {
+            try {
+                // Si algo falla, deshacer todos los cambios
+                if (dbConnection.getConnection() != null) {
+                    dbConnection.getConnection().rollback();
+                }
+            } catch (SQLException rollbackEx) {
+                System.err.println("Error al hacer rollback: " + rollbackEx.getMessage());
+                mostrarAlerta("Error", "Error al hacer rollback", Alert.AlertType.ERROR);
+            }
+            System.err.println("Error al actualizar el producto y las imágenes: " + e.getMessage());
+            mostrarAlerta("Error", "Error al actualizar el producto", Alert.AlertType.ERROR);
+        }
+    }
+    
     private void clearForm() {
         txtNombre.clear();
         txtDescripcion.clear();
@@ -306,6 +504,8 @@ public class ProductoController {
         txtExistencia.clear();
         listaImagenes.clear();  // Elimina todos los elementos de la lista
         productoSeleccionado = null;
+        cargarProductos();
+
     }
 
     private boolean validarCampos() {
@@ -357,98 +557,6 @@ public class ProductoController {
         alert.setTitle(titulo);
         alert.setContentText(mensaje);
         alert.showAndWait();
-    }
-
-    @FXML
-    private void onAgregarImagen() {
-        // Paso 1: Mostrar un FileChooser para seleccionar una imagen
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Imágenes", "*.png", "*.jpg", "*.jpeg", "*.gif"));
-        
-        File file = fileChooser.showOpenDialog(null);
-        
-        if (file != null) {
-            try {
-                // Paso 2: Convertir la imagen a un arreglo de bytes
-                byte[] imageBytes = Files.readAllBytes(file.toPath());
-
-                // Paso 3: Pedir al usuario una descripción opcional
-                TextInputDialog descripcionDialog = new TextInputDialog();
-                descripcionDialog.setTitle("Descripción de la Imagen");
-                descripcionDialog.setHeaderText("Ingrese una descripción para la imagen (opcional):");
-                descripcionDialog.setContentText("Descripción:");
-
-                Optional<String> result = descripcionDialog.showAndWait();
-                String descripcion = result.orElse("Sin descripción");
-
-                // Paso 4: Mostrar la imagen en la vista previa
-                Image image = new Image(new ByteArrayInputStream(imageBytes));
-                ProductoImagen nuevoProductoImagen = new ProductoImagen(0, image, descripcion);
-                
-                // Agregar el nuevo producto imagen a la tabla (TableView)
-                tblImagenes.getItems().add(nuevoProductoImagen);
-
-                // Paso 5: Guardar la imagen en la base de datos
-                guardarImagenEnBaseDeDatos(imageBytes, descripcion, productoSeleccionado.getId()); // Asumiendo que productoId está disponible
-
-            } catch (IOException e) {
-                showError("Error al cargar la imagen", e.getMessage());
-            }
-        }
-    }
-
-    private void guardarImagenEnBaseDeDatos(byte[] imageBytes, String descripcion, int productoId) {
-        String sql = "INSERT INTO producto_imagen (producto_id, imagen, descripcion) VALUES (?, ?, ?)";
-    
-        try (Connection conn = dbConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-    
-            stmt.setInt(1, productoId);  // Suponiendo que ya tienes el productoId disponible
-            stmt.setBytes(2, imageBytes); // Los datos de la imagen en formato binario
-            stmt.setString(3, descripcion); // Descripción de la imagen
-    
-            stmt.executeUpdate();
-            showInfo("Imagen guardada correctamente.");
-            tblImagenes.setItems(loadImagenes(productoId));
-    
-        } catch (SQLException e) {
-            showError("Error al guardar la imagen", e.getMessage());
-        }
-    }
-    
-    @FXML
-    private void onEliminarImagen() {
-        System.out.print("antes: "+ listaImagenes.size() + " ");
-        ProductoImagen seleccionada = tblImagenes.getSelectionModel().getSelectedItem();
-        if (seleccionada != null) {
-            Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION, "¿Está seguro de eliminar esta imagen?");
-            Optional<ButtonType> resultado = confirmacion.showAndWait();
-            if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
-                listaImagenes.remove(seleccionada);
-                // Eliminar la imagen de la base de datos
-                eliminarImagenDeBaseDeDatos(seleccionada.getId());
-            }
-        } else {
-            mostrarAlerta("Seleccione una imagen", "Por favor, seleccione una imagen para eliminar.", Alert.AlertType.WARNING);
-        }
-    }
-
-    private void eliminarImagenDeBaseDeDatos(int imagenId) {
-        String sql = "DELETE FROM producto_imagen WHERE id = ?";
-        try (Connection conn = dbConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
-            stmt.setInt(1, imagenId);  // Establecer el ID de la imagen a eliminar
-            int filasAfectadas = stmt.executeUpdate();
-            
-            if (filasAfectadas > 0) {
-                showInfo("La imagen ha sido eliminada correctamente.");
-            } else {
-                showError("Error al eliminar", "No se pudo eliminar la imagen.");
-            }
-        } catch (SQLException e) {
-            showError("Error de base de datos", e.getMessage());
-        }
     }
 
 }

@@ -12,6 +12,14 @@ public class Producto {
     private int existencia;
     private List<ProductoImagen> imagenes;
 
+    public Producto(String nombre, String descripcion, String categoria, double precio, double costo, int existencia) {
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.categoria = categoria;
+        this.precio = precio;
+        this.costo = costo;
+        this.existencia = existencia;
+    }
 
     public Producto(int id, String nombre, String descripcion, String categoria, double precio, double costo, int existencia) {
         this.id = id;
