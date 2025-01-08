@@ -8,4 +8,5 @@
     <Button text="Configuración" fx:id="screen1Button" onAction="#navigateToConfiguracion" />
     <Button text="Estados" fx:id="screen2Button" onAction="#navigateToEstados" />
     <Button text="Productos" fx:id="screen3Button" onAction="#navigateToProductos" />
+    <Button text="Roles" fx:id="screen4Button" onAction="#navigateToRoles" />
 </VBox>

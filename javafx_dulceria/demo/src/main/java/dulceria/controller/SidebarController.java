@@ -41,4 +41,11 @@ public class SidebarController {
         // Lógica de navegación
         app.changeView("/dulceria/fxml/ProductoCRUD.fxml");
     }
+
+    @FXML
+    private void navigateToRoles(ActionEvent event) {
+        System.out.println("Navegando a Pantalla roles");
+        // Lógica de navegación
+        app.changeView("/dulceria/fxml/rol.fxml");
+    }
 }
