@@ -7,12 +7,14 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -114,8 +116,37 @@ public class ProductoController {
     
             return new SimpleObjectProperty<>(imageView);  // Retornar el ImageView
         });
+
+        // Configurar doble clic
+        tblImagenes.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                ProductoImagen selected = tblImagenes.getSelectionModel().getSelectedItem();
+                if (selected != null) {
+                    mostrarImagen(selected.getImagen());
+                }
+            }
+        });
     }
 
+    // Método para mostrar la imagen en una nueva ventana
+    private void mostrarImagen(Image image) {
+        Stage stage = new Stage();
+        ImageView imageView = new ImageView(image);
+        imageView.setPreserveRatio(true);
+    
+        // Ajustar el tamaño de la ventana al tamaño original de la imagen
+        Scene scene = new Scene(new javafx.scene.layout.StackPane(imageView));
+        stage.setScene(scene);
+        stage.setTitle("Vista Previa de Imagen");
+    
+        // Configurar el tamaño de la ventana según el tamaño de la imagen
+        stage.setWidth(image.getWidth());
+        stage.setHeight(image.getHeight());
+        
+        stage.show();
+    }
+    
+    
     private void loadProductos() {
         productos = FXCollections.observableArrayList();
         try (Connection conn = dbConnection.getConnection();
