@@ -1,5 +1,7 @@
 package dulceria.model;
 
+import java.util.List;
+
 public class Producto {
     private int id;
     private String nombre;
@@ -8,6 +10,8 @@ public class Producto {
     private double precio;
     private double costo;
     private int existencia;
+    private List<ProductoImagen> imagenes;
+
 
     public Producto(int id, String nombre, String descripcion, String categoria, double precio, double costo, int existencia) {
         this.id = id;
@@ -18,6 +22,20 @@ public class Producto {
         this.costo = costo;
         this.existencia = existencia;
     }
+    
+
+    public Producto(int id, String nombre, String descripcion, String categoria, double precio, double costo,
+            int existencia, List<ProductoImagen> imagenes) {
+        this.id = id;
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.categoria = categoria;
+        this.precio = precio;
+        this.costo = costo;
+        this.existencia = existencia;
+        this.imagenes = imagenes;
+    }
+
 
     public int getId() {
         return id;
@@ -73,6 +91,14 @@ public class Producto {
 
     public void setExistencia(int existencia) {
         this.existencia = existencia;
+    }
+
+    public List<ProductoImagen> getImagenes() {
+        return imagenes;
+    }
+
+    public void setImagenes(List<ProductoImagen> imagenes) {
+        this.imagenes = imagenes;
     }
 
     @Override

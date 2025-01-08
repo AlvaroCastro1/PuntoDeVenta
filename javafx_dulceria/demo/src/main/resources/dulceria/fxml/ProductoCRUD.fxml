@@ -1,37 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.*?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="dulceria.controller.ProductoController">
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dulceria.controller.ProductoController">
     <center>
-        <SplitPane orientation="HORIZONTAL">
+        <SplitPane dividerPositions="0.5" orientation="HORIZONTAL">
             <!-- Tabla de Productos -->
             <VBox>
-                <Label text="Lista de Productos" style="-fx-font-size: 16; -fx-font-weight: bold;" />
+                <Label style="-fx-font-size: 16; -fx-font-weight: bold;" text="Lista de Productos" />
                 <TableView fx:id="tableProductos" prefHeight="400.0" prefWidth="400.0">
                     <columns>
-                        <TableColumn fx:id="colId" text="ID" prefWidth="80.0" />
-                        <TableColumn fx:id="colNombre" text="Nombre" prefWidth="100.0" />
-                        <TableColumn fx:id="colDescripcion" text="Descripción" prefWidth="150.0" />
-                        <TableColumn fx:id="colCategoria" text="Categoría" prefWidth="100.0" />
-                        <TableColumn fx:id="colPrecio" text="Precio" prefWidth="75.0" />
-                        <TableColumn fx:id="colExistencia" text="Existencia" prefWidth="75.0" />
+                        <TableColumn fx:id="colId" prefWidth="80.0" text="ID" />
+                        <TableColumn fx:id="colNombre" prefWidth="100.0" text="Nombre" />
+                        <TableColumn fx:id="colDescripcion" prefWidth="150.0" text="Descripción" />
+                        <TableColumn fx:id="colCategoria" prefWidth="100.0" text="Categoría" />
+                        <TableColumn fx:id="colPrecio" prefWidth="75.0" text="Precio" />
+                        <TableColumn fx:id="colExistencia" prefWidth="75.0" text="Existencia" />
                     </columns>
                 </TableView>
+            <padding>
+               <Insets left="20.0" right="20.0" top="20.0" />
+            </padding>
             </VBox>
 
             <!-- Formulario de Producto -->
-            <VBox spacing="10" alignment="TOP_LEFT" >
-                <Label text="Detalles del Producto" style="-fx-font-size: 16; -fx-font-weight: bold;" />
+            <VBox alignment="TOP_LEFT" spacing="10">
+                <Label style="-fx-font-size: 16; -fx-font-weight: bold;" text="Detalles del Producto" />
 
                 <GridPane hgap="10" vgap="10">
                     <Label text="Nombre:" />
                     <TextField fx:id="txtNombre" GridPane.columnIndex="1" />
 
                     <Label text="Descripción:" GridPane.rowIndex="1" />
-                    <TextArea fx:id="txtDescripcion" GridPane.columnIndex="1" GridPane.rowIndex="1" prefRowCount="3" />
+                    <TextArea fx:id="txtDescripcion" prefRowCount="3" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
                     <Label text="Categoría:" GridPane.rowIndex="2" />
                     <TextField fx:id="txtCategoria" GridPane.columnIndex="1" GridPane.rowIndex="2" />
@@ -44,23 +58,45 @@
 
                     <Label text="Existencia:" GridPane.rowIndex="5" />
                     <TextField fx:id="txtExistencia" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+               <columnConstraints>
+                  <ColumnConstraints />
+                  <ColumnConstraints />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+               </rowConstraints>
                 </GridPane>
 
-                <!-- Galería de Imágenes -->
-                <Label text="Galería de Imágenes:" />
-                <HBox fx:id="galleryContainer" spacing="10" style="-fx-border-color: lightgray; -fx-border-width: 1;">
-                    <children>
-                        <ImageView fitHeight="100" fitWidth="100" preserveRatio="true" />
-                    </children>
+                <!-- Tabla de imágenes -->
+                <TableView fx:id="tblImagenes" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colId_img" prefWidth="50" text="ID" />
+                        <TableColumn fx:id="colDescripcion_img" prefWidth="100" text="Descripción" />
+                        <TableColumn fx:id="colVistaPrevia" prefWidth="200" text="Vista Previa" />
+                    </columns>
+                </TableView>
+
+                <!-- Controles para gestión de imágenes -->
+                <HBox alignment="CENTER" spacing="10">
+                    <Button onAction="#onAgregarImagen" text="Añadir Imagen" />
+                    <Button onAction="#onEliminarImagen" text="Eliminar Imagen" />
                 </HBox>
 
                 <!-- Botones de Acción -->
-                <HBox spacing="10" alignment="CENTER">
-                    <Button text="Guardar" fx:id="btnGuardar" onAction="#onGuardar" />
-                    <Button text="Actualizar" fx:id="btnActualizar" onAction="#onActualizar" />
-                    <Button text="Eliminar" fx:id="btnEliminar" onAction="#onEliminar" />
-                    <Button text="Cancelar" fx:id="btnCancelar" onAction="#onCancelar" />
+                <HBox alignment="CENTER" spacing="10">
+                    <Button fx:id="btnGuardar" onAction="#onGuardar" text="Guardar" />
+                    <Button fx:id="btnActualizar" onAction="#onActualizar" text="Actualizar" />
+                    <Button fx:id="btnEliminar" onAction="#onEliminar" text="Eliminar" />
+                    <Button fx:id="btnCancelar" onAction="#onCancelar" text="Cancelar" />
                 </HBox>
+            <padding>
+               <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            </padding>
             </VBox>
         </SplitPane>
     </center>
