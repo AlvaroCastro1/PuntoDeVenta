@@ -7,7 +7,7 @@
         <TextField fx:id="txtNombre" promptText="Nombre del Usuario" />
         <TextField fx:id="txtEmail" promptText="Email" />
         <TextField fx:id="txtTel" promptText="Telefono" />
-        <TextField fx:id="txtRol" promptText="Rol" />
+        <ComboBox fx:id="cmbRol" />
         <ComboBox fx:id="cmbEstado" promptText="Selecciona el estado" />
         
         <HBox spacing="10" alignment="CENTER">

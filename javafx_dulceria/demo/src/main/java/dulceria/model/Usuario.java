@@ -7,6 +7,7 @@ public class Usuario {
     private StringProperty nombre;
     private StringProperty email;
     private StringProperty telefono;
+    private IntegerProperty idRol;
     private StringProperty rol;
     private StringProperty contrasena;
     private BooleanProperty estado;
@@ -17,12 +18,22 @@ public class Usuario {
         this.nombre = new SimpleStringProperty();
         this.email = new SimpleStringProperty();
         this.telefono = new SimpleStringProperty();
-        this.rol = new SimpleStringProperty();
+        this.idRol = new SimpleIntegerProperty();
         this.contrasena = new SimpleStringProperty();
         this.estado = new SimpleBooleanProperty();
     }
 
     // Constructor completo
+    public Usuario(int id, String nombre, String email, String telefono, boolean estado, int idRol, String rol) {
+        this.id = new SimpleIntegerProperty(id);
+        this.nombre = new SimpleStringProperty(nombre);
+        this.email = new SimpleStringProperty(email);
+        this.telefono = new SimpleStringProperty(telefono);
+        this.estado = new SimpleBooleanProperty(estado);
+        this.idRol = new SimpleIntegerProperty(idRol);
+        this.rol = new SimpleStringProperty(rol);
+    }
+
     public Usuario(int id, String nombre, String email, String telefono, String contrasena, boolean estado) {
         this.id = new SimpleIntegerProperty(id);
         this.nombre = new SimpleStringProperty(nombre);
@@ -78,6 +89,14 @@ public class Usuario {
         this.telefono.set(telefono);
     }
 
+    public IntegerProperty getIdRol() {
+        return idRol;
+    }
+
+    public void setIdRol(IntegerProperty idRol) {
+        this.idRol = idRol;
+    }
+
     public String getRol() {
         return rol.get();
     }
@@ -119,10 +138,6 @@ public class Usuario {
         return telefono;
     }
 
-    public StringProperty rolProperty() {
-        return rol;
-    }
-
     public StringProperty contrasenaProperty() {
         return contrasena;
     }
@@ -138,7 +153,7 @@ public class Usuario {
                 "id=" + id.get() +
                 ", nombre='" + nombre.get() + '\'' +
                 ", email='" + email.get() + '\'' +
-                ", rol='" + rol.get() + '\'' +
+                ", rol='" + idRol.get() + '\'' +
                 ", estado=" + estado.get() +
                 '}';
     }

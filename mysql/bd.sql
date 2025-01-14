@@ -153,6 +153,18 @@ CREATE TABLE rol (
     CONSTRAINT PK_rol PRIMARY KEY (id)
 );
 
+INSERT INTO rol (id, nombre, descripcion) VALUES
+(1, 'Administrador', 'Acceso completo al sistema'),
+(2, 'Moderador', 'Puede gestionar contenido y usuarios'),
+(3, 'Usuario', 'Usuario estándar con permisos básicos'),
+(4, 'Invitado', 'Acceso limitado solo para ver información'),
+(5, 'Soporte Técnico', 'Resuelve problemas técnicos del sistema'),
+(6, 'Supervisor', 'Supervisa y monitorea actividades'),
+(7, 'Desarrollador', 'Desarrolla y mantiene el sistema'),
+(8, 'Auditor', 'Acceso para revisar actividades y registros'),
+(9, 'Operador', 'Gestiona tareas operativas específicas'),
+(10, 'Gerente', 'Toma decisiones basadas en reportes');
+
 -- 12. detalle roles usuario
 CREATE TABLE usuario_rol (
     id_usuario INT NOT NULL,  -- ID del usuario
@@ -171,6 +183,29 @@ CREATE TABLE permiso (
     CONSTRAINT PK_permiso PRIMARY KEY (id)
 );
 
+INSERT INTO permiso (id, nombre, descripcion) VALUES
+(1, 'Crear','Permite crear nuevos registros o elementos'),
+(2, 'Leer','Permite leer información del sistema'),
+(3, 'Actualizar','Permite modificar registros existentes'),
+(4, 'Eliminar','Permite eliminar registros'),
+(5, 'Configurar','Permite acceder a configuraciones del sistema'),
+(6, 'Gestionar Usuarios','Permite agregar, modificar o eliminar usuarios'),
+(7, 'Acceder a Reportes','Permite ver reportes generados por el sistema'),
+(8, 'Exportar Datos','Permite exportar información a archivos externos'),
+(9, 'Importar Datos','Permite importar información desde archivos externos'),
+(10, 'Ver Estadísticas','Permite ver estadísticas y métricas del sistema'),
+(11, 'Aprobar Solicitudes','Permite aprobar solicitudes o procesos pendientes'),
+(12, 'Revertir Cambios','Permite deshacer cambios realizados'),
+(13, 'Realizar Backups','Permite crear respaldos de información'),
+(14, 'Restaurar Backups','Permite restaurar información desde respaldos'),
+(15, 'Acceso API','Permite interactuar con la API del sistema'),
+(16, 'Gestionar Roles','Permite crear, modificar o eliminar roles'),
+(17, 'Auditar Actividades','Permite revisar y auditar actividades'),
+(18, 'Gestionar Permisos','Permite asignar o revocar permisos'),
+(19, 'Gestionar Inventario','Permite gestionar productos o recursos'),
+(20, 'Ver Log de Actividades', 'Permite ver registros de actividades realizadas');
+
+
 -- 14. 
 CREATE TABLE rol_permiso (
     id_rol INT NOT NULL,  -- ID del rol
@@ -179,3 +214,35 @@ CREATE TABLE rol_permiso (
     CONSTRAINT FK_rol_permiso_rol FOREIGN KEY (id_rol) REFERENCES rol(id),
     CONSTRAINT FK_rol_permiso_permiso FOREIGN KEY (id_permiso) REFERENCES permiso(id)
 );
+
+INSERT INTO rol_permiso (id_rol, id_permiso) VALUES
+-- Permisos de Administrador (Acceso completo)
+(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (1, 8), (1, 9), (1, 10),
+(1, 11), (1, 12), (1, 13), (1, 14), (1, 15), (1, 16), (1, 17), (1, 18), (1, 19), (1, 20),
+
+-- Permisos de Moderador
+(2, 2), (2, 3), (2, 4), (2, 6), (2, 7), (2, 10),
+
+-- Permisos de Usuario
+(3, 2), (3, 7), (3, 10),
+
+-- Permisos de Invitado
+(4, 2), (4, 10),
+
+-- Permisos de Soporte Técnico
+(5, 2), (5, 5), (5, 13), (5, 14), (5, 20),
+
+-- Permisos de Supervisor
+(6, 2), (6, 7), (6, 10), (6, 17), (6, 20),
+
+-- Permisos de Desarrollador
+(7, 1), (7, 2), (7, 3), (7, 4), (7, 5), (7, 15), (7, 19), (7, 20),
+
+-- Permisos de Auditor
+(8, 2), (8, 7), (8, 10), (8, 17), (8, 20),
+
+-- Permisos de Operador
+(9, 2), (9, 3), (9, 4), (9, 19),
+
+-- Permisos de Gerente
+(10, 2), (10, 7), (10, 8), (10, 10), (10, 11), (10, 20);

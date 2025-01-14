@@ -2,9 +2,14 @@ package dulceria.controller;
 
 import dulceria.model.Usuario;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.Optional;
 
+import dulceria.DatabaseConnection;
 import dulceria.DAO.UsuarioDAO;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -39,7 +44,7 @@ public class UsuarioController {
     @FXML
     private TextField txtTel;
     @FXML
-    private TextField txtRol;
+    private ComboBox<String> cmbRol;
     @FXML
     private Button btnGuardar;
     @FXML
@@ -55,7 +60,7 @@ public class UsuarioController {
     public void initialize() {
 
         cmbEstado.getItems().addAll("Activo", "Inactivo");
-
+        cargarRoles();  // Cargar los roles disponibles
         tblUsuarios.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 mostrarDetallesUsuario(newValue);
@@ -74,6 +79,7 @@ public class UsuarioController {
         colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
         colTel.setCellValueFactory(new PropertyValueFactory<>("telefono"));
         colRol.setCellValueFactory(new PropertyValueFactory<>("rol"));
+        colRol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRol()));
     }
 
     private void cargarUsuarios() {
@@ -87,6 +93,7 @@ public class UsuarioController {
         txtEmail.setText(usuario.getEmail());
         txtTel.setText(usuario.getTelefono());
         String estadoTexto = usuario.isEstado() == true ? "Activo" : "Inactivo";
+        cmbRol.setValue(usuario.getRol());
         cmbEstado.setValue(estadoTexto);
     }
 
@@ -94,12 +101,17 @@ public class UsuarioController {
     private void actualizarUsuario() {
         Usuario usuarioSeleccionado = tblUsuarios.getSelectionModel().getSelectedItem();
         String estadoSeleccionado = cmbEstado.getValue();
-        if (usuarioSeleccionado != null && estadoSeleccionado != null) {
+        String rolSeleccionado = cmbRol.getValue();  // Obtener el rol seleccionado
+
+        if (usuarioSeleccionado != null && estadoSeleccionado != null && rolSeleccionado != null) {
             usuarioSeleccionado.setNombre(txtNombre.getText());
             usuarioSeleccionado.setEmail(txtEmail.getText());
             usuarioSeleccionado.setTelefono(txtTel.getText());
-            // usuarioSeleccionado.setRol(txtRol.getText());
-            usuarioSeleccionado.setEstado(estadoSeleccionado.equals("Activo") ? true : false);
+            usuarioSeleccionado.setEstado(estadoSeleccionado.equals("Activo"));
+
+            // Aquí actualizamos el rol en la base de datos
+            usuarioSeleccionado.setRol(rolSeleccionado);
+
             if (usuarioDAO.actualizarUsuario(usuarioSeleccionado)) {
                 mostrarAlerta("Éxito", "Usuario actualizado correctamente.", Alert.AlertType.INFORMATION);
                 cargarUsuarios();
@@ -111,6 +123,7 @@ public class UsuarioController {
             mostrarAlerta("Error", "Por favor, selecciona un usuario para actualizar.", Alert.AlertType.ERROR);
         }
     }
+
 
     @FXML
     private void eliminarUsuario() {
@@ -137,10 +150,24 @@ public class UsuarioController {
         txtNombre.clear();
         txtEmail.clear();
         txtTel.clear();
-        txtRol.clear();
+        cmbRol.getSelectionModel().clearSelection(); // Limpia la selección
+        cmbRol.setValue(null); // Limpia también el valor mostrado
         cmbEstado.getSelectionModel().clearSelection(); // Limpia la selección
         cmbEstado.setValue(null); // Limpia también el valor mostrado
     }
+
+    private void cargarRoles() {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement("SELECT nombre FROM rol");
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                cmbRol.getItems().add(rs.getString("nombre"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
         Alert alerta = new Alert(tipo);
