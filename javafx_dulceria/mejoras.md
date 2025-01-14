@@ -5,12 +5,5 @@ En promocion, sería útil incluir un campo que especifique si el descuento es u
 
 
 
-Tabla de Roles (rol):
-
-Tabla de Permisos (permiso):
-
-Tabla de Usuarios (usuario):
-
-Relaciones de Usuario y Roles (usuario_rol):
-
-Relaciones de Roles y Permisos (rol_permiso):
+cambiar pass
+login
