@@ -1,23 +1,18 @@
 package dulceria.model;
 
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.property.SimpleStringProperty;
 
-public class Rol {
+public class Permiso {
     private int id;
-    private StringProperty nombreRol;
+    private StringProperty nombre;
     private StringProperty descripcion;
 
     // Constructor
-    public Rol(int id, String nombreRol, String descripcion) {
+    public Permiso(int id, String nombre, String descripcion) {
         this.id = id;
-        this.nombreRol = new SimpleStringProperty(nombreRol);
+        this.nombre = new SimpleStringProperty(nombre);
         this.descripcion = new SimpleStringProperty(descripcion);
-    }
-
-    public Rol(int id, String nombreRol) {
-        this.id = id;
-        this.nombreRol = new SimpleStringProperty(nombreRol);
     }
 
     // Getters y Setters
@@ -29,16 +24,12 @@ public class Rol {
         this.id = id;
     }
 
-    public String getNombreRol() {
-        return nombreRol.get();
+    public String getNombre() {
+        return nombre.get();
     }
 
-    public void setNombreRol(String nombreRol) {
-        this.nombreRol.set(nombreRol);
-    }
-
-    public StringProperty nombreRolProperty() {
-        return nombreRol;
+    public void setNombre(String nombre) {
+        this.nombre.set(nombre);
     }
 
     public String getDescripcion() {
@@ -47,6 +38,11 @@ public class Rol {
 
     public void setDescripcion(String descripcion) {
         this.descripcion.set(descripcion);
+    }
+
+    // Métodos Property
+    public StringProperty nombreProperty() {
+        return nombre;
     }
 
     public StringProperty descripcionProperty() {

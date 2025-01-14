@@ -9,4 +9,9 @@
     <Button text="Estados" fx:id="screen2Button" onAction="#navigateToEstados" />
     <Button text="Productos" fx:id="screen3Button" onAction="#navigateToProductos" />
     <Button text="Roles" fx:id="screen4Button" onAction="#navigateToRoles" />
+    <Button text="Permisos" fx:id="screen5Button" onAction="#navigateToPermisos" />
+    <Button text="Usuarios" fx:id="screen5Button" onAction="#navigateToUsuarios" />
+    <Button text="Crear Usuario" fx:id="screen5Button" onAction="#navigateToCrearUsuario" />
+    <Button text="Rol usuario" fx:id="screen5Button" onAction="#navigateToRolUsuario" />
+    <Button text="Rol Permiso" fx:id="screen5Button" onAction="#navigateToRolPermiso" />
 </VBox>

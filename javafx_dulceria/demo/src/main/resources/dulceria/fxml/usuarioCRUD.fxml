@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1" fx:controller="dulceria.controller.UsuarioController">
+    <VBox spacing="10" >
+        <TextField fx:id="txtNombre" promptText="Nombre del Usuario" />
+        <TextField fx:id="txtEmail" promptText="Email" />
+        <TextField fx:id="txtTel" promptText="Telefono" />
+        <TextField fx:id="txtRol" promptText="Rol" />
+        <ComboBox fx:id="cmbEstado" promptText="Selecciona el estado" />
+        
+        <HBox spacing="10" alignment="CENTER">
+            <Button onAction="#actualizarUsuario" text="Actualizar" />
+            <Button onAction="#eliminarUsuario" text="Eliminar" />
+            <Button onAction="#limpiarCampos" text="Cancelar" />
+        </HBox>
+
+        <TableView fx:id="tblUsuarios" prefWidth="600" prefHeight="400">
+            <columns>
+                <TableColumn fx:id="colId" text="ID" />
+                <TableColumn fx:id="colNombre" text="Nombre" />
+                <TableColumn fx:id="colEmail" text="Email" />
+                <TableColumn fx:id="colTel" text="Telefono" />
+                <TableColumn fx:id="colRol" text="Rol" />
+            </columns>
+        </TableView>
+    </VBox>
+</AnchorPane>

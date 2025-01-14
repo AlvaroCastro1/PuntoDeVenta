@@ -20,6 +20,7 @@
             <Button onAction="#crearRol" text="Crear Rol" />
             <Button onAction="#actualizarRol" text="Actualizar Rol" />
             <Button onAction="#eliminarRol" text="Eliminar Rol" />
+            <Button onAction="#limpiarCampos" text="Cancelar" />
         </HBox>
 
         <TableView fx:id="tblRoles" prefHeight="301.0" prefWidth="602.0">

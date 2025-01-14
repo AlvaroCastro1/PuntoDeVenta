@@ -46,6 +46,40 @@ public class SidebarController {
     private void navigateToRoles(ActionEvent event) {
         System.out.println("Navegando a Pantalla roles");
         // Lógica de navegación
-        app.changeView("/dulceria/fxml/rol.fxml");
+        app.changeView("/dulceria/fxml/rolCRUD.fxml");
+    }
+
+    @FXML
+    private void navigateToPermisos(ActionEvent event) {
+        System.out.println("Navegando a Pantalla Permisos");
+        // Lógica de navegación
+        app.changeView("/dulceria/fxml/permisoCRUD.fxml");
+    }
+
+    @FXML
+    private void navigateToUsuarios(ActionEvent event) {
+        System.out.println("Navegando a Pantalla Usuarios");
+        // Lógica de navegación
+        app.changeView("/dulceria/fxml/usuarioCRUD.fxml");
+    }
+    @FXML
+    private void navigateToCrearUsuario(ActionEvent event) {
+        System.out.println("Navegando a Pantalla Crear Usuario");
+        // Lógica de navegación
+        app.changeView("/dulceria/fxml/crearUsuario.fxml");
+    }
+
+    @FXML
+    private void navigateToRolUsuario(ActionEvent event) {
+        System.out.println("Navegando a Pantalla Rol Usuario");
+        // Lógica de navegación
+        app.changeView("/dulceria/fxml/rol_usuario.fxml");
+    }
+
+    @FXML
+    private void navigateToRolPermiso(ActionEvent event) {
+        System.out.println("Navegando a Pantalla Rol Permiso");
+        // Lógica de navegación
+        app.changeView("/dulceria/fxml/rol_permiso.fxml");
     }
 }

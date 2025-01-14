@@ -131,3 +131,51 @@ CREATE TABLE producto_promocion (
     CONSTRAINT FK_producto_promocion_producto FOREIGN KEY (id_producto) REFERENCES producto(id),
     CONSTRAINT FK_producto_promocion_promocion FOREIGN KEY (id_promocion) REFERENCES promocion(id)
 );
+
+-- 10. usuarios
+CREATE TABLE usuario (
+    id INT AUTO_INCREMENT NOT NULL,  -- ID único del usuario
+    nombre NVARCHAR(100) NOT NULL,  -- Nombre del usuario
+    correo NVARCHAR(100) NOT NULL UNIQUE,  -- Correo electrónico (único)
+    telefono NVARCHAR(20) NOT NULL UNIQUE,
+    contrasena NVARCHAR(255) NOT NULL,  -- Contraseña encriptada
+    estado BIT NOT NULL DEFAULT 1,  -- Estado: 1 = activo, 0 = inactivo
+    fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,  -- Fecha de creación
+    fecha_ultima_actualizacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,  -- Fecha de última actualización
+    CONSTRAINT PK_usuario PRIMARY KEY (id)
+);
+
+-- 11. roles
+CREATE TABLE rol (
+    id INT AUTO_INCREMENT NOT NULL,  -- ID único del rol
+    nombre NVARCHAR(50) NOT NULL,  -- Nombre del rol (ej. 'Administrador', 'Vendedor')
+    descripcion NVARCHAR(255) NULL,  -- Descripción del rol
+    CONSTRAINT PK_rol PRIMARY KEY (id)
+);
+
+-- 12. detalle roles usuario
+CREATE TABLE usuario_rol (
+    id_usuario INT NOT NULL,  -- ID del usuario
+    id_rol INT NOT NULL,  -- ID del rol
+    CONSTRAINT PK_usuario_rol PRIMARY KEY (id_usuario, id_rol),
+    CONSTRAINT FK_usuario_rol_usuario FOREIGN KEY (id_usuario) REFERENCES usuario(id),
+    CONSTRAINT FK_usuario_rol_rol FOREIGN KEY (id_rol) REFERENCES rol(id)
+);
+
+
+-- 13. permisos
+CREATE TABLE permiso (
+    id INT AUTO_INCREMENT NOT NULL,  -- ID único del permiso
+    nombre NVARCHAR(50) NOT NULL,  -- Nombre del permiso (ej. 'Crear Producto', 'Eliminar Venta')
+    descripcion NVARCHAR(255) NULL,  -- Descripción del permiso
+    CONSTRAINT PK_permiso PRIMARY KEY (id)
+);
+
+-- 14. 
+CREATE TABLE rol_permiso (
+    id_rol INT NOT NULL,  -- ID del rol
+    id_permiso INT NOT NULL,  -- ID del permiso
+    CONSTRAINT PK_rol_permiso PRIMARY KEY (id_rol, id_permiso),
+    CONSTRAINT FK_rol_permiso_rol FOREIGN KEY (id_rol) REFERENCES rol(id),
+    CONSTRAINT FK_rol_permiso_permiso FOREIGN KEY (id_permiso) REFERENCES permiso(id)
+);

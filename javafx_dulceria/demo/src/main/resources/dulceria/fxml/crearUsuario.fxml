@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1" fx:controller="dulceria.controller.CrearUsuarioController">
+    <VBox spacing="15" alignment="CENTER" AnchorPane.topAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0">
+        <Label text="Crear Nuevo Usuario" style="-fx-font-size: 20px; -fx-font-weight: bold;" />
+        
+        <TextField fx:id="txtNombre" promptText="Nombre Completo" />
+        <TextField fx:id="txtEmail" promptText="Correo Electrónico" />
+        <TextField fx:id="txtTelefono" promptText="Telefono" />
+        <HBox spacing="5">
+            <PasswordField fx:id="txtContrasena" promptText="Contraseña" />
+            <TextField fx:id="txtContrasenaVisible" promptText="Contraseña" visible="false" managed="false" />
+            <Button fx:id="btnToggleContrasena" text="👁" onAction="#toggleContrasena" />
+        </HBox>
+        <HBox spacing="5">
+            <PasswordField fx:id="txtConfirmarContrasena" promptText="Confirmar Contraseña" />
+            <TextField fx:id="txtConfirmarContrasenaVisible" promptText="Confirmar Contraseña" visible="false" managed="false" />
+            <Button fx:id="btnToggleConfirmarContrasena" text="👁" onAction="#toggleConfirmarContrasena" />
+        </HBox>
+
+        
+        <HBox spacing="10" alignment="CENTER">
+            <Button text="Guardar" onAction="#guardarUsuario" />
+            <Button text="Cancelar" onAction="#cancelar" />
+        </HBox>
+    </VBox>
+</AnchorPane>

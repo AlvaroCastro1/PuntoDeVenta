@@ -134,8 +134,8 @@ public class RolController {
         alert.showAndWait();
     }
 
-    // Limpiar los campos
-    private void limpiarCampos() {
+    @FXML
+    public void limpiarCampos() {
         txtNombreRol.clear();
         txtDescripcion.clear();
     }

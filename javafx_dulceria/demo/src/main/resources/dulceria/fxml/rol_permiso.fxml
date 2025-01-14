@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="dulceria.controller.RolPermisoController" spacing="20" alignment="CENTER">
+    <Label text="Gestión de Rol-Permiso" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+
+    <!-- Selección de Usuario y Rol -->
+    <HBox spacing="10" alignment="CENTER">
+        <VBox>
+            <Label text="Rol"/>
+            <ComboBox fx:id="comboBoxRol" prefWidth="200" promptText="Seleccionar Rol"/>
+        </VBox>
+        <VBox>
+            <Label text="Permiso"/>
+            <ComboBox fx:id="comboBoxPermiso" prefWidth="200" promptText="Seleccionar Permiso"/>
+        </VBox>
+    </HBox>
+
+    <!-- Botones de Acción -->
+    <HBox spacing="15" alignment="CENTER">
+        <Button text="Asignar" onAction="#agregarRelacion"/>
+        <Button text="Eliminar" onAction="#eliminarRelacion"/>
+    </HBox>
+
+    <!-- Tabla Relaciones Rol-Permiso -->
+    <VBox spacing="10" alignment="CENTER">
+        <Label text="Relaciones Rol-Permiso"/>
+        <TableView fx:id="tablaRolPermiso" prefWidth="500" prefHeight="200">
+            <columns>
+                <TableColumn fx:id="columnaRol" text="Rol" prefWidth="250"/>
+                <TableColumn fx:id="columnaPermiso" text="Permiso" prefWidth="250"/>
+            </columns>
+        </TableView>
+    </VBox>
+</VBox>

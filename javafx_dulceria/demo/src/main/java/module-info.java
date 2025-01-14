@@ -3,6 +3,7 @@ module dulceria {
     requires javafx.fxml;
 
     requires java.sql;    // Requiere el controlador JDBC para MySQL
+    requires spring.security.crypto;  // Este es un ejemplo; asegúrate de que este módulo esté disponible
 
 
     opens dulceria.controller to javafx.fxml;  // Abierto para los controladores
