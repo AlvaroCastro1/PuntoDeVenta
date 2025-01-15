@@ -6,6 +6,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 
 public class UsuarioDAO {
     private Connection connection;
@@ -105,5 +107,17 @@ public class UsuarioDAO {
         return 0;  // Si no se encuentra el rol
     }
     
+    public boolean cambiarContrasena(int usuarioId, String nuevaContrasena) {
+        String query = "UPDATE usuario SET contrasena = ? WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            String contrasenaEncriptada = new BCryptPasswordEncoder().encode(nuevaContrasena);
+            stmt.setString(1, contrasenaEncriptada);
+            stmt.setInt(2, usuarioId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
     
 }

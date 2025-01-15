@@ -12,6 +12,7 @@
         
         <HBox spacing="10" alignment="CENTER">
             <Button onAction="#actualizarUsuario" text="Actualizar" />
+            <Button onAction="#cambiarContrasena" text="Cambiar Contrseña" />
             <Button onAction="#eliminarUsuario" text="Eliminar" />
             <Button onAction="#limpiarCampos" text="Cancelar" />
         </HBox>

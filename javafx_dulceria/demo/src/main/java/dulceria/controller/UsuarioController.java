@@ -20,6 +20,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 public class UsuarioController {
@@ -154,6 +155,54 @@ public class UsuarioController {
         cmbRol.setValue(null); // Limpia también el valor mostrado
         cmbEstado.getSelectionModel().clearSelection(); // Limpia la selección
         cmbEstado.setValue(null); // Limpia también el valor mostrado
+    }
+
+    @FXML
+    private void cambiarContrasena() {
+        Usuario usuarioSeleccionado = tblUsuarios.getSelectionModel().getSelectedItem();
+        if (usuarioSeleccionado == null) {
+            mostrarAlerta("Error", "Por favor, selecciona un usuario primero.", Alert.AlertType.ERROR);
+            return;
+        }
+
+        // Solicitar la nueva contraseña
+        TextInputDialog dialogNuevaContrasena = new TextInputDialog();
+        dialogNuevaContrasena.setTitle("Cambiar Contraseña");
+        dialogNuevaContrasena.setHeaderText("Nueva Contraseña");
+        dialogNuevaContrasena.setContentText("Ingresa la nueva contraseña:");
+        Optional<String> resultadoNuevaContrasena = dialogNuevaContrasena.showAndWait();
+
+        if (!resultadoNuevaContrasena.isPresent() || resultadoNuevaContrasena.get().isEmpty()) {
+            mostrarAlerta("Error", "Debe ingresar una contraseña válida.", Alert.AlertType.ERROR);
+            return;
+        }
+        String nuevaContrasena = resultadoNuevaContrasena.get();
+
+        // Confirmar la nueva contraseña
+        TextInputDialog dialogConfirmarContrasena = new TextInputDialog();
+        dialogConfirmarContrasena.setTitle("Confirmar Contraseña");
+        dialogConfirmarContrasena.setHeaderText("Confirmar Contraseña");
+        dialogConfirmarContrasena.setContentText("Reingresa la nueva contraseña:");
+        Optional<String> resultadoConfirmarContrasena = dialogConfirmarContrasena.showAndWait();
+
+        if (!resultadoConfirmarContrasena.isPresent() || !resultadoConfirmarContrasena.get().equals(nuevaContrasena)) {
+            mostrarAlerta("Error", "Las contraseñas no coinciden. Intenta de nuevo.", Alert.AlertType.ERROR);
+            return;
+        }
+
+        // Validar longitud mínima
+        if (nuevaContrasena.length() < 6) {
+            mostrarAlerta("Error", "La contraseña debe tener al menos 6 caracteres.", Alert.AlertType.ERROR);
+            return;
+        }
+
+        // Actualizar la contraseña en la base de datos
+        boolean exito = usuarioDAO.cambiarContrasena(usuarioSeleccionado.getId(), nuevaContrasena);
+        if (exito) {
+            mostrarAlerta("Éxito", "Contraseña actualizada correctamente.", Alert.AlertType.INFORMATION);
+        } else {
+            mostrarAlerta("Error", "No se pudo actualizar la contraseña. Intenta de nuevo.", Alert.AlertType.ERROR);
+        }
     }
 
     private void cargarRoles() {
