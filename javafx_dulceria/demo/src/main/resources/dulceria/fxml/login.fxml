@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" alignment="CENTER" spacing="15" fx:controller="dulceria.controller.LoginController">
+    <Label text="Iniciar Sesión" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+
+    <GridPane hgap="10" vgap="10">
+        <Label text="Usuario:"/>
+        <TextField fx:id="txtUsuario" GridPane.columnIndex="1"/>
+
+        <Label text="Contraseña:" GridPane.rowIndex="1"/>
+        <HBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <PasswordField fx:id="txtContrasena" promptText="Ingrese su contraseña" HBox.hgrow="ALWAYS"/>
+            <TextField fx:id="txtContrasenaVisible" promptText="Ingrese su contraseña" HBox.hgrow="ALWAYS" visible="false"/>
+            <Button fx:id="btnMostrarContrasena" text="👁" onAction="#toggleMostrarContrasena"/>
+        </HBox>
+    </GridPane>
+
+    <Button text="Iniciar Sesión" onAction="#login"/>
+    <Label fx:id="lblMensajeError" textFill="red"/>
+</VBox>

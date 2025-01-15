@@ -246,3 +246,16 @@ INSERT INTO rol_permiso (id_rol, id_permiso) VALUES
 
 -- Permisos de Gerente
 (10, 2), (10, 7), (10, 8), (10, 10), (10, 11), (10, 20);
+
+DELIMITER //
+
+CREATE TRIGGER asignar_rol_por_defecto
+AFTER INSERT ON usuario
+FOR EACH ROW
+BEGIN
+    -- Asignamos el rol con id=3 (Usuario) al usuario recién creado
+    INSERT INTO usuario_rol (id_usuario, id_rol)
+    VALUES (NEW.id, 3);
+END //
+
+DELIMITER ;

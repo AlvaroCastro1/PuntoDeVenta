@@ -64,7 +64,7 @@ public class CrearUsuarioController {
             nombre,
             email,
             telefono,
-            encoder.encode(contrasena),
+            contrasena,
             estadoPredeterminado
         );
 

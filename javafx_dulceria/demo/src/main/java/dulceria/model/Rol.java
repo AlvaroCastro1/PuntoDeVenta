@@ -52,4 +52,11 @@ public class Rol {
     public StringProperty descripcionProperty() {
         return descripcion;
     }
+
+    @Override
+    public String toString() {
+        return getNombreRol() + ": " + getDescripcion() ;
+    }
+
+    
 }

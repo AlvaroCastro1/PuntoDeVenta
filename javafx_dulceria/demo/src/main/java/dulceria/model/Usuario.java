@@ -1,5 +1,7 @@
 package dulceria.model;
 
+import java.util.List;
+
 import javafx.beans.property.*;
 
 public class Usuario {
@@ -7,10 +9,10 @@ public class Usuario {
     private StringProperty nombre;
     private StringProperty email;
     private StringProperty telefono;
-    private IntegerProperty idRol;
-    private StringProperty rol;
     private StringProperty contrasena;
     private BooleanProperty estado;
+    private List<Rol> roles;
+    private List<Permiso> permisos;
 
     // Constructor vacío
     public Usuario() {
@@ -18,7 +20,6 @@ public class Usuario {
         this.nombre = new SimpleStringProperty();
         this.email = new SimpleStringProperty();
         this.telefono = new SimpleStringProperty();
-        this.idRol = new SimpleIntegerProperty();
         this.contrasena = new SimpleStringProperty();
         this.estado = new SimpleBooleanProperty();
     }
@@ -30,8 +31,6 @@ public class Usuario {
         this.email = new SimpleStringProperty(email);
         this.telefono = new SimpleStringProperty(telefono);
         this.estado = new SimpleBooleanProperty(estado);
-        this.idRol = new SimpleIntegerProperty(idRol);
-        this.rol = new SimpleStringProperty(rol);
     }
 
     public Usuario(int id, String nombre, String email, String telefono, String contrasena, boolean estado) {
@@ -89,22 +88,6 @@ public class Usuario {
         this.telefono.set(telefono);
     }
 
-    public IntegerProperty getIdRol() {
-        return idRol;
-    }
-
-    public void setIdRol(IntegerProperty idRol) {
-        this.idRol = idRol;
-    }
-
-    public String getRol() {
-        return rol.get();
-    }
-
-    public void setRol(String rol) {
-        this.rol.set(rol);
-    }
-
     public String getContrasena() {
         return contrasena.get();
     }
@@ -146,6 +129,22 @@ public class Usuario {
         return estado;
     }
 
+    public List<Permiso> getPermisos() {
+        return permisos;
+    }
+
+    public void setPermisos(List<Permiso> permisos) {
+        this.permisos = permisos;
+    }
+
+    public List<Rol> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Rol> roles) {
+        this.roles = roles;
+    }
+
     // Método toString (opcional, útil para depuración)
     @Override
     public String toString() {
@@ -153,7 +152,6 @@ public class Usuario {
                 "id=" + id.get() +
                 ", nombre='" + nombre.get() + '\'' +
                 ", email='" + email.get() + '\'' +
-                ", rol='" + idRol.get() + '\'' +
                 ", estado=" + estado.get() +
                 '}';
     }

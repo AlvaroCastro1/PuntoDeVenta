@@ -7,8 +7,23 @@
         <TextField fx:id="txtNombre" promptText="Nombre del Usuario" />
         <TextField fx:id="txtEmail" promptText="Email" />
         <TextField fx:id="txtTel" promptText="Telefono" />
-        <ComboBox fx:id="cmbRol" />
         <ComboBox fx:id="cmbEstado" promptText="Selecciona el estado" />
+        <!-- ComboBox para seleccionar el rol -->
+        <ComboBox fx:id="cmbRoles" promptText="Selecciona un Rol">
+            <!-- Aquí los roles se llenarán dinámicamente desde el controlador -->
+        </ComboBox>
+        
+        <!-- Botones para agregar y eliminar roles -->
+        <HBox spacing="10" alignment="CENTER">
+            <Button onAction="#asignarRol" text="Asignar Rol" />
+            <Button onAction="#eliminarRol" text="Eliminar Rol" />
+        </HBox>
+        <!-- ListView para mostrar los roles asignados al usuario -->
+        <Label text="Roles asignados:"/>
+        <ListView fx:id="listRolesUsuario" prefWidth="400" prefHeight="200">
+            <!-- Los roles asignados se mostrarán aquí -->
+        </ListView>
+
         
         <HBox spacing="10" alignment="CENTER">
             <Button onAction="#actualizarUsuario" text="Actualizar" />
@@ -23,7 +38,6 @@
                 <TableColumn fx:id="colNombre" text="Nombre" />
                 <TableColumn fx:id="colEmail" text="Email" />
                 <TableColumn fx:id="colTel" text="Telefono" />
-                <TableColumn fx:id="colRol" text="Rol" />
             </columns>
         </TableView>
     </VBox>

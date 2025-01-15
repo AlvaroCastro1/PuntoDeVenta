@@ -1,6 +1,8 @@
 package dulceria.app;
 
+import dulceria.controller.LoginController;
 import dulceria.controller.SidebarController;
+import dulceria.model.Usuario;
 import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -19,39 +21,62 @@ public class App extends Application {
     private BorderPane root; // Declaración de root como campo de clase
 
 
+    private static Usuario usuarioAutenticado;
+
     @Override
     public void start(Stage primaryStage) throws Exception {
-        // Cargar el archivo FXML para el Sidebar
-        FXMLLoader sidebarLoader = new FXMLLoader(getClass().getResource("/dulceria/fxml/sidebar.fxml"));
-        Parent sidebar = sidebarLoader.load(); // Cargar el sidebar
-
-        // Obtener el controlador del Sidebar
-        SidebarController sidebarController = sidebarLoader.getController();
-        sidebarController.setApp(this); // Pasar la instancia de App
-
-        // Configurar el contenedor principal
-        root = new BorderPane(); // Asegurarte de usar el campo de clase root
-        root.setLeft(sidebar);
-        root.setCenter(createView("Pantalla de inicio"));
-
-        // Configurar la animación del Sidebar
-        slideAnimation = new TranslateTransition(Duration.millis(300), sidebar);
-
-        // Configurar los eventos del mouse para mostrar/ocultar el Sidebar
-        root.setOnMouseMoved(event -> {
-            if (event.getX() < 10 && !isSidebarVisible) {
-                showSidebar(sidebar); // Muestra el sidebar cuando el mouse está cerca del borde izquierdo
-            } else if (event.getX() > 200 && isSidebarVisible) {
-                hideSidebar(sidebar); // Oculta el sidebar cuando el mouse está en el área de contenido
-            }
-        });
-
-        // Configurar la escena y el escenario
-        Scene scene = new Scene(root, 800, 600);
-        scene.getStylesheets().add(getClass().getResource("/dulceria/css/styles.css").toExternalForm()); // Aplicar CSS
-        primaryStage.setTitle("Sidebar con animación");
-        primaryStage.setScene(scene);
+        // Cargar el archivo FXML para la pantalla de login
+        FXMLLoader loginLoader = new FXMLLoader(getClass().getResource("/dulceria/fxml/login.fxml"));
+        Parent loginView = loginLoader.load();
+        
+        // Configurar la escena del login
+        Scene loginScene = new Scene(loginView, 400, 300);
+        primaryStage.setTitle("Login");
+        primaryStage.setScene(loginScene);
         primaryStage.show();
+        
+        // Suponemos que el controlador de login tiene una forma de validar el login
+        LoginController loginController = loginLoader.getController();
+        loginController.setApp(this, primaryStage); // Pasamos la instancia de App y el Stage
+    }
+
+    // Método para cambiar a la vista principal con Sidebar
+    public void showMainView(Stage primaryStage) {
+        // Cargar el archivo FXML para el Sidebar
+        try {
+            FXMLLoader sidebarLoader = new FXMLLoader(getClass().getResource("/dulceria/fxml/sidebar.fxml"));
+            Parent sidebar = sidebarLoader.load(); // Cargar el sidebar
+
+            // Obtener el controlador del Sidebar
+            SidebarController sidebarController = sidebarLoader.getController();
+            sidebarController.setApp(this); // Pasar la instancia de App
+
+            // Configurar el contenedor principal
+            root = new BorderPane(); // Asegurarte de usar el campo de clase root
+            root.setLeft(sidebar);
+            root.setCenter(createView("Pantalla de inicio"));
+
+            // Configurar la animación del Sidebar
+            slideAnimation = new TranslateTransition(Duration.millis(300), sidebar);
+
+            // Configurar los eventos del mouse para mostrar/ocultar el Sidebar
+            root.setOnMouseMoved(event -> {
+                if (event.getX() < 10 && !isSidebarVisible) {
+                    showSidebar(sidebar); // Muestra el sidebar cuando el mouse está cerca del borde izquierdo
+                } else if (event.getX() > 200 && isSidebarVisible) {
+                    hideSidebar(sidebar); // Oculta el sidebar cuando el mouse está en el área de contenido
+                }
+            });
+
+            // Cambiar a la vista principal
+            Scene mainScene = new Scene(root, 800, 600);
+            mainScene.getStylesheets().add(getClass().getResource("/dulceria/css/styles.css").toExternalForm()); // Aplicar CSS
+            primaryStage.setTitle("Sidebar con animación");
+            primaryStage.setScene(mainScene);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void changeView(String fxmlPath) {
@@ -89,5 +114,14 @@ public class App extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    // Getter y Setter para acceder al usuario autenticado
+    public static Usuario getUsuarioAutenticado() {
+        return usuarioAutenticado;
+    }
+
+    public static void setUsuarioAutenticado(Usuario usuario) {
+        usuarioAutenticado = usuario;
     }
 }

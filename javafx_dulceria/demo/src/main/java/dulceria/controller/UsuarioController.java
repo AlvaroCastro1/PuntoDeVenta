@@ -1,10 +1,12 @@
 package dulceria.controller;
 
+import dulceria.model.Rol;
 import dulceria.model.Usuario;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.List;
 import java.util.Optional;
 
 import dulceria.DatabaseConnection;
@@ -17,6 +19,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -35,8 +38,6 @@ public class UsuarioController {
     private TableColumn<Usuario, String> colEmail;
     @FXML
     private TableColumn<Usuario, String> colTel;
-    @FXML
-    private TableColumn<Usuario, String> colRol;
 
     @FXML
     private TextField txtNombre;
@@ -45,13 +46,16 @@ public class UsuarioController {
     @FXML
     private TextField txtTel;
     @FXML
-    private ComboBox<String> cmbRol;
-    @FXML
     private Button btnGuardar;
     @FXML
     private Button btnEliminar;
     @FXML
     private ComboBox<String> cmbEstado;
+    @FXML 
+    private ComboBox<Rol> cmbRoles;  // ComboBox para roles
+    @FXML 
+    private ListView<Rol> listRolesUsuario;  // ListView para roles asignados
+
 
 
     private UsuarioDAO usuarioDAO;
@@ -61,10 +65,10 @@ public class UsuarioController {
     public void initialize() {
 
         cmbEstado.getItems().addAll("Activo", "Inactivo");
-        cargarRoles();  // Cargar los roles disponibles
         tblUsuarios.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 mostrarDetallesUsuario(newValue);
+                cargarRolesUsuario(newValue);
             }
         });
 
@@ -72,6 +76,7 @@ public class UsuarioController {
         listaUsuarios = FXCollections.observableArrayList();
         configurarTabla();
         cargarUsuarios();
+        cargarRolesDisponibles();
     }
 
     private void configurarTabla() {
@@ -79,8 +84,6 @@ public class UsuarioController {
         colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
         colTel.setCellValueFactory(new PropertyValueFactory<>("telefono"));
-        colRol.setCellValueFactory(new PropertyValueFactory<>("rol"));
-        colRol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRol()));
     }
 
     private void cargarUsuarios() {
@@ -94,7 +97,6 @@ public class UsuarioController {
         txtEmail.setText(usuario.getEmail());
         txtTel.setText(usuario.getTelefono());
         String estadoTexto = usuario.isEstado() == true ? "Activo" : "Inactivo";
-        cmbRol.setValue(usuario.getRol());
         cmbEstado.setValue(estadoTexto);
     }
 
@@ -102,16 +104,12 @@ public class UsuarioController {
     private void actualizarUsuario() {
         Usuario usuarioSeleccionado = tblUsuarios.getSelectionModel().getSelectedItem();
         String estadoSeleccionado = cmbEstado.getValue();
-        String rolSeleccionado = cmbRol.getValue();  // Obtener el rol seleccionado
 
-        if (usuarioSeleccionado != null && estadoSeleccionado != null && rolSeleccionado != null) {
+        if (usuarioSeleccionado != null && estadoSeleccionado != null) {
             usuarioSeleccionado.setNombre(txtNombre.getText());
             usuarioSeleccionado.setEmail(txtEmail.getText());
             usuarioSeleccionado.setTelefono(txtTel.getText());
             usuarioSeleccionado.setEstado(estadoSeleccionado.equals("Activo"));
-
-            // Aquí actualizamos el rol en la base de datos
-            usuarioSeleccionado.setRol(rolSeleccionado);
 
             if (usuarioDAO.actualizarUsuario(usuarioSeleccionado)) {
                 mostrarAlerta("Éxito", "Usuario actualizado correctamente.", Alert.AlertType.INFORMATION);
@@ -151,8 +149,6 @@ public class UsuarioController {
         txtNombre.clear();
         txtEmail.clear();
         txtTel.clear();
-        cmbRol.getSelectionModel().clearSelection(); // Limpia la selección
-        cmbRol.setValue(null); // Limpia también el valor mostrado
         cmbEstado.getSelectionModel().clearSelection(); // Limpia la selección
         cmbEstado.setValue(null); // Limpia también el valor mostrado
     }
@@ -205,23 +201,124 @@ public class UsuarioController {
         }
     }
 
-    private void cargarRoles() {
-        try (Connection conn = DatabaseConnection.getConnection()) {
-            PreparedStatement stmt = conn.prepareStatement("SELECT nombre FROM rol");
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                cmbRol.getItems().add(rs.getString("nombre"));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
     private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
         Alert alerta = new Alert(tipo);
         alerta.setTitle(titulo);
         alerta.setContentText(mensaje);
         alerta.showAndWait();
     }
+
+    private void cargarRolesDisponibles() {
+        try (Connection con = DatabaseConnection.getConnection()) {
+            String sql = "SELECT * FROM rol"; // Consulta para obtener todos los roles
+            PreparedStatement stmt = con.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+    
+            cmbRoles.getItems().clear();
+            while (rs.next()) {
+                cmbRoles.getItems().add(new Rol(rs.getInt("id"),
+                 rs.getString("nombre"), 
+                 rs.getString("descripcion"))); // Crear objeto Rol y agregarlo
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            mostrarAlerta("Error", "No se pudieron cargar los roles.", Alert.AlertType.ERROR);
+        }
+    }
+    
+    // Método para cargar los roles asignados a un usuario
+    private void cargarRolesUsuario(Usuario usuario) {
+        try (Connection con = DatabaseConnection.getConnection()) {
+            String sql = "SELECT r.id, r.nombre, r.descripcion FROM rol r " +
+                         "JOIN usuario_rol ur ON r.id = ur.id_rol " +
+                         "WHERE ur.id_usuario = ?";
+            PreparedStatement stmt = con.prepareStatement(sql);
+            stmt.setInt(1, usuario.getId());
+            ResultSet rs = stmt.executeQuery();
+    
+            listRolesUsuario.getItems().clear();
+            while (rs.next()) {
+                listRolesUsuario.getItems().add(new Rol(
+                                                    rs.getInt("id"),
+                                                    rs.getString("nombre"),
+                                                    rs.getString("descripcion"))
+                                                ); // Crear objeto Rol y agregarlo
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            mostrarAlerta("Error", "No se pudieron cargar los roles asignados.", Alert.AlertType.ERROR);
+        }
+    }
+    
+    // Método para asignar un rol al usuario seleccionado
+    @FXML
+    private void asignarRol() {
+        Usuario usuarioSeleccionado = tblUsuarios.getSelectionModel().getSelectedItem();
+        Rol rolSeleccionado = cmbRoles.getValue();
+    
+        if (usuarioSeleccionado != null && rolSeleccionado != null) {
+            try (Connection con = DatabaseConnection.getConnection()) {
+                String sql = "INSERT INTO usuario_rol (id_usuario, id_rol) VALUES (?, ?)";
+                PreparedStatement stmt = con.prepareStatement(sql);
+                stmt.setInt(1, usuarioSeleccionado.getId());
+                stmt.setInt(2, rolSeleccionado.getId());
+                int rowsAffected = stmt.executeUpdate();
+    
+                if (rowsAffected > 0) {
+                    mostrarAlerta("Éxito", "Rol asignado correctamente.", Alert.AlertType.INFORMATION);
+                    cargarRolesUsuario(usuarioSeleccionado);  // Recargar los roles asignados
+                } else {
+                    mostrarAlerta("Error", "No se pudo asignar el rol.", Alert.AlertType.ERROR);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                mostrarAlerta("Error", "No se pudo asignar el rol.", Alert.AlertType.ERROR);
+            }
+        }
+    }
+    
+    // Método para eliminar un rol del usuario seleccionado
+    @FXML
+    private void eliminarRol() {
+        Usuario usuarioSeleccionado = tblUsuarios.getSelectionModel().getSelectedItem();
+        Rol rolSeleccionado = listRolesUsuario.getSelectionModel().getSelectedItem();
+
+        if (usuarioSeleccionado != null && rolSeleccionado != null) {
+            // Mostrar un cuadro de confirmación antes de eliminar
+            Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+            confirmacion.setTitle("Confirmar Eliminación");
+            confirmacion.setHeaderText("¿Estás seguro de eliminar este rol?");
+            confirmacion.setContentText("El rol asociado a este usuario será eliminado.");
+
+            // Mostrar el cuadro de confirmación y esperar la respuesta del usuario
+            Optional<ButtonType> resultado = confirmacion.showAndWait();
+
+            // Si el usuario confirma, proceder con la eliminación
+            if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
+                try (Connection con = DatabaseConnection.getConnection()) {
+                    String sql = "DELETE FROM usuario_rol WHERE id_usuario = ? AND id_rol = ?";
+                    PreparedStatement stmt = con.prepareStatement(sql);
+                    stmt.setInt(1, usuarioSeleccionado.getId());
+                    stmt.setInt(2, rolSeleccionado.getId());
+                    int rowsAffected = stmt.executeUpdate();
+
+                    if (rowsAffected > 0) {
+                        mostrarAlerta("Éxito", "Rol eliminado correctamente.", Alert.AlertType.INFORMATION);
+                        cargarRolesUsuario(usuarioSeleccionado);  // Recargar los roles asignados
+                    } else {
+                        mostrarAlerta("Error", "No se pudo eliminar el rol.", Alert.AlertType.ERROR);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    mostrarAlerta("Error", "No se pudo eliminar el rol.", Alert.AlertType.ERROR);
+                }
+            } else {
+                // Si el usuario cancela, no hacer nada
+                System.out.println("Eliminación de rol cancelada.");
+            }
+        } else {
+            mostrarAlerta("Error", "Por favor, selecciona un usuario y un rol para eliminar.", Alert.AlertType.ERROR);
+        }
+    }
+
 }

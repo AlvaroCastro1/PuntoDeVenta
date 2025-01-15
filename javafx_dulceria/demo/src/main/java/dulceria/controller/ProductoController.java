@@ -1,8 +1,10 @@
 package dulceria.controller;
 
 import dulceria.DatabaseConnection;
+import dulceria.app.App;
 import dulceria.model.Producto;
 import dulceria.model.ProductoImagen;
+import dulceria.model.Usuario;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -78,7 +80,8 @@ public class ProductoController {
     public void initialize() {
         configureTable();
         loadProductos();
-
+        Usuario u = App.getUsuarioAutenticado();
+        System.out.println(u.getPermisos().get(0));
     }
 
     private void configureTable() {
