@@ -1,44 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1" fx:controller="dulceria.controller.UsuarioController">
-    <VBox spacing="10" >
-        <TextField fx:id="txtNombre" promptText="Nombre del Usuario" />
-        <TextField fx:id="txtEmail" promptText="Email" />
-        <TextField fx:id="txtTel" promptText="Telefono" />
-        <ComboBox fx:id="cmbEstado" promptText="Selecciona el estado" />
-        <!-- ComboBox para seleccionar el rol -->
-        <ComboBox fx:id="cmbRoles" promptText="Selecciona un Rol">
-            <!-- Aquí los roles se llenarán dinámicamente desde el controlador -->
-        </ComboBox>
-        
-        <!-- Botones para agregar y eliminar roles -->
-        <HBox spacing="10" alignment="CENTER">
-            <Button onAction="#asignarRol" text="Asignar Rol" />
-            <Button onAction="#eliminarRol" text="Eliminar Rol" />
-        </HBox>
-        <!-- ListView para mostrar los roles asignados al usuario -->
-        <Label text="Roles asignados:"/>
-        <ListView fx:id="listRolesUsuario" prefWidth="400" prefHeight="200">
-            <!-- Los roles asignados se mostrarán aquí -->
-        </ListView>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-        
-        <HBox spacing="10" alignment="CENTER">
-            <Button onAction="#actualizarUsuario" text="Actualizar" />
-            <Button onAction="#cambiarContrasena" text="Cambiar Contrseña" />
-            <Button onAction="#eliminarUsuario" text="Eliminar" />
-            <Button onAction="#limpiarCampos" text="Cancelar" />
-        </HBox>
+<AnchorPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dulceria.controller.UsuarioController">
+    <HBox spacing="20">
+        <!-- Columna de la tabla de usuarios (lado izquierdo) -->
+        <VBox alignment="CENTER_LEFT" spacing="10">
+            <TableView fx:id="tblUsuarios" prefHeight="400" prefWidth="600">
+                <columns>
+                    <TableColumn fx:id="colId" text="ID" />
+                    <TableColumn fx:id="colNombre" text="Nombre" />
+                    <TableColumn fx:id="colEmail" text="Email" />
+                    <TableColumn fx:id="colTel" text="Telefono" />
+                </columns>
+            </TableView>
+        </VBox>
 
-        <TableView fx:id="tblUsuarios" prefWidth="600" prefHeight="400">
-            <columns>
-                <TableColumn fx:id="colId" text="ID" />
-                <TableColumn fx:id="colNombre" text="Nombre" />
-                <TableColumn fx:id="colEmail" text="Email" />
-                <TableColumn fx:id="colTel" text="Telefono" />
-            </columns>
-        </TableView>
-    </VBox>
+        <!-- Columna de los formularios y botones (lado derecho) -->
+        <VBox alignment="CENTER_RIGHT" spacing="10">
+            <TextField fx:id="txtNombre" promptText="Nombre del Usuario" />
+            <TextField fx:id="txtEmail" promptText="Email" />
+            <TextField fx:id="txtTel" promptText="Telefono" />
+            <ComboBox fx:id="cmbEstado" promptText="Selecciona el estado" />
+            <ComboBox fx:id="cmbRoles" promptText="Selecciona un Rol">
+                <!-- Aquí los roles se llenarán dinámicamente desde el controlador -->
+            </ComboBox>
+            
+            <!-- Botones para agregar y eliminar roles -->
+            <HBox alignment="CENTER" spacing="10">
+                <Button onAction="#asignarRol" text="Asignar Rol" />
+                <Button onAction="#eliminarRol" text="Eliminar Rol" />
+            </HBox>
+            
+            <!-- ListView para mostrar los roles asignados al usuario -->
+            <Label text="Roles asignados:" />
+            <ListView fx:id="listRolesUsuario" prefHeight="200" prefWidth="400">
+                <!-- Los roles asignados se mostrarán aquí -->
+            </ListView>
+
+            <HBox alignment="CENTER" spacing="10">
+                <Button onAction="#actualizarUsuario" text="Actualizar" />
+                <Button onAction="#cambiarContrasena" text="Cambiar Contraseña" />
+                <Button onAction="#eliminarUsuario" text="Eliminar" />
+                <Button onAction="#limpiarCampos" text="Cancelar" />
+            </HBox>
+        </VBox>
+      <padding>
+         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+      </padding>
+    </HBox>
 </AnchorPane>
