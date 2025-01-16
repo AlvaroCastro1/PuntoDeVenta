@@ -6,15 +6,14 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.scene.image.Image;
 
 public class ProductoImagen {
     private final IntegerProperty id;
-    private final ObjectProperty<Image> imagen;
+    private final ObjectProperty<byte[]> imagen;
     private final StringProperty descripcion;  // Nueva propiedad para la descripción
 
     // Constructor
-    public ProductoImagen(int id, Image imagen, String descripcion) {
+    public ProductoImagen(int id, byte[] imagen, String descripcion) {
         this.id = new SimpleIntegerProperty(id);
         this.imagen = new SimpleObjectProperty<>(imagen);
         this.descripcion = new SimpleStringProperty(descripcion);  // Inicializamos la descripción
@@ -33,18 +32,13 @@ public class ProductoImagen {
         return id;
     }
 
-    // Getters y setters para la imagen
-    public Image getImagen() {
+    public byte[] getImagen() {
         return imagen.get();
     }
 
-    public void setImagen(Image imagen) {
+    public void setImagen(byte[] imagen) {
         this.imagen.set(imagen);
-    }
-
-    public ObjectProperty<Image> imagenProperty() {
-        return imagen;
-    }
+    }    
 
     // Getters y setters para la descripción
     public String getDescripcion() {

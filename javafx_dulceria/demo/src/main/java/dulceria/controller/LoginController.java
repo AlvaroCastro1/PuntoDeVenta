@@ -16,7 +16,7 @@ public class LoginController {
     @FXML
     private TextField txtContrasenaVisible;
     @FXML
-    private Button btnMostrarContrasena;
+    private Button btnMostrarContrasena, btnEntrar;
     @FXML
     private Label lblMensajeError;
 
@@ -41,6 +41,10 @@ public class LoginController {
     public void initialize() {
         usuarioDAO = new UsuarioDAO();
         sincronizarCampos();
+        txtContrasena.setOnAction(event -> {
+            // Cuando se presiona Enter en el campo de contraseña, disparar el clic en el botón "Entrar"
+            btnEntrar.fire();
+        });
     }
 
     private void sincronizarCampos() {

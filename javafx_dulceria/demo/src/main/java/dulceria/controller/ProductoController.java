@@ -53,11 +53,9 @@ public class ProductoController {
     @FXML
     private TableColumn<Producto, Double> colPrecio;
 
-    @FXML
-    private TableColumn<Producto, Integer> colExistencia;
 
     @FXML
-    private TextField txtNombre, txtCategoria, txtPrecio, txtCosto, txtExistencia;
+    private TextField txtNombre, txtCategoria, txtPrecio, txtCosto;
 
     @FXML
     private TextArea txtDescripcion;
@@ -81,7 +79,6 @@ public class ProductoController {
         configureTable();
         loadProductos();
         Usuario u = App.getUsuarioAutenticado();
-        System.out.println(u.getPermisos().get(0));
     }
 
     private void configureTable() {
@@ -91,7 +88,6 @@ public class ProductoController {
         colDescripcion.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getDescripcion()));
         colCategoria.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getCategoria()));
         colPrecio.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getPrecio()));
-        colExistencia.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getExistencia()));
         
         //tabla imagenes
         tableProductos.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
@@ -109,23 +105,42 @@ public class ProductoController {
 
         // Configurar la columna de Vista Previa con ImageView
         colVistaPrevia.setCellValueFactory(param -> {
-            Image imagen = param.getValue().getImagen();
-            ImageView imageView = new ImageView(imagen);
-            
-            // Ajustar el tamaño de la imagen
-            imageView.setFitWidth(30);  // Ajustar el ancho
-            imageView.setFitHeight(30); // Ajustar la altura
-            imageView.setPreserveRatio(true); // Mantener la relación de aspecto
-    
-            return new SimpleObjectProperty<>(imageView);  // Retornar el ImageView
-        });
+            // Obtener el Byte[] de la fila actual
+            byte[] byteArray = param.getValue().getImagen();
+        
+            // Verificar si el byteArray no es nulo
+            if (byteArray != null) {
+                // Convertir Byte[] a Image
+                byte[] primitiveBytes = new byte[byteArray.length];
+                for (int i = 0; i < byteArray.length; i++) {
+                    primitiveBytes[i] = byteArray[i];
+                }
+                ByteArrayInputStream inputStream = new ByteArrayInputStream(primitiveBytes);
+                Image imagen = new Image(inputStream);
+        
+                // Crear el ImageView
+                ImageView imageView = new ImageView(imagen);
+        
+                // Ajustar el tamaño de la imagen
+                imageView.setFitWidth(30);  // Ajustar el ancho
+                imageView.setFitHeight(30); // Ajustar la altura
+                imageView.setPreserveRatio(true); // Mantener la relación de aspecto
+        
+                // Retornar el ImageView como una propiedad
+                return new SimpleObjectProperty<>(imageView);
+            } else {
+                // Si no hay imagen, retornar nulo
+                return new SimpleObjectProperty<>(null);
+            }
+        });        
 
         // Configurar doble clic
         tblImagenes.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 ProductoImagen selected = tblImagenes.getSelectionModel().getSelectedItem();
                 if (selected != null) {
-                    mostrarImagen(selected.getImagen());
+                    Image img = convertToImage(selected.getImagen());
+                    mostrarImagen(img);
                 }
             }
         });
@@ -163,8 +178,7 @@ public class ProductoController {
                         rs.getString("descripcion"),
                         rs.getString("categoria"),
                         rs.getDouble("precio"),
-                        rs.getDouble("costo"),
-                        rs.getInt("existencia")
+                        rs.getDouble("costo")
                 );
                 productos.add(producto);
             }
@@ -190,11 +204,8 @@ public class ProductoController {
                     String descripcion = rs.getString("descripcion"); // Obtener la descripción
                     byte[] imagenBytes = rs.getBytes("imagen"); // Obtener la imagen en formato binario
 
-                    // Convertir el arreglo de bytes a una imagen
-                    Image imagen = new Image(new ByteArrayInputStream(imagenBytes));
-
                     // Crear el objeto ProductoImagen con los campos id, imagen y descripcion
-                    ProductoImagen productoImagen = new ProductoImagen(id, imagen, descripcion);
+                    ProductoImagen productoImagen = new ProductoImagen(id, imagenBytes, descripcion);
                     imagenes.add(productoImagen);
                     hasImages = true;
                 }
@@ -218,7 +229,6 @@ public class ProductoController {
         txtCategoria.setText(producto.getCategoria());
         txtPrecio.setText(String.valueOf(producto.getPrecio()));
         txtCosto.setText(String.valueOf(producto.getCosto()));
-        txtExistencia.setText(String.valueOf(producto.getExistencia()));
         
         // Cargar imágenes asociadas al producto
         listaImagenes.clear();  // Limpiar la lista antes de cargar los nuevos datos
@@ -235,9 +245,8 @@ public class ProductoController {
             String categoria = txtCategoria.getText();
             double precio = Double.parseDouble(txtPrecio.getText());
             double costo = Double.parseDouble(txtCosto.getText());
-            int existencia = Integer.parseInt(txtExistencia.getText());
 
-            String sql = "UPDATE producto SET nombre = ?, descripcion = ?, categoria = ?, precio = ?, costo = ?, existencia = ? WHERE id = ?";
+            String sql = "UPDATE producto SET nombre = ?, descripcion = ?, categoria = ?, precio = ?, costo = ? WHERE id = ?";
 
             try (Connection conn = DatabaseConnection.getConnection();
                  PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -246,8 +255,7 @@ public class ProductoController {
                 stmt.setString(3, categoria);
                 stmt.setDouble(4, precio);
                 stmt.setDouble(5, costo);
-                stmt.setInt(6, existencia);
-                stmt.setInt(7, productoSeleccionado.getId());
+                stmt.setInt(6, productoSeleccionado.getId());
 
                 stmt.executeUpdate();
                 mostrarAlerta("Éxito", "Producto actualizado exitosamente", Alert.AlertType.INFORMATION);
@@ -287,9 +295,19 @@ public class ProductoController {
 
     @FXML
     public void onGuardar() {
-
         if (validarCampos()) {
             if (productoSeleccionado != null) { // ACTUALIZAR PRODUCTO
+                int id = productoSeleccionado.getId();
+
+                productoSeleccionado = new Producto(
+                    id, 
+                    txtNombre.getText(), 
+                    txtDescripcion.getText(), 
+                    txtCategoria.getText(), 
+                    Double.parseDouble(txtPrecio.getText()), 
+                    Double.parseDouble(txtCosto.getText())
+                );
+
                 actualizarProductoConImagenes(productoSeleccionado, listaImagenes);
             } else { //GUARDAR PRODUCTO NUEVO
                 Producto nuevoProducto = new Producto(
@@ -297,8 +315,7 @@ public class ProductoController {
                     txtDescripcion.getText(),
                     txtCategoria.getText(),
                     Double.parseDouble(txtPrecio.getText()),
-                    Double.parseDouble(txtCosto.getText()),
-                    Integer.parseInt(txtExistencia.getText())
+                    Double.parseDouble(txtCosto.getText())
                 );
                 guardarProductoConImagenes(nuevoProducto, listaImagenes);
             }
@@ -327,13 +344,7 @@ public class ProductoController {
                 Optional<String> result = descripcionDialog.showAndWait();
                 String descripcion = result.orElse("Sin descripción");
 
-                // Paso 4: Mostrar la imagen en la vista previa
-                 // Obtener la URL del archivo seleccionado
-                String fileUrl = file.toURI().toString();
-
-                // Crear la imagen desde la URL del archivo
-                Image image = new Image(fileUrl);
-                ProductoImagen nuevoProductoImagen = new ProductoImagen(0, image, descripcion);
+                ProductoImagen nuevoProductoImagen = new ProductoImagen(0, imageBytes, descripcion);
                 
                 // Agregar el nuevo producto imagen a la tabla (TableView)
                 tblImagenes.getItems().add(nuevoProductoImagen);
@@ -364,7 +375,7 @@ public class ProductoController {
     }
 
     public void guardarProductoConImagenes(Producto producto, ObservableList<ProductoImagen> listaImagenes) {
-        String sqlProducto = "INSERT INTO producto (nombre, descripcion, categoria, precio, costo, existencia) VALUES (?, ?, ?, ?, ?, ?)";
+        String sqlProducto = "INSERT INTO producto (nombre, descripcion, categoria, precio, costo) VALUES (?, ?, ?, ?, ?)";
         String sqlImagen = "INSERT INTO producto_imagen (producto_id, imagen, descripcion) VALUES (?, ?, ?)";
     
         try (Connection conn = dbConnection.getConnection()) {
@@ -379,7 +390,6 @@ public class ProductoController {
                 stmtProducto.setString(3, producto.getCategoria());
                 stmtProducto.setDouble(4, producto.getPrecio());
                 stmtProducto.setDouble(5, producto.getCosto());
-                stmtProducto.setInt(6, producto.getExistencia());
     
                 int filasProducto = stmtProducto.executeUpdate();
                 if (filasProducto == 0) {
@@ -402,23 +412,7 @@ public class ProductoController {
             try (PreparedStatement stmtImagen = conn.prepareStatement(sqlImagen)) {
                 for (ProductoImagen productoImagen : listaImagenes) {
                     if (productoImagen.getImagen() != null) { // Validar que la imagen no sea nula
-                        Image imagen = productoImagen.getImagen();
-                        byte[] imagenBytes;
-    
-                        // Convertir la imagen a bytes
-                        try {
-                            // Obtener la URL y quitar el prefijo 'file:'
-                            String filePath = imagen.getUrl().replaceFirst("file:", "");
-
-                            // Crear el archivo desde la ruta local
-                            Path path = Paths.get(filePath);
-                            
-                            // Leer los bytes de la imagen
-                            imagenBytes = Files.readAllBytes(path);
-                        } catch (Exception e) {
-                            mostrarAlerta("Error con la imagen del producto", "Hay un error al intentar guardar la imagen\n"+imagen.getUrl(), Alert.AlertType.ERROR);
-                            throw new IOException("Error al leer la imagen desde: " + imagen.getUrl(), e);
-                        }
+                        byte[] imagenBytes = productoImagen.getImagen();
     
                         stmtImagen.setInt(1, productoId);
                         stmtImagen.setBytes(2, imagenBytes);
@@ -437,21 +431,14 @@ public class ProductoController {
             mostrarAlerta("Información", "Producto guardado con éxito", Alert.AlertType.INFORMATION);
             clearForm();
 
-        } catch (SQLException | IOException e) {
-            try {
-                // Si algo falla, deshacer todos los cambios
-                dbConnection.getConnection().rollback();
-            } catch (SQLException rollbackEx) {
-                System.err.println("Error al hacer rollback: " + rollbackEx.getMessage());
-                mostrarAlerta("Error", "Error al hacer rollback", Alert.AlertType.ERROR);
-            }
+        } catch (SQLException e) {
             System.err.println("Error al guardar el producto y las imágenes: " + e.getMessage());
             mostrarAlerta("Error", "al guardar el producto", Alert.AlertType.ERROR);
         }
     }
     
     public void actualizarProductoConImagenes(Producto producto, ObservableList<ProductoImagen> listaImagenes) {
-        String sqlActualizarProducto = "UPDATE producto SET nombre = ?, descripcion = ?, categoria = ?, precio = ?, costo = ?, existencia = ? WHERE id = ?";
+        String sqlActualizarProducto = "UPDATE producto SET nombre = ?, descripcion = ?, categoria = ?, precio = ?, costo = ? WHERE id = ?";
         String sqlEliminarImagenes = "DELETE FROM producto_imagen WHERE producto_id = ?";
         String sqlInsertarImagen = "INSERT INTO producto_imagen (producto_id, imagen, descripcion) VALUES (?, ?, ?)";
     
@@ -466,8 +453,7 @@ public class ProductoController {
                 stmtActualizar.setString(3, producto.getCategoria());
                 stmtActualizar.setDouble(4, producto.getPrecio());
                 stmtActualizar.setDouble(5, producto.getCosto());
-                stmtActualizar.setInt(6, producto.getExistencia());
-                stmtActualizar.setInt(7, producto.getId());
+                stmtActualizar.setInt(6, producto.getId());
     
                 int filasActualizadas = stmtActualizar.executeUpdate();
                 if (filasActualizadas == 0) {
@@ -486,18 +472,7 @@ public class ProductoController {
             try (PreparedStatement stmtInsertarImagen = conn.prepareStatement(sqlInsertarImagen)) {
                 for (ProductoImagen productoImagen : listaImagenes) {
                     if (productoImagen.getImagen() != null) { // Validar que la imagen no sea nula
-                        Image imagen = productoImagen.getImagen();
-                        byte[] imagenBytes;
-    
-                        // Convertir la imagen a bytes
-                        try {
-                            String filePath = imagen.getUrl().replaceFirst("file:", "");
-                            Path path = Paths.get(filePath);
-                            imagenBytes = Files.readAllBytes(path);
-                        } catch (Exception e) {
-                            mostrarAlerta("Error con la imagen del producto", "Error al leer la imagen desde: " + productoImagen.getImagen().getUrl(), Alert.AlertType.ERROR);
-                            throw new IOException("Error al leer la imagen desde: " + productoImagen.getImagen().getUrl(), e);
-                        }
+                        byte[] imagenBytes = productoImagen.getImagen();
     
                         stmtInsertarImagen.setInt(1, producto.getId());
                         stmtInsertarImagen.setBytes(2, imagenBytes);
@@ -513,17 +488,9 @@ public class ProductoController {
             // Confirmar la transacción
             conn.commit();
             mostrarAlerta("Información", "Producto actualizado con éxito", Alert.AlertType.INFORMATION);
+            cargarProductos();
     
-        } catch (SQLException | IOException e) {
-            try {
-                // Si algo falla, deshacer todos los cambios
-                if (dbConnection.getConnection() != null) {
-                    dbConnection.getConnection().rollback();
-                }
-            } catch (SQLException rollbackEx) {
-                System.err.println("Error al hacer rollback: " + rollbackEx.getMessage());
-                mostrarAlerta("Error", "Error al hacer rollback", Alert.AlertType.ERROR);
-            }
+        } catch (SQLException e) {
             System.err.println("Error al actualizar el producto y las imágenes: " + e.getMessage());
             mostrarAlerta("Error", "Error al actualizar el producto", Alert.AlertType.ERROR);
         }
@@ -535,7 +502,6 @@ public class ProductoController {
         txtCategoria.clear();
         txtPrecio.clear();
         txtCosto.clear();
-        txtExistencia.clear();
         listaImagenes.clear();  // Elimina todos los elementos de la lista
         productoSeleccionado = null;
         cargarProductos();
@@ -544,7 +510,7 @@ public class ProductoController {
 
     private boolean validarCampos() {
         if (txtNombre.getText().isEmpty() || txtCategoria.getText().isEmpty() || txtPrecio.getText().isEmpty()
-                || txtCosto.getText().isEmpty() || txtExistencia.getText().isEmpty()) {
+                || txtCosto.getText().isEmpty() ) {
             mostrarAlerta("Advertencia", "Todos los campos son obligatorios", Alert.AlertType.WARNING);
             return false;
         }
@@ -552,7 +518,6 @@ public class ProductoController {
         try {
             Double.parseDouble(txtPrecio.getText());
             Double.parseDouble(txtCosto.getText());
-            Integer.parseInt(txtExistencia.getText());
         } catch (NumberFormatException e) {
             mostrarAlerta("Advertencia", "Precio, costo y existencia deben ser valores numéricos", Alert.AlertType.WARNING);
             return false;
@@ -576,12 +541,12 @@ public class ProductoController {
                         rs.getString("descripcion"),
                         rs.getString("categoria"),
                         rs.getDouble("precio"),
-                        rs.getDouble("costo"),
-                        rs.getInt("existencia")
+                        rs.getDouble("costo")
                 );
                 tableProductos.getItems().add(producto);
             }
         } catch (SQLException e) {
+            System.out.println("aqui");
             mostrarAlerta("Error", "Ocurrió un error al cargar los productos: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
@@ -593,4 +558,17 @@ public class ProductoController {
         alert.showAndWait();
     }
 
+    public static Image convertToImage(byte[] byteArray) {
+        // Convertir Byte[] a byte[]
+        byte[] primitiveBytes = new byte[byteArray.length];
+        for (int i = 0; i < byteArray.length; i++) {
+            primitiveBytes[i] = byteArray[i];
+        }
+
+        // Crear un ByteArrayInputStream a partir del byte[]
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(primitiveBytes);
+
+        // Crear y devolver la imagen
+        return new Image(inputStream);
+    }
 }

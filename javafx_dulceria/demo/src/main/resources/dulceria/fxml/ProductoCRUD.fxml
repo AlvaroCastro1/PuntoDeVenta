@@ -28,7 +28,6 @@
                         <TableColumn fx:id="colDescripcion" prefWidth="150.0" text="Descripción" />
                         <TableColumn fx:id="colCategoria" prefWidth="100.0" text="Categoría" />
                         <TableColumn fx:id="colPrecio" prefWidth="75.0" text="Precio" />
-                        <TableColumn fx:id="colExistencia" prefWidth="75.0" text="Existencia" />
                     </columns>
                 </TableView>
             <padding>
@@ -56,8 +55,6 @@
                     <Label text="Costo:" GridPane.rowIndex="4" />
                     <TextField fx:id="txtCosto" GridPane.columnIndex="1" GridPane.rowIndex="4" />
 
-                    <Label text="Existencia:" GridPane.rowIndex="5" />
-                    <TextField fx:id="txtExistencia" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                <columnConstraints>
                   <ColumnConstraints />
                   <ColumnConstraints />

@@ -82,4 +82,11 @@ public class SidebarController {
         // Lógica de navegación
         app.changeView("/dulceria/fxml/rol_permiso.fxml");
     }
+
+    @FXML
+    private void navigateToLotes(ActionEvent event) {
+        System.out.println("Navegando a Pantalla Lotes");
+        // Lógica de navegación
+        app.changeView("/dulceria/fxml/loteCRUD.fxml");
+    }
 }
