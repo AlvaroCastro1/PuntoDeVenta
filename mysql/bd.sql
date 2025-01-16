@@ -76,6 +76,22 @@ CREATE TABLE detalle_entrada (
     CONSTRAINT FK_detalle_entrada_producto FOREIGN KEY (id_producto) REFERENCES producto(id) ON DELETE CASCADE,
     CONSTRAINT FK_detalle_entrada_lote FOREIGN KEY (id_lote) REFERENCES lote(id) ON DELETE CASCADE
 );
+
+-- 6. Tabla para pérdidas
+CREATE TABLE perdida (
+    id INT AUTO_INCREMENT NOT NULL,
+    id_entrada INT NOT NULL,            -- Relación con la tabla de entradas
+    id_producto INT NOT NULL,           -- Relación con producto
+    id_lote INT NOT NULL,               -- Relación con lote
+    cantidad INT NOT NULL,              -- Cantidad ingresada
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT PK_detalle_entrada PRIMARY KEY (id),
+    CONSTRAINT FK_detalle_entrada_entrada FOREIGN KEY (id_entrada) REFERENCES entrada(id) ON DELETE CASCADE,
+    CONSTRAINT FK_detalle_entrada_producto FOREIGN KEY (id_producto) REFERENCES producto(id) ON DELETE CASCADE,
+    CONSTRAINT FK_detalle_entrada_lote FOREIGN KEY (id_lote) REFERENCES lote(id) ON DELETE CASCADE
+);
+
 -- 7. Detalle de pérdidas
 CREATE TABLE detalle_perdida (
     id INT AUTO_INCREMENT NOT NULL,
