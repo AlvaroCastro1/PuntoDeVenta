@@ -89,4 +89,11 @@ public class SidebarController {
         // Lógica de navegación
         app.changeView("/dulceria/fxml/loteCRUD.fxml");
     }
+
+    @FXML
+    private void navigateToEntrada(ActionEvent event) {
+        System.out.println("Navegando a Pantalla Entradas");
+        // Lógica de navegación
+        app.changeView("/dulceria/fxml/entrada.fxml");
+    }
 }

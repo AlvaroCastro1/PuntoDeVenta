@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="dulceria.controller.EntradaController">
+    <top>
+        <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-padding: 10; -fx-background-color: #f0f0f0;">
+            <Label text="Entrada" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+            <Label text="Fecha Entrada:"/>
+            <DatePicker fx:id="fechaEntradaPicker"/>
+        </HBox>
+    </top>
+    <center>
+        <HBox spacing="20" style="-fx-padding: 10;">
+            <!-- Formulario a la izquierda -->
+            <VBox spacing="10" style="-fx-padding: 10; -fx-border-color: #d0d0d0; -fx-border-width: 1;">
+                <Label text="Formulario" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                <GridPane hgap="10" vgap="10">
+                    <Label text="Producto:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                    <ComboBox fx:id="productoComboBox" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                    <Label text="Cantidad:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                    <TextField fx:id="cantidadTextField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                    <Label text="Fecha Caducidad:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                    <DatePicker fx:id="fechaCaducidadPicker" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                    <Button text="Agregar" fx:id="agregarButton" GridPane.rowIndex="3" GridPane.columnIndex="1" onAction="#agregarDetalle"/>
+                </GridPane>
+            </VBox>
+
+            <!-- Tabla a la derecha -->
+            <VBox spacing="10" style="-fx-padding: 10; -fx-border-color: #d0d0d0; -fx-border-width: 1;">
+                <Label text="Productos Agregados" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                <TableView fx:id="Entradas" style="-fx-padding: 10;">
+                    <columns>
+                        <TableColumn fx:id="productoColumn" text="Producto"/>
+                        <TableColumn fx:id="precioColumn" text="Precio"/>
+                        <TableColumn fx:id="cantidadColumn" text="Cantidad"/>
+                        <TableColumn fx:id="costoColumn" text="Costo"/>
+                    </columns>
+                </TableView>
+                <HBox spacing="10" alignment="CENTER_RIGHT" style="-fx-padding: 10;">
+                    <Label text="Total: $" style="-fx-font-size: 14px;"/>
+                    <Label fx:id="totalLabel" text="0.00" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                </HBox>
+                <HBox spacing="10" alignment="CENTER_RIGHT">
+                    <Button text="Guardar" fx:id="guardarButton" onAction="#guardarEntrada_bd"/>
+                </HBox>
+            </VBox>
+        </HBox>
+    </center>
+</BorderPane>

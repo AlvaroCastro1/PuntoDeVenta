@@ -1,17 +1,28 @@
 package dulceria.model;
 
+import java.util.Date;
 import javafx.beans.property.*;
-import java.sql.Date;
 
 public class Lote {
     private IntegerProperty id;
     private IntegerProperty idProducto;
     private IntegerProperty cantidad;
     private ObjectProperty<Date> fechaCaducidad;
+
+    @Override
+    public String toString() {
+    return "Lote [id=" + id.get() + ", idProducto=" + idProducto.get() + ", cantidad=" + cantidad.get() + 
+           ", fechaCaducidad=" + fechaCaducidad.get() + ", fechaEntrada=" + fechaEntrada.get() + 
+           ", idState=" + idState.get() + "]";
+    }
+
+
     private ObjectProperty<Date> fechaEntrada;
     private IntegerProperty idState;
 
     // Constructor
+    public Lote(){}
+
     public Lote(int id, int idProducto, int cantidad, Date fechaCaducidad, Date fechaEntrada, int idState) {
         this.id = new SimpleIntegerProperty(id);
         this.idProducto = new SimpleIntegerProperty(idProducto);
@@ -76,6 +87,10 @@ public class Lote {
 
     public void setFechaCaducidad(Date fechaCaducidad) {
         this.fechaCaducidad.set(fechaCaducidad);
+    }
+
+    public void setFechaEntrada(Date fechaEntrada) {
+        this.fechaEntrada.set(fechaEntrada);
     }
 
     public IntegerProperty idStateProperty() {

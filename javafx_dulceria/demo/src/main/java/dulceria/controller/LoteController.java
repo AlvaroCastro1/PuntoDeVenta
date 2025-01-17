@@ -2,11 +2,12 @@ package dulceria.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.Alert.AlertType;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Optional;
 
 import dulceria.DatabaseConnection;
@@ -35,7 +36,6 @@ public class LoteController {
     @FXML
     private Button btnAdd, btnUpdate, btnDelete, btnClear;
 
-    private Connection conn;
     private ObservableList<Lote> loteList = FXCollections.observableArrayList();
     private ObservableList<Producto> productoList = FXCollections.observableArrayList();  // Lista de productos
     private ObservableList<Estado> stateList = FXCollections.observableArrayList();
@@ -50,7 +50,11 @@ public class LoteController {
         colId.setCellValueFactory(cellData -> cellData.getValue().idProperty().asObject());
         colIdProducto.setCellValueFactory(cellData -> cellData.getValue().idProductoProperty().asObject());
         colCantidad.setCellValueFactory(cellData -> cellData.getValue().cantidadProperty().asObject());
-        colFechaCaducidad.setCellValueFactory(cellData -> cellData.getValue().fechaCaducidadProperty());
+        colFechaCaducidad.setCellValueFactory(cellData -> 
+            new SimpleObjectProperty<java.sql.Date>(
+                new java.sql.Date(cellData.getValue().getFechaCaducidad().getTime())
+            )
+        );
         colIdState.setCellValueFactory(cellData -> cellData.getValue().idStateProperty().asObject());
 
         loadComboBoxData();
@@ -71,8 +75,8 @@ public class LoteController {
         if (lote != null) {
             // Rellenar los campos con los datos del lote seleccionado
             txtCantidad.setText(String.valueOf(lote.getCantidad()));
-            datePickerFechaEntrada.setValue(lote.getFechaEntrada().toLocalDate());  // Convertir de Date a LocalDate
-            datePickerFechaCaducidad.setValue(lote.getFechaCaducidad().toLocalDate());  // Convertir de Date a LocalDate
+            datePickerFechaEntrada.setValue(lote.getFechaEntrada().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());  // Convertir de Date a Instant y a LocalDate
+            datePickerFechaCaducidad.setValue(lote.getFechaCaducidad().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()); 
             cmbIdProducto.setValue(productoList.stream().filter(p -> p.getId() == lote.getIdProducto()).findFirst().orElse(null));
             cmbIdState.setValue(stateList.stream().filter(s -> s.getId() == lote.getIdState()).findFirst().orElse(null));
         }
