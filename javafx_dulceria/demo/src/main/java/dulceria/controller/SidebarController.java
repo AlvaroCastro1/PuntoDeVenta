@@ -91,6 +91,13 @@ public class SidebarController {
     }
 
     @FXML
+    private void navigateToEntradas(ActionEvent event) {
+        System.out.println("Navegando a Pantalla Detalle Entradas");
+        // Lógica de navegación
+        app.changeView("/dulceria/fxml/detalleEntrada.fxml");
+    }
+
+    @FXML
     private void navigateToEntrada(ActionEvent event) {
         System.out.println("Navegando a Pantalla Entradas");
         // Lógica de navegación

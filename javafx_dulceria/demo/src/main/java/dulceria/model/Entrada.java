@@ -20,7 +20,13 @@ public class Entrada {
     private ObjectProperty<LocalDateTime> updatedAt = new SimpleObjectProperty<>();
 
     // Constructor vacío para JPA
-    public Entrada() {
+    public Entrada(){}
+
+    public Entrada(int id, LocalDateTime fecha, Estado estado, double total) {
+        this.id.set(id);
+        this.fecha.set(fecha);
+        this.estado = estado;
+        this.total.set(total);
     }
 
     // Constructor con parámetros

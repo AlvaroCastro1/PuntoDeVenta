@@ -1,8 +1,25 @@
 package dulceria.model;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+
 public class DetalleEntrada {
 
     private int id ;
+
+    public int getId() {
+        return id;
+    }
+
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+
+    public void setCantidad(int cantidad) {
+        this.cantidad = cantidad;
+    }
 
     private Entrada entrada;
 
@@ -69,6 +86,10 @@ public class DetalleEntrada {
 
     public int getCantidad(){
         return cantidad;
+    }
+
+    public IntegerProperty cantidadProperty() {
+        return new SimpleIntegerProperty(cantidad);
     }
 
 }

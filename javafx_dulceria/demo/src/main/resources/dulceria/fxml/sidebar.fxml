@@ -9,7 +9,8 @@
     <Button text="Estados" fx:id="screen2Button" onAction="#navigateToEstados" />
     <Button text="Productos" fx:id="screen3Button" onAction="#navigateToProductos" />
     <Button text="Lotes" fx:id="screen3Button" onAction="#navigateToLotes" />
-    <Button text="Entrada" fx:id="screen3Button" onAction="#navigateToEntrada" />
+    <Button text="Entradas" fx:id="screen3Button" onAction="#navigateToEntradas" />
+    <Button text="Nueva Entrada" fx:id="screen3Button" onAction="#navigateToEntrada" />
     <Button text="Roles" fx:id="screen4Button" onAction="#navigateToRoles" />
     <Button text="Permisos" fx:id="screen5Button" onAction="#navigateToPermisos" />
     <Button text="Usuarios" fx:id="screen5Button" onAction="#navigateToUsuarios" />
