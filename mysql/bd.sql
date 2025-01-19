@@ -9,6 +9,17 @@ CREATE TABLE cState (
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT PK_cState PRIMARY KEY (id)
 );
+INSERT INTO cState (id,nombre_estado) VALUES
+(2,'Cancelado'),
+(3,'Pendiente'),
+(4,'Vendido'),
+(5,'En espera'),
+(6,'Pagado'),
+(7,'No disponible'),
+(8,'Caducado'),
+(9,'Reservado'),
+(10,'En proceso');
+
 
 -- 2. Tabla para productos
 CREATE TABLE producto (

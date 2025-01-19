@@ -290,7 +290,7 @@ public class EntradaController {
             cantidad,
             fechaCaducidad,
             fechaEntrada,
-            1
+            1 // disponible
         );
 
         // Crear el objeto DetalleEntrada
@@ -435,7 +435,7 @@ public class EntradaController {
                 try (PreparedStatement pstmtEntrada = connection.prepareStatement(insertEntradaSQL, Statement.RETURN_GENERATED_KEYS)) {
                     pstmtEntrada.setTimestamp(1, new Timestamp(System.currentTimeMillis()));  // Fecha actual
                     pstmtEntrada.setDouble(2, Double.parseDouble(totalLabel.getText()));  // Asumimos que tienes un método para calcular el total
-                    pstmtEntrada.setInt(3, 1);  // El estado de la entrada (por ejemplo, "realizada")
+                    pstmtEntrada.setInt(3, 1);  // El estado de la entrada ("disponible")
 
                     pstmtEntrada.executeUpdate();
                     ResultSet rsEntrada = pstmtEntrada.getGeneratedKeys();
