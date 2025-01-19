@@ -147,6 +147,7 @@ public class EntradaDetalleController {
             "de.id_lote, " +
             "de.cantidad, " +
             "p.nombre AS producto_nombre, " +
+            "p.codigo AS producto_codigo, " +
             "p.descripcion AS producto_descripcion, " +
             "p.categoria AS producto_categoria, " +
             "p.precio AS producto_precio, " +
@@ -174,6 +175,7 @@ public class EntradaDetalleController {
                     // Crear instancia de Producto
                     Producto producto = new Producto(
                         rsDetalles.getString("producto_nombre"),
+                        rsDetalles.getString("producto_codigo"),
                         rsDetalles.getString("producto_descripcion"),
                         rsDetalles.getString("producto_categoria"),
                         rsDetalles.getDouble("producto_precio"),

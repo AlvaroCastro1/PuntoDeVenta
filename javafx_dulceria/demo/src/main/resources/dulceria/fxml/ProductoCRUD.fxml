@@ -55,6 +55,10 @@
                     <Label text="Costo:" GridPane.rowIndex="4" />
                     <TextField fx:id="txtCosto" GridPane.columnIndex="1" GridPane.rowIndex="4" />
 
+                    <!-- Nueva fila para el campo de código de barras -->
+                    <Label text="Código de Barras:" GridPane.rowIndex="5" />
+                    <TextField fx:id="txtCodigo" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+
                <columnConstraints>
                   <ColumnConstraints />
                   <ColumnConstraints />

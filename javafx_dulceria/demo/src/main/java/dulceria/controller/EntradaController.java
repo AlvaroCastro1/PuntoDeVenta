@@ -347,7 +347,7 @@ public class EntradaController {
     private void CargarProdComboBox() {
         try (Connection conn = dbConnection.getConnection()) {
             // Cargar productos desde la base de datos
-            String sqlProducto = "SELECT id, nombre, descripcion, categoria, precio, costo FROM producto";
+            String sqlProducto = "SELECT id, nombre, codigo, descripcion, categoria, precio, costo FROM producto";
             Statement stmt = conn.createStatement();
             ResultSet rsProducto = stmt.executeQuery(sqlProducto);
             while (rsProducto.next()) {
@@ -355,6 +355,7 @@ public class EntradaController {
                 Producto producto = new Producto(
                     rsProducto.getInt("id"),
                     rsProducto.getString("nombre"),
+                    rsProducto.getString("codigo"),
                     rsProducto.getString("descripcion"),
                     rsProducto.getString("categoria"),
                     rsProducto.getDouble("precio"),

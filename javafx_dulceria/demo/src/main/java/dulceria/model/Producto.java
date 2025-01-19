@@ -5,23 +5,26 @@ import java.util.List;
 public class Producto {
     private int id;
     private String nombre;
+    private String codigo;
     private String descripcion;
     private String categoria;
     private double precio;
     private double costo;
     private List<ProductoImagen> imagenes;
 
-    public Producto(String nombre, String descripcion, String categoria, double precio, double costo) {
+    public Producto(String nombre, String codigo, String descripcion, String categoria, double precio, double costo) {
         this.nombre = nombre;
+        this.codigo = codigo;
         this.descripcion = descripcion;
         this.categoria = categoria;
         this.precio = precio;
         this.costo = costo;
     }
 
-    public Producto(int id, String nombre, String descripcion, String categoria, double precio, double costo) {
+    public Producto(int id, String nombre, String codigo, String descripcion, String categoria, double precio, double costo) {
         this.id = id;
         this.nombre = nombre;
+        this.codigo = codigo;
         this.descripcion = descripcion;
         this.categoria = categoria;
         this.precio = precio;
@@ -95,6 +98,14 @@ public class Producto {
 
     public void setImagenes(List<ProductoImagen> imagenes) {
         this.imagenes = imagenes;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
     }
 
     @Override

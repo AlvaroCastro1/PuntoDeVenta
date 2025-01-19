@@ -85,12 +85,12 @@ public class LoteController {
     private void loadComboBoxData() {
         try (Connection conn = dbConnection.getConnection()) {
             // Cargar productos desde la base de datos
-            String sqlProducto = "SELECT id, nombre FROM producto";
+            String sqlProducto = "SELECT id, nombre, codigo FROM producto";
             Statement stmt = conn.createStatement();
             ResultSet rsProducto = stmt.executeQuery(sqlProducto);
             while (rsProducto.next()) {
                 // Crear productos y agregarlos a la lista
-                Producto producto = new Producto(rsProducto.getInt("id"), rsProducto.getString("nombre"), "", "", 0, 0);
+                Producto producto = new Producto(rsProducto.getInt("id"), rsProducto.getString("nombre"), rsProducto.getString("codigo"),"", "", 0, 0);
                 productoList.add(producto);
             }
             cmbIdProducto.setItems(productoList);

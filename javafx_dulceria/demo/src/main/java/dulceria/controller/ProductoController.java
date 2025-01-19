@@ -22,8 +22,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.*;
 import java.util.Optional;
 
@@ -55,7 +53,7 @@ public class ProductoController {
 
 
     @FXML
-    private TextField txtNombre, txtCategoria, txtPrecio, txtCosto;
+    private TextField txtNombre, txtCodigo, txtCategoria, txtPrecio, txtCosto;
 
     @FXML
     private TextArea txtDescripcion;
@@ -175,6 +173,7 @@ public class ProductoController {
                 Producto producto = new Producto(
                         rs.getInt("id"),
                         rs.getString("nombre"),
+                        rs.getString("codigo"),
                         rs.getString("descripcion"),
                         rs.getString("categoria"),
                         rs.getDouble("precio"),
@@ -225,6 +224,7 @@ public class ProductoController {
     private void loadProductoDetails(Producto producto) {
         this.productoSeleccionado = producto;
         txtNombre.setText(producto.getNombre());
+        txtCodigo.setText(producto.getCodigo());
         txtDescripcion.setText(producto.getDescripcion());
         txtCategoria.setText(producto.getCategoria());
         txtPrecio.setText(String.valueOf(producto.getPrecio()));
@@ -241,21 +241,23 @@ public class ProductoController {
     public void onActualizar() {
         if (productoSeleccionado != null && validarCampos()) {
             String nombre = txtNombre.getText();
+            String codigo = txtCodigo.getText();
             String descripcion = txtDescripcion.getText();
             String categoria = txtCategoria.getText();
             double precio = Double.parseDouble(txtPrecio.getText());
             double costo = Double.parseDouble(txtCosto.getText());
 
-            String sql = "UPDATE producto SET nombre = ?, descripcion = ?, categoria = ?, precio = ?, costo = ? WHERE id = ?";
+            String sql = "UPDATE producto SET nombre = ?, codigo = ?, descripcion = ?, categoria = ?, precio = ?, costo = ? WHERE id = ?";
 
             try (Connection conn = DatabaseConnection.getConnection();
                  PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setString(1, nombre);
-                stmt.setString(2, descripcion);
-                stmt.setString(3, categoria);
-                stmt.setDouble(4, precio);
-                stmt.setDouble(5, costo);
-                stmt.setInt(6, productoSeleccionado.getId());
+                stmt.setString(2, codigo);
+                stmt.setString(3, descripcion);
+                stmt.setString(4, categoria);
+                stmt.setDouble(5, precio);
+                stmt.setDouble(6, costo);
+                stmt.setInt(7, productoSeleccionado.getId());
 
                 stmt.executeUpdate();
                 mostrarAlerta("Éxito", "Producto actualizado exitosamente", Alert.AlertType.INFORMATION);
@@ -302,6 +304,7 @@ public class ProductoController {
                 productoSeleccionado = new Producto(
                     id, 
                     txtNombre.getText(), 
+                    txtCodigo.getText(),
                     txtDescripcion.getText(), 
                     txtCategoria.getText(), 
                     Double.parseDouble(txtPrecio.getText()), 
@@ -312,6 +315,7 @@ public class ProductoController {
             } else { //GUARDAR PRODUCTO NUEVO
                 Producto nuevoProducto = new Producto(
                     txtNombre.getText(),
+                    txtCodigo.getText(),
                     txtDescripcion.getText(),
                     txtCategoria.getText(),
                     Double.parseDouble(txtPrecio.getText()),
@@ -375,7 +379,7 @@ public class ProductoController {
     }
 
     public void guardarProductoConImagenes(Producto producto, ObservableList<ProductoImagen> listaImagenes) {
-        String sqlProducto = "INSERT INTO producto (nombre, descripcion, categoria, precio, costo) VALUES (?, ?, ?, ?, ?)";
+        String sqlProducto = "INSERT INTO producto (nombre, codigo, descripcion, categoria, precio, costo) VALUES (?, ?, ?, ?, ?, ?)";
         String sqlImagen = "INSERT INTO producto_imagen (producto_id, imagen, descripcion) VALUES (?, ?, ?)";
     
         try (Connection conn = dbConnection.getConnection()) {
@@ -386,10 +390,11 @@ public class ProductoController {
             int productoId;
             try (PreparedStatement stmtProducto = conn.prepareStatement(sqlProducto, Statement.RETURN_GENERATED_KEYS)) {
                 stmtProducto.setString(1, producto.getNombre());
-                stmtProducto.setString(2, producto.getDescripcion());
-                stmtProducto.setString(3, producto.getCategoria());
-                stmtProducto.setDouble(4, producto.getPrecio());
-                stmtProducto.setDouble(5, producto.getCosto());
+                stmtProducto.setString(2, producto.getNombre());
+                stmtProducto.setString(3, producto.getDescripcion());
+                stmtProducto.setString(4, producto.getCategoria());
+                stmtProducto.setDouble(5, producto.getPrecio());
+                stmtProducto.setDouble(6, producto.getCosto());
     
                 int filasProducto = stmtProducto.executeUpdate();
                 if (filasProducto == 0) {
@@ -438,7 +443,7 @@ public class ProductoController {
     }
     
     public void actualizarProductoConImagenes(Producto producto, ObservableList<ProductoImagen> listaImagenes) {
-        String sqlActualizarProducto = "UPDATE producto SET nombre = ?, descripcion = ?, categoria = ?, precio = ?, costo = ? WHERE id = ?";
+        String sqlActualizarProducto = "UPDATE producto SET nombre = ?, codigo = ?, descripcion = ?, categoria = ?, precio = ?, costo = ? WHERE id = ?";
         String sqlEliminarImagenes = "DELETE FROM producto_imagen WHERE producto_id = ?";
         String sqlInsertarImagen = "INSERT INTO producto_imagen (producto_id, imagen, descripcion) VALUES (?, ?, ?)";
     
@@ -449,11 +454,12 @@ public class ProductoController {
             // Actualizar el producto
             try (PreparedStatement stmtActualizar = conn.prepareStatement(sqlActualizarProducto)) {
                 stmtActualizar.setString(1, producto.getNombre());
-                stmtActualizar.setString(2, producto.getDescripcion());
-                stmtActualizar.setString(3, producto.getCategoria());
-                stmtActualizar.setDouble(4, producto.getPrecio());
-                stmtActualizar.setDouble(5, producto.getCosto());
-                stmtActualizar.setInt(6, producto.getId());
+                stmtActualizar.setString(2, producto.getCodigo());
+                stmtActualizar.setString(3, producto.getDescripcion());
+                stmtActualizar.setString(4, producto.getCategoria());
+                stmtActualizar.setDouble(5, producto.getPrecio());
+                stmtActualizar.setDouble(6, producto.getCosto());
+                stmtActualizar.setInt(7, producto.getId());
     
                 int filasActualizadas = stmtActualizar.executeUpdate();
                 if (filasActualizadas == 0) {
@@ -498,6 +504,7 @@ public class ProductoController {
     
     private void clearForm() {
         txtNombre.clear();
+        txtCodigo.clear();
         txtDescripcion.clear();
         txtCategoria.clear();
         txtPrecio.clear();
@@ -509,7 +516,7 @@ public class ProductoController {
     }
 
     private boolean validarCampos() {
-        if (txtNombre.getText().isEmpty() || txtCategoria.getText().isEmpty() || txtPrecio.getText().isEmpty()
+        if (txtNombre.getText().isEmpty() || txtCodigo.getText().isEmpty() || txtCategoria.getText().isEmpty() || txtPrecio.getText().isEmpty()
                 || txtCosto.getText().isEmpty() ) {
             mostrarAlerta("Advertencia", "Todos los campos son obligatorios", Alert.AlertType.WARNING);
             return false;
@@ -538,6 +545,7 @@ public class ProductoController {
                 Producto producto = new Producto(
                         rs.getInt("id"),
                         rs.getString("nombre"),
+                        rs.getString("codigo"),
                         rs.getString("descripcion"),
                         rs.getString("categoria"),
                         rs.getDouble("precio"),
