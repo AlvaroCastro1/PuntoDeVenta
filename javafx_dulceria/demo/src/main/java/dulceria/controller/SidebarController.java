@@ -103,4 +103,11 @@ public class SidebarController {
         // Lógica de navegación
         app.changeView("/dulceria/fxml/entrada.fxml");
     }
+
+    @FXML
+    private void navigateToPerdidas(ActionEvent event) {
+        System.out.println("Navegando a Pantalla Entradas");
+        // Lógica de navegación
+        app.changeView("/dulceria/fxml/perdidas.fxml");
+    }
 }

@@ -75,8 +75,8 @@ public class LoteController {
         if (lote != null) {
             // Rellenar los campos con los datos del lote seleccionado
             txtCantidad.setText(String.valueOf(lote.getCantidad()));
-            datePickerFechaEntrada.setValue(lote.getFechaEntrada().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());  // Convertir de Date a Instant y a LocalDate
-            datePickerFechaCaducidad.setValue(lote.getFechaCaducidad().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()); 
+            datePickerFechaEntrada.setValue(new java.sql.Date(lote.getFechaEntrada().getTime()).toLocalDate()); 
+            datePickerFechaCaducidad.setValue(new java.sql.Date(lote.getFechaCaducidad().getTime()).toLocalDate());
             cmbIdProducto.setValue(productoList.stream().filter(p -> p.getId() == lote.getIdProducto()).findFirst().orElse(null));
             cmbIdState.setValue(stateList.stream().filter(s -> s.getId() == lote.getIdState()).findFirst().orElse(null));
         }
