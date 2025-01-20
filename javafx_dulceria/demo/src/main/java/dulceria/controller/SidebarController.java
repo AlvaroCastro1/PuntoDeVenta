@@ -110,4 +110,11 @@ public class SidebarController {
         // Lógica de navegación
         app.changeView("/dulceria/fxml/perdidas.fxml");
     }
+
+    @FXML
+    private void navigateToVenta(ActionEvent event) {
+        System.out.println("Navegando a Pantalla Venta");
+        // Lógica de navegación
+        app.changeView("/dulceria/fxml/venta.fxml");
+    }
 }

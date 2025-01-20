@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="410.0" prefWidth="890.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1" fx:controller="dulceria.controller.VentaController">
+    <children>
+        <!-- Título de la interfaz -->
+        <Label layoutX="20" layoutY="20" text="Registro de Venta" />
+
+        <!-- Contenedor para los productos -->
+        <VBox alignment="TOP_LEFT" layoutX="20" layoutY="60" spacing="10">
+            <Label text="Producto:" />
+            <ComboBox fx:id="comboProducto" prefWidth="200" />
+            <Label text="Precio Unitario:" />
+            <TextField fx:id="txtPrecioUnitario" editable="false" prefWidth="200" />
+            <Button onAction="#agregarProducto" prefWidth="200" text="Agregar Producto" />
+        </VBox>
+
+        <!-- Tabla de productos seleccionados -->
+        <TableView fx:id="tablaVenta" layoutX="250" layoutY="60" prefHeight="200" prefWidth="600">
+            <columns>
+                <TableColumn fx:id="colConsecutivo" prefWidth="45" text="Num." />
+                <TableColumn fx:id="colProducto" prefWidth="150" text="Producto" />
+                <TableColumn fx:id="colCantidad" prefWidth="100" text="Cantidad" />
+                <TableColumn fx:id="colPrecioUnitario" prefWidth="150" text="Precio Unitario" />
+                <TableColumn fx:id="colTotal" prefWidth="100" text="Total" />
+            </columns>
+        </TableView>
+
+        <!-- Resumen de la venta -->
+        <VBox layoutX="250" layoutY="270" spacing="10">
+            <Label text="Resumen de la Venta:" />
+            <Label fx:id="lblTotal" text="Total: $0.00" />
+            <Button onAction="#guardarVenta" prefWidth="200" text="Registrar Venta" />
+        </VBox>
+    </children>
+</AnchorPane>
