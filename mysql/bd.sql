@@ -124,6 +124,7 @@ CREATE TABLE detalle_venta (
     id_venta INT NOT NULL, -- Relación con venta
     id_producto INT NOT NULL, -- Relación con producto
     id_lote INT NULL, -- Relación con lote
+    id_state INT DEFAULT 6,  -- estado pagado
     costo_unitario DECIMAL(10, 2) NOT NULL,
     precio_unitario DECIMAL(10, 2) NOT NULL,
     cantidad INT NOT NULL,
@@ -134,7 +135,8 @@ CREATE TABLE detalle_venta (
     CONSTRAINT PK_detalle_venta PRIMARY KEY (id),
     CONSTRAINT FK_detalle_venta_venta FOREIGN KEY (id_venta) REFERENCES venta(id) ON DELETE CASCADE,
     CONSTRAINT FK_detalle_venta_producto FOREIGN KEY (id_producto) REFERENCES producto(id) ON DELETE CASCADE,
-    CONSTRAINT FK_detalle_venta_lote FOREIGN KEY (id_lote) REFERENCES lote(id) ON DELETE CASCADE
+    CONSTRAINT FK_detalle_venta_lote FOREIGN KEY (id_lote) REFERENCES lote(id) ON DELETE CASCADE,
+    CONSTRAINT fk_detalle_venta_state FOREIGN KEY (id_state) REFERENCES cState(id)
 );
 
 -- 10. Tabla para promociones

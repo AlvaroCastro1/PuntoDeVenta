@@ -12,7 +12,8 @@
     <Button text="Entradas" fx:id="screen3Button" onAction="#navigateToEntradas" />
     <Button text="Nueva Entrada" fx:id="screen3Button" onAction="#navigateToEntrada" />
     <Button text="Perdidas" fx:id="screen3Button" onAction="#navigateToPerdidas" />
-    <Button text="Venta" fx:id="screen3Button" onAction="#navigateToVenta" />
+    <Button text="Nueva Venta" fx:id="screen3Button" onAction="#navigateToVenta" />
+    <Button text="Ventas" fx:id="screen3Button" onAction="#navigateToVentas" />
     <Button text="Roles" fx:id="screen4Button" onAction="#navigateToRoles" />
     <Button text="Permisos" fx:id="screen5Button" onAction="#navigateToPermisos" />
     <Button text="Usuarios" fx:id="screen5Button" onAction="#navigateToUsuarios" />
