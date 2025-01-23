@@ -3,18 +3,64 @@ package dulceria.model;
 import javafx.beans.property.*;
 
 public class VentaProducto {
+
     private final IntegerProperty num = new SimpleIntegerProperty();
     private Producto producto;
+    private StringProperty nombre = new SimpleStringProperty();
     private final IntegerProperty cantidad = new SimpleIntegerProperty();
     private final DoubleProperty precioUnitario = new SimpleDoubleProperty();
     private final DoubleProperty total = new SimpleDoubleProperty();
+    private boolean Promocion;
+    private int id_promocion;
 
-    public VentaProducto(int num, Producto producto, int cantidad, double precioUnitario) {
+    public int getId_promocion() {
+        return id_promocion;
+    }
+
+    public void setId_promocion(int id_promocion) {
+        this.id_promocion = id_promocion;
+    }
+
+    public boolean isPromocion() {
+        return Promocion;
+    }
+
+    public void setPromocion(boolean promocion) {
+        Promocion = promocion;
+    }
+
+    public VentaProducto(int num, Producto producto, String nombre, int cantidad, double precioUnitario, boolean promocion) {
         setNum(num);
         setProducto(producto);
+        setNombre(nombre);
         setCantidad(cantidad);
         setPrecioUnitario(precioUnitario);
+        this.Promocion = promocion;
         calcularTotal();
+    }
+
+    // para promocion
+    public VentaProducto(int num, Producto producto, String nombre, int cantidad, double precioUnitario, boolean promocion, double total) {
+        setNum(num);
+        setProducto(producto);
+        setNombre(nombre);
+        setCantidad(cantidad);
+        setPrecioUnitario(precioUnitario);
+        this.Promocion = promocion;
+        setTotal(total);
+        
+    }
+    // Getter y Setter
+    public String getNombre() {
+        return nombre.get();
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre.set(nombre);
+    }
+
+    public StringProperty nombreProperty() {
+        return nombre;
     }
 
     public Producto getProducto(){

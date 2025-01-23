@@ -105,7 +105,6 @@ CREATE TABLE perdida (
     CONSTRAINT FK_perdida_lote FOREIGN KEY (id_lote) REFERENCES lote(id) ON DELETE CASCADE
 );
 
-
 -- 8. Tabla para ventas
 CREATE TABLE venta (
     id INT AUTO_INCREMENT NOT NULL,
@@ -130,6 +129,7 @@ CREATE TABLE detalle_venta (
     cantidad INT NOT NULL,
     id_promocion INT NULL, -- Relación con promocion
     descuento_aplicado DECIMAL(10, 2) NULL, -- Descuento aplicado
+    subtotal DECIMAL(10, 2) NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT PK_detalle_venta PRIMARY KEY (id),
@@ -142,31 +142,22 @@ CREATE TABLE detalle_venta (
 -- 10. Tabla para promociones
 CREATE TABLE promocion (
     id INT AUTO_INCREMENT NOT NULL,
+    id_producto INT NOT NULL, -- Producto al que aplica la promoción
     nombre NVARCHAR(100) NOT NULL,
-    tipo NVARCHAR(50) NOT NULL, -- Tipo de promoción
+    tipo NVARCHAR(50) NOT NULL, -- Tipo de promoción: porcentaje o monto fijo
     valor_descuento DECIMAL(10, 2) NULL, -- Porcentaje o monto fijo
+    precio_final DECIMAL(10, 2) NULL, -- Precio final calculado, si aplica
+    cantidad_necesaria INT NOT NULL DEFAULT 1, -- Cantidad mínima del producto
     fecha_inicio DATE NOT NULL,
     fecha_fin DATE NOT NULL,
     activo BIT NOT NULL DEFAULT 1, -- Si la promoción está activa
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT PK_promocion PRIMARY KEY (id)
+    CONSTRAINT PK_promocion PRIMARY KEY (id),
+    CONSTRAINT FK_promocion_producto FOREIGN KEY (id_producto) REFERENCES producto(id) ON DELETE CASCADE
 );
 
--- 11. Tabla para productos en promociones
-CREATE TABLE producto_promocion (
-    id INT AUTO_INCREMENT NOT NULL,
-    id_producto INT NOT NULL, -- Relación con producto
-    id_promocion INT NOT NULL, -- Relación con promocion
-    cantidad_necesaria INT NULL, -- Cantidad mínima
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT PK_producto_promocion PRIMARY KEY (id),
-    CONSTRAINT FK_producto_promocion_producto FOREIGN KEY (id_producto) REFERENCES producto(id) ON DELETE CASCADE,
-    CONSTRAINT FK_producto_promocion_promocion FOREIGN KEY (id_promocion) REFERENCES promocion(id) ON DELETE CASCADE
-);
-
--- 10. usuarios
+-- 11. usuarios
 CREATE TABLE usuario (
     id INT AUTO_INCREMENT NOT NULL,  -- ID único del usuario
     nombre NVARCHAR(100) NOT NULL,  -- Nombre del usuario
@@ -179,7 +170,7 @@ CREATE TABLE usuario (
     CONSTRAINT PK_usuario PRIMARY KEY (id)
 );
 
--- 11. roles
+-- 12. roles
 CREATE TABLE rol (
     id INT AUTO_INCREMENT NOT NULL,  -- ID único del rol
     nombre NVARCHAR(50) NOT NULL,  -- Nombre del rol (ej. 'Administrador', 'Vendedor')
@@ -199,7 +190,7 @@ INSERT INTO rol (id, nombre, descripcion) VALUES
     (9, 'Operador', 'Gestiona tareas operativas específicas'),
     (10, 'Gerente', 'Toma decisiones basadas en reportes');
 
--- 12. detalle roles usuario
+-- 13. detalle roles usuario
 CREATE TABLE usuario_rol (
     id_usuario INT NOT NULL,  -- ID del usuario
     id_rol INT NOT NULL,  -- ID del rol
@@ -209,7 +200,7 @@ CREATE TABLE usuario_rol (
 );
 
 
--- 13. permisos
+-- 14. permisos
 CREATE TABLE permiso (
     id INT AUTO_INCREMENT NOT NULL,  -- ID único del permiso
     nombre NVARCHAR(50) NOT NULL,  -- Nombre del permiso (ej. 'Crear Producto', 'Eliminar Venta')
@@ -240,7 +231,7 @@ INSERT INTO permiso (id, nombre, descripcion) VALUES
     (20, 'Ver Log de Actividades', 'Permite ver registros de actividades realizadas');
 
 
--- 14. 
+-- 15. 
 CREATE TABLE rol_permiso (
     id_rol INT NOT NULL,  -- ID del rol
     id_permiso INT NOT NULL,  -- ID del permiso
