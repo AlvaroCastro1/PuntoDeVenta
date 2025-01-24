@@ -25,6 +25,14 @@ TextField, PasswordField, ComboBox {
     -fx-text-fill: #2c3e50;
 }
 
+.text-area .content {
+    -fx-background-color: #ecf0f1;
+    -fx-border-color: #bdc3c7;
+    -fx-padding: 8;
+    -fx-font-size: 10px;
+    -fx-text-fill: #2c3e50;
+}
+
 Button {
     -fx-background-color: #3498db;
     -fx-text-fill: white;
@@ -212,6 +220,13 @@ Button:hover {
 .root.dark-mode TextField, 
 .root.dark-mode PasswordField,
 .root.dark-mode DatePicker{
+    -fx-background-color: #34495e;
+    -fx-font-size: 10px; /* Tamaño de la letra */
+    -fx-text-fill: #ecf0f1;
+    -fx-border-color: #1abc9c;
+}
+
+.root.dark-mode .text-area .content {
     -fx-background-color: #34495e;
     -fx-font-size: 10px; /* Tamaño de la letra */
     -fx-text-fill: #ecf0f1;
