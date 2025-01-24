@@ -1,0 +1,53 @@
+/* Estilos generales para el Sidebar */
+#sidebar {
+    -fx-background-color: #018bd3; /* Fondo gris claro para el modo claro */
+    -fx-padding: 0;
+    -fx-spacing: 0; /* Sin espacio entre botones */
+    -fx-pref-width: 200; /* Ancho fijo */
+}
+
+/* Botones del Sidebar */
+#sidebar .sidebar-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ffffff; /* Texto en modo claro */
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-padding: 15;
+    -fx-alignment: center-left;
+    -fx-border-width: 0 0 1px 0; /* Línea divisoria debajo */
+    -fx-border-color: #018bd3;
+    -fx-border-style: solid;
+}
+
+#sidebar .sidebar-button:hover {
+    -fx-background-color: #5fb0db; /* Fondo gris claro al pasar el cursor */
+    -fx-text-fill: #000000; /* Texto en modo claro */
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-padding: 15;
+    -fx-alignment: center-left;
+}
+
+#sidebar .sidebar-button-active {
+    -fx-background-color: #3498db; /* Fondo azul para botón activo */
+    -fx-text-fill: white;
+}
+
+/* Modo oscuro */
+.root.dark-mode #sidebar {
+    -fx-background-color: #2c3e50; /* Fondo oscuro */
+}
+
+.root.dark-mode #sidebar .sidebar-button {
+    -fx-text-fill: #bdc3c7; /* Texto claro */
+    -fx-border-color: #34495e; /* Líneas divisorias más oscuras */
+}
+
+.root.dark-mode #sidebar .sidebar-button:hover {
+    -fx-background-color: #34495e; /* Fondo más oscuro al pasar el cursor */
+}
+
+.root.dark-mode #sidebar .sidebar-button-active {
+    -fx-background-color: #16a085; /* Fondo verde oscuro */
+    -fx-text-fill: white;
+}
