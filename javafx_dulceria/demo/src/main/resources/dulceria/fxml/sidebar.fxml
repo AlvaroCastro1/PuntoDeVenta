@@ -21,4 +21,6 @@
     <Button text="Crear Usuario" fx:id="screen5Button" onAction="#navigateToCrearUsuario" />
     <Button text="Rol usuario" fx:id="screen5Button" onAction="#navigateToRolUsuario" />
     <Button text="Rol Permiso" fx:id="screen5Button" onAction="#navigateToRolPermiso" />
+
+    <Button text="Modo Claro/Oscuro" onAction="#toggleModoOscuro" />
 </VBox>

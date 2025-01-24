@@ -5,6 +5,8 @@ import dulceria.app.App;
 import dulceria.model.Usuario;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 public class LoginController {
@@ -45,6 +47,10 @@ public class LoginController {
             // Cuando se presiona Enter en el campo de contraseña, disparar el clic en el botón "Entrar"
             btnEntrar.fire();
         });
+
+        Image imagen = new Image(getClass().getResource("/dulceria/images/eye.png").toString());
+        ImageView imageView = new ImageView(imagen);
+        btnMostrarContrasena.setGraphic(imageView);
     }
 
     private void sincronizarCampos() {

@@ -2,28 +2,27 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1" fx:controller="dulceria.controller.CrearUsuarioController">
-    <VBox spacing="15" alignment="CENTER" AnchorPane.topAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0">
-        <Label text="Crear Nuevo Usuario" style="-fx-font-size: 20px; -fx-font-weight: bold;" />
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1" fx:controller="dulceria.controller.CrearUsuarioController" stylesheets="@../css/estilos.css" fx:id="rootAnchorPane" >
+    <VBox spacing="15" alignment="CENTER" AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0" styleClass="contenido">
+        <Label text="Crear Nuevo Usuario" styleClass="titulo-principal" />
         
-        <TextField fx:id="txtNombre" promptText="Nombre Completo" />
-        <TextField fx:id="txtEmail" promptText="Correo Electrónico" />
-        <TextField fx:id="txtTelefono" promptText="Telefono" />
+        <TextField fx:id="txtNombre" promptText="Nombre completo" />
+        <TextField fx:id="txtEmail" promptText="Correo electrónico" />
+        <TextField fx:id="txtTelefono" promptText="Teléfono" />
         <HBox spacing="5">
             <PasswordField fx:id="txtContrasena" promptText="Contraseña" />
             <TextField fx:id="txtContrasenaVisible" promptText="Contraseña" visible="false" managed="false" />
-            <Button fx:id="btnToggleContrasena" text="👁" onAction="#toggleContrasena" />
+            <Button fx:id="btnToggleContrasena"  text="" onAction="#toggleContrasena" />
         </HBox>
         <HBox spacing="5">
-            <PasswordField fx:id="txtConfirmarContrasena" promptText="Confirmar Contraseña" />
-            <TextField fx:id="txtConfirmarContrasenaVisible" promptText="Confirmar Contraseña" visible="false" managed="false" />
-            <Button fx:id="btnToggleConfirmarContrasena" text="👁" onAction="#toggleConfirmarContrasena" />
+            <PasswordField fx:id="txtConfirmarContrasena" promptText="Confirmar contraseña" />
+            <TextField fx:id="txtConfirmarContrasenaVisible" promptText="Confirmar contraseña" visible="false" managed="false" />
+            <Button fx:id="btnToggleConfirmarContrasena" text="" onAction="#toggleConfirmarContrasena" />
         </HBox>
 
-        
         <HBox spacing="10" alignment="CENTER">
-            <Button text="Guardar" onAction="#guardarUsuario" />
-            <Button text="Cancelar" onAction="#cancelar" />
+            <Button text="Guardar" onAction="#guardarUsuario" styleClass="boton-guardar" />
+            <Button text="Cancelar" onAction="#cancelar" styleClass="boton-cancelar" />
         </HBox>
     </VBox>
 </AnchorPane>

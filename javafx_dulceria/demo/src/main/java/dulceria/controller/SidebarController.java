@@ -3,6 +3,8 @@ package dulceria.controller;
 import dulceria.app.App;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
 
 public class SidebarController {
 
@@ -131,4 +133,22 @@ public class SidebarController {
         // Lógica de navegación
         app.changeView("/dulceria/fxml/promocionesCRUD.fxml");
     }
+
+    @FXML
+    public void toggleModoOscuro(ActionEvent event) {
+        Button button = (Button) event.getSource();  // Obtiene el botón que disparó el evento
+        Scene scene = button.getScene();             // Obtiene la escena desde el botón
+
+        // Alterna entre el modo claro y el modo oscuro en la raíz de la escena
+        if (scene.getRoot().getStyleClass().contains("dark-mode")) {
+            scene.getRoot().getStyleClass().remove("dark-mode");
+        } else {
+            scene.getRoot().getStyleClass().add("dark-mode");
+        }
+
+        // Asegúrate de que el cambio de modo se aplique a todos los elementos si es necesario
+        scene.getStylesheets().clear();
+        scene.getStylesheets().add(getClass().getResource("/dulceria/css/estilos.css").toExternalForm());
+    }
+
 }

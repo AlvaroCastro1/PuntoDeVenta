@@ -14,7 +14,7 @@
         <HBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="1">
             <PasswordField fx:id="txtContrasena" promptText="Ingrese su contraseña" HBox.hgrow="ALWAYS"/>
             <TextField fx:id="txtContrasenaVisible" promptText="Ingrese su contraseña" HBox.hgrow="ALWAYS" visible="false"/>
-            <Button fx:id="btnMostrarContrasena" text="👁" onAction="#toggleMostrarContrasena"/>
+            <Button fx:id="btnMostrarContrasena" text="" onAction="#toggleMostrarContrasena"/>
         </HBox>
     </GridPane>
 

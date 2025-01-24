@@ -6,6 +6,8 @@ import dulceria.DAO.UsuarioDAO;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 public class CrearUsuarioController {
 
@@ -43,6 +45,14 @@ public class CrearUsuarioController {
     @FXML
     public void initialize() {
         usuarioDAO = new UsuarioDAO();
+        setButtonImage(btnToggleContrasena, "/dulceria/images/eye.png");
+        setButtonImage(btnToggleConfirmarContrasena, "/dulceria/images/eye.png");
+    }
+
+    private void setButtonImage(Button button, String imagePath) {
+        Image imagen = new Image(getClass().getResource(imagePath).toString());
+        ImageView imageView = new ImageView(imagen);
+        button.setGraphic(imageView);
     }
 
     @FXML

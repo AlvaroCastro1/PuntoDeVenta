@@ -1,0 +1,84 @@
+/* Modo claro */
+.root {
+    -fx-background-color: #ffffff;  /* Fondo oscuro */
+    -fx-base: #ffffff; /* Fondo general */
+    -fx-text-fill: #2c3e50; /* Color del texto */
+}
+
+.contenido {
+    -fx-padding: 20;
+    -fx-spacing: 15;
+    -fx-alignment: center;
+}
+
+.titulo-principal {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #34495e;
+}
+
+TextField, PasswordField {
+    -fx-background-color: #ecf0f1;
+    -fx-border-color: #bdc3c7;
+    -fx-padding: 8;
+    -fx-font-size: 14px;
+    -fx-text-fill: #2c3e50;
+}
+
+Button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 8 16;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-cursor: hand;
+}
+
+Button:hover {
+    -fx-background-color: #2980b9;
+}
+
+.boton-guardar {
+    -fx-background-color: #2ecc71;
+}
+
+.boton-guardar:hover {
+    -fx-background-color: #27ae60;
+}
+
+.boton-cancelar {
+    -fx-background-color: #e74c3c;
+}
+
+.boton-cancelar:hover {
+    -fx-background-color: #c0392b;
+}
+
+/* Modo Oscuro */
+.dark-mode {
+    -fx-background-color: #2c3e50;  /* Fondo oscuro */
+    -fx-text-fill: white;           /* Texto blanco */
+}
+
+.root.dark-mode TextField, 
+.root.dark-mode PasswordField {
+    -fx-background-color: #34495e;
+    -fx-text-fill: #ecf0f1;
+    -fx-border-color: #2c3e50;
+}
+
+.root.dark-mode Button {
+    -fx-background-color: #16a085;
+}
+
+.root.dark-mode Button:hover {
+    -fx-background-color: #1abc9c;
+}
+
+.root.dark-mode .titulo-principal {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+}
