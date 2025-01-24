@@ -23,7 +23,7 @@ public class App extends Application {
 
     private static Usuario usuarioAutenticado;
 
-    private boolean modoOscuro = false; // Variable para guardar el estado del tema
+    private boolean modoOscuro = true; // Variable para guardar el estado del tema
 
     public boolean isModoOscuro() {
         return modoOscuro;
@@ -38,9 +38,19 @@ public class App extends Application {
         // Cargar el archivo FXML para la pantalla de login
         FXMLLoader loginLoader = new FXMLLoader(getClass().getResource("/dulceria/fxml/login.fxml"));
         Parent loginView = loginLoader.load();
-        
+
         // Configurar la escena del login
         Scene loginScene = new Scene(loginView, 700, 300);
+    
+        // Verificar y aplicar el tema oscuro si está habilitado
+        if (isModoOscuro()) { // Suponiendo que tienes un método isModoOscuro() en la clase App
+            loginScene.getRoot().getStyleClass().add("dark-mode"); // Añadir la clase CSS para el tema oscuro
+        }
+    
+        // Añadir la hoja de estilos principal
+        loginScene.getStylesheets().add(getClass().getResource("/dulceria/css/login.css").toExternalForm());
+    
+        // Configurar el título y mostrar la ventana
         primaryStage.setTitle("Login");
         primaryStage.setScene(loginScene);
         primaryStage.show();
