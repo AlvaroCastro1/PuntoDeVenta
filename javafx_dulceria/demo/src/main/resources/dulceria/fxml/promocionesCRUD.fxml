@@ -78,7 +78,7 @@
                 <!-- Botones de acción -->
                 <HBox alignment="CENTER" spacing="20" styleClass="button-bar">
                     <Button fx:id="btnGuardarPromocion" onAction="#guardarPromocion" styleClass="boton-guardar" text="Guardar" />
-                    <Button fx:id="btnCambiarEstado" onAction="#cambiarEstadoPromocion" styleClass="boton-cancelar" text="Cambiar Estado" />
+                    <Button fx:id="btnCambiarEstado" onAction="#cambiarEstadoPromocion" styleClass="boton-actualizar" text="Cambiar Estado" />
                     <Button fx:id="btnCancelarPromocion" onAction="#cancelarPromocion" styleClass="boton-eliminar" text="Cancelar" />
                 </HBox>
             </VBox>

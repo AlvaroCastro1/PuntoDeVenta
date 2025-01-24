@@ -56,6 +56,15 @@ Button:hover {
     -fx-background-color: #27ae60;
 }
 
+.boton-actualizar {
+    -fx-background-color: #ac39ee;
+    -fx-text-fill: white;
+}
+
+.boton-actualizar:hover {
+    -fx-background-color: #7f1eb8;
+}
+
 .boton-cancelar {
     -fx-background-color: #d3ee39;
     -fx-text-fill: white;

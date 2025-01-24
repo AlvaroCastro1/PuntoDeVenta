@@ -29,7 +29,7 @@
     <HBox spacing="10">
         <TextField fx:id="nombreEstadoField" promptText="Nombre del estado" HBox.hgrow="ALWAYS"/>
         <Button text="Guardar" onAction="#guardarEstado" styleClass="boton-guardar" />
-        <Button text="Actualizar" onAction="#actualizarEstado" styleClass="boton-cancelar" />
+        <Button text="Actualizar" onAction="#actualizarEstado" styleClass="boton-actualizar" />
         <Button text="Eliminar" onAction="#eliminarEstado" styleClass="boton-eliminar" />
     </HBox>
 </VBox>
