@@ -149,6 +149,11 @@ Button:hover {
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 3, 0, 0, 3); /* Efecto sutil */
 }
 
+.table-view .placeholder .label {
+    -fx-text-fill: #555555;
+    -fx-font-size: 10px;
+}
+
 /* Cabecera de la tabla */
 .table-view .column-header-background {
     -fx-background-color: #ffffff; /* Fondo blanco */
@@ -359,4 +364,9 @@ Button:hover {
 .root.dark-mode .table-view .cell:selected .cell {
     -fx-background-color: #1b7a67;  /* Fondo oscuro para la fila seleccionada */
     -fx-text-fill: #f0f0f0;         /* Cambiar el color del texto de la celda seleccionada */
+}
+
+.root.dark-mode .table-view .placeholder .label {
+    -fx-text-fill: #f0f0f0;
+    -fx-font-size: 10px;
 }

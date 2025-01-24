@@ -9,18 +9,19 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1" fx:controller="dulceria.controller.EntradaDetalleController">
+<BorderPane styleClass="main-container" stylesheets="@../css/estilos.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1" fx:controller="dulceria.controller.EntradaDetalleController">
     <!-- Título superior -->
     <top>
-        <Label alignment="CENTER" style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Entrada" BorderPane.alignment="CENTER" />
+        <Label alignment="CENTER" styleClass="titulo-principal" text="Entrada" BorderPane.alignment="CENTER" />
     </top>
 
     <!-- Cuerpo con las tablas -->
     <center>
-        <HBox alignment="CENTER" spacing="10">
+        <HBox alignment="CENTER" spacing="20" style="-fx-padding: 10;">
             <!-- Tabla de entradas (Izquierda) -->
-            <VBox alignment="CENTER" prefWidth="300" spacing="10">
-                <TableView fx:id="tablaEntradas" prefHeight="150" prefWidth="240.0">
+            <VBox alignment="TOP_CENTER" spacing="10" HBox.hgrow="ALWAYS">
+                <Label styleClass="titulo-principal" text="Entradas" />
+                <TableView fx:id="tablaEntradas" VBox.vgrow="ALWAYS" style="-fx-pref-height: 200;">
                     <columns>
                         <TableColumn fx:id="colFecha" text="Fecha" />
                         <TableColumn fx:id="colTotal" text="Total" />
@@ -30,8 +31,9 @@
             </VBox>
 
             <!-- Tabla de detalles (Derecha) -->
-            <VBox alignment="CENTER" prefWidth="300" spacing="10">
-                <TableView fx:id="tablaDetalles" prefHeight="150">
+            <VBox alignment="TOP_CENTER" spacing="10" HBox.hgrow="ALWAYS">
+                <Label styleClass="titulo-principal" text="Detalles" />
+                <TableView fx:id="tablaDetalles" VBox.vgrow="ALWAYS" style="-fx-pref-height: 200;">
                     <columns>
                         <TableColumn fx:id="colProducto" text="Producto" />
                         <TableColumn fx:id="colCantidad" text="Cantidad" />
@@ -45,20 +47,22 @@
 
     <!-- Botones y total inferior -->
     <bottom>
-        <VBox spacing="10">
+        <VBox spacing="15" style="-fx-padding: 10;">
             <!-- Total -->
-            <HBox alignment="CENTER_RIGHT" spacing="10" style="-fx-padding: 10;">
-                <Label style="-fx-font-size: 14px;" text="Total: $" />
-                <Label fx:id="totalLabel" style="-fx-font-size: 14px; -fx-font-weight: bold;" text="0.00" />
+            <HBox alignment="CENTER_RIGHT" spacing="10">
+                <Label styleClass="form-label" text="Total: $" />
+                <Label styleClass="form-label" fx:id="totalLabel" style="-fx-font-size: 14px; -fx-font-weight: bold;" text="0.00" />
             </HBox>
             <!-- Botones -->
-            <HBox alignment="CENTER" spacing="10">
-                <Button fx:id="btnCancelar" text="Cancelar" />
-                <Button fx:id="btnCambiar" text="Cambiar" onAction="#handleCambiar"/>
+            <HBox alignment="CENTER" spacing="15">
+                <Button fx:id="btnCancelar" text="Cancelar" styleClass="boton-cancelar" />
+                <Button fx:id="btnCambiar" text="Cambiar" styleClass="boton-guardar" onAction="#handleCambiar" />
             </HBox>
         </VBox>
     </bottom>
-   <padding>
-      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-   </padding>
+
+    <!-- Padding general -->
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
 </BorderPane>
