@@ -123,6 +123,78 @@ Button:hover {
     -fx-background-color: #64e258; /* Color de fondo al pasar el ratón */
 }
 
+/* Diseño general de la tabla */
+.table-view {
+    -fx-background-color: #f4f4f9;  /* Fondo muy claro */
+    -fx-border-color: #e0e0e0;     /* Borde gris claro */
+    -fx-border-width: 1px;         /* Borde fino */
+    -fx-padding: 10px;              /* Espaciado alrededor de la tabla */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 3, 0, 0, 3); /* Efecto sutil */
+}
+
+/* Cabecera de la tabla */
+.table-view .column-header-background {
+    -fx-background-color: #ffffff; /* Fondo blanco */
+    -fx-border-color: #d3d3d3;     /* Borde gris claro */
+    -fx-border-width: 0 0 1px 0;   /* Borde inferior */
+}
+
+.table-view .column-header .label {
+    -fx-font-size: 14px;           /* Fuente más pequeña */
+    -fx-font-weight: bold;         /* Letra en negrita */
+    -fx-text-fill: #333;           /* Color de texto gris oscuro */
+}
+
+/* Filas de la tabla */
+.table-view .cell {
+    -fx-padding: 8px 12px;         /* Espaciado dentro de las celdas */
+    -fx-font-size: 13px;           /* Tamaño de fuente más pequeño */
+    -fx-text-fill: #555;           /* Color de texto gris oscuro */
+}
+
+/* Hover sobre las filas */
+.table-view .row:hover {
+    -fx-background-color: #f5f5f5; /* Fondo suave cuando pasas el mouse */
+}
+
+/* Borde de las celdas */
+.table-view .cell {
+    -fx-border-color: transparent transparent #e0e0e0 transparent; /* Borde inferior */
+    -fx-border-width: 0 0 1px 0;
+}
+
+/* Tabla con bordes elegantes */
+.table-view .column-header, .table-view .row {
+    -fx-background-color: transparent;
+}
+
+.table-view .column-header .label {
+    -fx-alignment: center-left;
+}
+
+/* Primer columna con fondo especial */
+.table-view .column-header .label:first-child {
+    -fx-background-color: #f8f8f8;
+    -fx-font-weight: normal;
+}
+
+/* Estilos adicionales para las columnas */
+.table-view .column-header .label {
+    -fx-padding: 0 10px;
+}
+
+/* Estilo para la fila seleccionada */
+.table-view .cell:selected {
+    -fx-background-color: #45e6c5;  /* Fondo oscuro para la fila seleccionada */
+    -fx-text-fill: #000000;         /* Texto blanco en la fila seleccionada */
+}
+
+/* Estilo para el texto de la fila seleccionada */
+.table-view .cell:selected .cell {
+    -fx-background-color: #45e6c5;  /* Fondo oscuro para la fila seleccionada */
+    -fx-text-fill: #000000;         /* Cambiar el color del texto de la celda seleccionada */
+}
+
 /*-----------------------------------------------Modo Oscuro----------------------------------------------------*/
 .dark-mode {
     -fx-background-color: #2c3e50;  /* Fondo oscuro */
@@ -204,4 +276,63 @@ Button:hover {
 
 .root.dark-mode .form-datepicker .date-picker-popup .cell:hover {
     -fx-background-color: #bc1a22; /* Color de fondo al pasar el ratón */
+}
+
+/* Estilo general para el modo oscuro */
+.root.dark-mode .table-view {
+    -fx-background-color: #444444;  /* Fondo gris oscuro */
+    -fx-border-width: 1px;          /* Borde fino */
+    -fx-padding: 10px;               /* Espaciado alrededor de la tabla */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 5, 0, 0, 5); /* Sombra más marcada */
+}
+
+/* Cabecera de la tabla */
+.root.dark-mode .table-view .column-header-background {
+    -fx-background-color: #444444;  /* Fondo gris relleno cabecera */
+    -fx-border-color: #1abc9c;      /* Borde gris */
+    -fx-border-width: 0 0 1px 0;    /* Borde inferior */
+}
+
+.root.dark-mode .table-view .column-header .label {
+    -fx-background-color: #444444;  /* Fondo gris oscuro */
+    -fx-font-size: 14px;            /* Fuente más pequeña */
+    -fx-font-weight: bold;          /* Texto en negrita */
+    -fx-text-fill: #f0f0f0;         /* Texto blanco */
+}
+
+/* Estilo de las filas */
+.root.dark-mode .table-view .cell {
+    -fx-background-color: #444444;  /* Fondo gris oscuro */
+    -fx-padding: 8px 12px;          /* Espaciado dentro de las celdas */
+    -fx-font-size: 13px;            /* Tamaño de fuente más pequeño */
+    -fx-text-fill: #f0f0f0;         /* Texto blanco */
+}
+
+/* Borde de las celdas */
+.root.dark-mode .table-view .cell {
+    -fx-border-color: transparent transparent #666666 transparent; /* Borde inferior gris oscuro */
+    -fx-border-width: 0 0 1px 0;
+}
+
+/* Tabla con bordes elegantes */
+.root.dark-mode .table-view .column-header {
+    -fx-background-color: transparent;
+}
+
+
+/* Estilo adicional para las columnas */
+.root.dark-mode .table-view .column-header .label {
+    -fx-padding: 0 10px;
+}
+
+/* Estilo para la fila seleccionada */
+.root.dark-mode .table-view .cell:selected {
+    -fx-background-color: #1b7a67;  /* Fondo oscuro para la fila seleccionada */
+    -fx-text-fill: #f0f0f0;         /* Texto blanco en la fila seleccionada */
+}
+
+/* Estilo para el texto de la fila seleccionada */
+.root.dark-mode .table-view .cell:selected .cell {
+    -fx-background-color: #1b7a67;  /* Fondo oscuro para la fila seleccionada */
+    -fx-text-fill: #f0f0f0;         /* Cambiar el color del texto de la celda seleccionada */
 }
