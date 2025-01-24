@@ -3,7 +3,6 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
@@ -15,13 +14,13 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dulceria.controller.ProductoController" stylesheets="@../css/estilos.css">
+<BorderPane stylesheets="@../css/estilos.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dulceria.controller.ProductoController" styleClass="main-container">
     <center>
-        <SplitPane dividerPositions="0.5" orientation="HORIZONTAL" styleClass="main-container">
-            <!-- Tabla de Productos -->
-            <VBox>
-                <Label style="-fx-font-size: 16; -fx-font-weight: bold;" text="Lista de Productos" styleClass="titulo-principal" />
-                <TableView fx:id="tableProductos" prefHeight="400.0" prefWidth="400.0">
+        <HBox spacing="20" styleClass="main-container">
+            <!-- Sección Tabla -->
+            <VBox spacing="10" styleClass="tabla-seccion">
+                <Label style="-fx-font-size: 16; -fx-font-weight: bold;" styleClass="titulo-principal" text="Lista de Productos" />
+                <TableView fx:id="tableProductos" prefHeight="400.0" VBox.vgrow="ALWAYS">
                     <columns>
                         <TableColumn fx:id="colId" prefWidth="80.0" text="ID" />
                         <TableColumn fx:id="colNombre" prefWidth="100.0" text="Nombre" />
@@ -30,35 +29,31 @@
                         <TableColumn fx:id="colPrecio" prefWidth="75.0" text="Precio" />
                     </columns>
                 </TableView>
-            <padding>
-               <Insets left="20.0" right="20.0" top="20.0" />
-            </padding>
             </VBox>
 
-            <!-- Formulario de Producto -->
-            <VBox alignment="TOP_LEFT" spacing="10">
-                <Label style="-fx-font-size: 16; -fx-font-weight: bold;" text="Detalles del Producto" styleClass="titulo-principal" />
+            <!-- Sección Formulario -->
+            <VBox spacing="20" styleClass="details-pane">
+                <Label style="-fx-font-size: 16; -fx-font-weight: bold;" styleClass="titulo-principal" text="Detalles del Producto" />
 
                 <GridPane hgap="10" vgap="10">
-                    <Label text="Nombre:" styleClass="form-label" />
+                    <!-- Campos del formulario -->
+                    <Label styleClass="form-label" text="Nombre:" />
                     <TextField fx:id="txtNombre" GridPane.columnIndex="1" />
 
-                    <Label text="Descripción:" GridPane.rowIndex="1" styleClass="form-label" />
-                    <TextArea fx:id="txtDescripcion" prefRowCount="3" GridPane.columnIndex="1" GridPane.rowIndex="1" styleClass="text-area" />
+                    <Label styleClass="form-label" text="Descripción:" GridPane.rowIndex="1" />
+                    <TextArea fx:id="txtDescripcion" prefRowCount="3" styleClass="text-area" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
-                    <Label text="Categoría:" GridPane.rowIndex="2" styleClass="form-label" />
+                    <Label styleClass="form-label" text="Categoría:" GridPane.rowIndex="2" />
                     <TextField fx:id="txtCategoria" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
-                    <Label text="Precio:" GridPane.rowIndex="3" styleClass="form-label" />
+                    <Label styleClass="form-label" text="Precio:" GridPane.rowIndex="3" />
                     <TextField fx:id="txtPrecio" GridPane.columnIndex="1" GridPane.rowIndex="3" />
 
-                    <Label text="Costo:" GridPane.rowIndex="4" styleClass="form-label" />
+                    <Label styleClass="form-label" text="Costo:" GridPane.rowIndex="4" />
                     <TextField fx:id="txtCosto" GridPane.columnIndex="1" GridPane.rowIndex="4" />
 
-                    <!-- Nueva fila para el campo de código de barras -->
-                    <Label text="Código de Barras:" GridPane.rowIndex="5" styleClass="form-label" />
+                    <Label styleClass="form-label" text="Código de Barras:" GridPane.rowIndex="5" />
                     <TextField fx:id="txtCodigo" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-
                <columnConstraints>
                   <ColumnConstraints />
                   <ColumnConstraints />
@@ -71,6 +66,7 @@
                   <RowConstraints />
                   <RowConstraints />
                </rowConstraints>
+
                 </GridPane>
 
                 <!-- Tabla de imágenes -->
@@ -88,17 +84,16 @@
                     <Button onAction="#onEliminarImagen" text="Eliminar Imagen" />
                 </HBox>
 
-                <!-- Botones de Acción -->
+                <!-- Botones de acción -->
                 <HBox alignment="CENTER" spacing="10">
-                    <Button fx:id="btnGuardar" onAction="#onGuardar" text="Guardar" styleClass="boton-guardar" />
-                    <!-- <Button fx:id="btnActualizar" onAction="#onActualizar" text="Actualizar" /> -->
-                    <Button fx:id="btnEliminar" onAction="#onEliminar" text="Eliminar" styleClass="boton-eliminar" />
-                    <Button fx:id="btnCancelar" onAction="#onCancelar" text="Cancelar" styleClass="boton-cancelar" />
+                    <Button fx:id="btnGuardar" onAction="#onGuardar" styleClass="boton-guardar" text="Guardar" />
+                    <Button fx:id="btnEliminar" onAction="#onEliminar" styleClass="boton-eliminar" text="Eliminar" />
+                    <Button fx:id="btnCancelar" onAction="#onCancelar" styleClass="boton-cancelar" text="Cancelar" />
                 </HBox>
-            <padding>
-               <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-            </padding>
             </VBox>
-        </SplitPane>
+        </HBox>
     </center>
+   <padding>
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+   </padding>
 </BorderPane>
