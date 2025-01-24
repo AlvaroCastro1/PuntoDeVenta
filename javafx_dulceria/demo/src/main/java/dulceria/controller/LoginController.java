@@ -3,7 +3,9 @@ package dulceria.controller;
 import dulceria.DAO.UsuarioDAO;
 import dulceria.app.App;
 import dulceria.model.Usuario;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -64,7 +66,6 @@ public class LoginController {
         boolean mostrar = txtContrasena.isVisible();
         txtContrasena.setVisible(!mostrar);
         txtContrasenaVisible.setVisible(mostrar);
-        btnMostrarContrasena.setText(mostrar ? "👁" : "🙈");
     }
 
     @FXML
@@ -95,4 +96,25 @@ public class LoginController {
         alerta.setContentText(mensaje);
         alerta.showAndWait();
     }
+
+    @FXML
+    public void toggleModoOscuro(ActionEvent event) {
+            Button button = (Button) event.getSource();
+            Scene scene = button.getScene();
+        
+            // Alternar modo oscuro
+            boolean isDarkMode = scene.getRoot().getStyleClass().contains("dark-mode");
+            if (isDarkMode) {
+                scene.getRoot().getStyleClass().remove("dark-mode");
+                app.setModoOscuro(false); // Actualizar el estado en App
+            } else {
+                scene.getRoot().getStyleClass().add("dark-mode");
+                app.setModoOscuro(true); // Actualizar el estado en App
+            }
+        
+            scene.getStylesheets().clear();
+            scene.getStylesheets().add(getClass().getResource("/dulceria/css/login.css").toExternalForm());
+        }
+        
+
 }

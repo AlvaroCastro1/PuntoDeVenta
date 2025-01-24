@@ -23,6 +23,16 @@ public class App extends Application {
 
     private static Usuario usuarioAutenticado;
 
+    private boolean modoOscuro = false; // Variable para guardar el estado del tema
+
+    public boolean isModoOscuro() {
+        return modoOscuro;
+    }
+
+    public void setModoOscuro(boolean modoOscuro) {
+        this.modoOscuro = modoOscuro;
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         // Cargar el archivo FXML para la pantalla de login
@@ -30,7 +40,7 @@ public class App extends Application {
         Parent loginView = loginLoader.load();
         
         // Configurar la escena del login
-        Scene loginScene = new Scene(loginView, 400, 300);
+        Scene loginScene = new Scene(loginView, 700, 300);
         primaryStage.setTitle("Login");
         primaryStage.setScene(loginScene);
         primaryStage.show();
@@ -42,35 +52,35 @@ public class App extends Application {
 
     // Método para cambiar a la vista principal con Sidebar
     public void showMainView(Stage primaryStage) {
-        // Cargar el archivo FXML para el Sidebar
         try {
             FXMLLoader sidebarLoader = new FXMLLoader(getClass().getResource("/dulceria/fxml/sidebar.fxml"));
-            Parent sidebar = sidebarLoader.load(); // Cargar el sidebar
-
-            // Obtener el controlador del Sidebar
+            Parent sidebar = sidebarLoader.load();
+    
             SidebarController sidebarController = sidebarLoader.getController();
-            sidebarController.setApp(this); // Pasar la instancia de App
-
-            // Configurar el contenedor principal
-            root = new BorderPane(); // Asegurarte de usar el campo de clase root
+            sidebarController.setApp(this);
+    
+            root = new BorderPane();
             root.setLeft(sidebar);
             root.setCenter(createView("Pantalla de inicio"));
-
-            // Configurar la animación del Sidebar
+    
             slideAnimation = new TranslateTransition(Duration.millis(300), sidebar);
-
-            // Configurar los eventos del mouse para mostrar/ocultar el Sidebar
+    
             root.setOnMouseMoved(event -> {
                 if (event.getX() < 10 && !isSidebarVisible) {
-                    showSidebar(sidebar); // Muestra el sidebar cuando el mouse está cerca del borde izquierdo
+                    showSidebar(sidebar);
                 } else if (event.getX() > 200 && isSidebarVisible) {
-                    hideSidebar(sidebar); // Oculta el sidebar cuando el mouse está en el área de contenido
+                    hideSidebar(sidebar);
                 }
             });
-
-            // Cambiar a la vista principal
+    
             Scene mainScene = new Scene(root, 800, 600);
-            mainScene.getStylesheets().add(getClass().getResource("/dulceria/css/styles.css").toExternalForm()); // Aplicar CSS
+    
+            // Verificar el estado del tema y aplicar el CSS correspondiente
+            if (isModoOscuro()) {
+                mainScene.getRoot().getStyleClass().add("dark-mode");
+            }
+    
+            mainScene.getStylesheets().add(getClass().getResource("/dulceria/css/styles.css").toExternalForm());
             primaryStage.setTitle("Sidebar con animación");
             primaryStage.setScene(mainScene);
 

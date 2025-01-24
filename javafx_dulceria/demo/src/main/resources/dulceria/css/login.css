@@ -1,0 +1,137 @@
+/* Contenedor principal */
+.login-container {
+    -fx-padding: 30;
+    -fx-background-color: #ffffff; /* Fondo claro */
+    -fx-border-radius: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0, 0, 0);
+    -fx-spacing: 15;
+    -fx-alignment: center;
+}
+
+/* Título */
+.title {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+/* Grid del formulario */
+.form-grid {
+    -fx-padding: 10;
+    -fx-alignment: center;
+}
+
+/* Etiquetas */
+.form-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #34495e;
+}
+
+/* Campos de texto */
+.form-input {
+    -fx-pref-width: 200px;
+    -fx-padding: 8;
+    -fx-font-size: 14px;
+    -fx-border-color: #bdc3c7;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #2c3e50;
+}
+
+.form-input:focused {
+    -fx-border-color: #3498db;
+    -fx-background-color: #ecf0f1;
+}
+
+/* Contenedor de la contraseña */
+.password-container {
+    -fx-alignment: center-left;
+}
+
+/* Botón para mostrar contraseña */
+.show-password-button {
+    -fx-background-color: #15415f;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+    -fx-text-fill: #ffffff;
+    -fx-border-radius: 5;
+    -fx-padding: 5;
+}
+
+.show-password-button:hover {
+    -fx-background-color: #d6eaf8;
+}
+
+/* Botón de inicio de sesión */
+.login-button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-border-radius: 5;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+}
+
+.login-button:hover {
+    -fx-background-color: #2980b9;
+}
+
+/* Mensaje de error */
+.error-message {
+    -fx-font-size: 12px;
+    -fx-text-fill: #e74c3c;
+}
+
+/* Modo oscuro */
+.dark-mode {
+    -fx-background-color: #2c3e50;  /* Fondo oscuro */
+    -fx-text-fill: white;           /* Texto blanco */
+}
+
+.root.dark-mode .login-container {
+    -fx-background-color: #2c3e50;
+}
+
+.root.dark-mode .title {
+    -fx-text-fill: #ecf0f1;
+}
+
+.root.dark-mode .form-label {
+    -fx-text-fill: #ecf0f1;
+}
+
+.root.dark-mode .form-input {
+    -fx-background-color: #34495e;
+    -fx-text-fill: #ecf0f1;
+    -fx-border-color: #1abc9c;
+}
+
+.root.dark-mode .form-input:focused {
+    -fx-border-color: #16a085;
+    -fx-background-color: #2c3e50;
+}
+
+.root.dark-mode .show-password-button {
+    -fx-text-fill: #1abc9c;
+    /* Botón para mostrar contraseña */
+    -fx-background-color: #71a8cc;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+    -fx-text-fill: #ffffff;
+    -fx-border-radius: 5;
+    -fx-padding: 5;
+}
+
+.root.dark-mode .show-password-button:hover {
+    -fx-background-color: #16a085;
+}
+
+.root.dark-mode .login-button {
+    -fx-background-color: #1abc9c;
+}
+
+.root.dark-mode .login-button:hover {
+    -fx-background-color: #16a085;
+}
