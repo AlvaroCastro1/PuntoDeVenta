@@ -3,32 +3,74 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1" fx:controller="dulceria.controller.LoteController">
+<AnchorPane styleClass="main-container" stylesheets="@../css/estilos.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dulceria.controller.LoteController">
     <children>
-        <ComboBox fx:id="cmbIdProducto" layoutX="14.0" layoutY="44.0" prefHeight="24.0" prefWidth="198.0" promptText="Seleccionar Producto" />
-        <TextField fx:id="txtCantidad" layoutX="14.0" layoutY="74.0" prefHeight="24.0" prefWidth="198.0" promptText="Cantidad" />
-        <DatePicker fx:id="datePickerFechaEntrada" layoutX="14.0" layoutY="104.0" promptText="Fecha de entrada" />
-        <DatePicker fx:id="datePickerFechaCaducidad" layoutX="14.0" layoutY="134.0" promptText="Fecha de caducidad" />
-        <ComboBox fx:id="cmbIdState" layoutX="14.0" layoutY="164.0" prefHeight="24.0" prefWidth="198.0" promptText="Seleccionar estado" />
+        <!-- Contenedor principal -->
+        <VBox alignment="TOP_CENTER" spacing="15" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+            <Label styleClass="titulo-principal" text="Crear Nuevo Lote" />
 
-        <Button fx:id="btnAdd" layoutX="14.0" layoutY="204.0" text="Agregar" />
-        <Button fx:id="btnUpdate" layoutX="84.0" layoutY="204.0" text="Actualizar" />
-        <Button fx:id="btnDelete" layoutX="164.0" layoutY="204.0" text="Eliminar" />
-        <Button fx:id="btnClear" layoutX="244.0" layoutY="204.0" text="Limpiar" />
+            <!-- Tabla -->
+            <TableView fx:id="tableLote" prefHeight="200.0" styleClass="table-view">
+                <columns>
+                    <TableColumn fx:id="colId" text="ID" />
+                    <TableColumn fx:id="colIdProducto" text="ID Producto" />
+                    <TableColumn fx:id="colCantidad" text="Cantidad" />
+                    <TableColumn fx:id="colFechaCaducidad" text="Fecha Caducidad" />
+                    <TableColumn fx:id="colIdState" text="ID Estado" />
+                </columns>
+            </TableView>
 
-        <TableView fx:id="tableLote" layoutX="14.0" layoutY="240.0" prefHeight="200.0" prefWidth="600.0">
-            <columns>
-                <TableColumn fx:id="colId" prefWidth="53.0" text="ID" />
-                <TableColumn fx:id="colIdProducto" prefWidth="127.0" text="ID Producto" />
-                <TableColumn fx:id="colCantidad" minWidth="0.0" prefWidth="96.0" text="Cantidad" />
-                <TableColumn fx:id="colFechaCaducidad" minWidth="0.0" prefWidth="174.0" text="Fecha Caducidad" />
-                <TableColumn fx:id="colIdState" prefWidth="147.0" text="ID Estado" />
-            </columns>
-        </TableView>
+            <!-- Formulario con GridPane dentro de details-pane -->
+            <VBox alignment="TOP_CENTER" spacing="15.0" styleClass="details-pane">
+            <GridPane hgap="10" styleClass="form-container" vgap="10" GridPane.hgrow="ALWAYS">
+                <!-- Configurar las columnas para que se expandan -->
+                <columnConstraints>
+                    <ColumnConstraints hgrow="ALWAYS" />
+                    <ColumnConstraints hgrow="ALWAYS" />
+                </columnConstraints>
+
+                <!-- Fila 1: Producto y Cantidad -->
+                <ComboBox fx:id="cmbIdProducto" promptText="Seleccionar Producto" styleClass="input-field" GridPane.columnSpan="2" GridPane.rowIndex="0" GridPane.hgrow="ALWAYS" />
+                <TextField fx:id="txtCantidad" promptText="Cantidad" styleClass="input-field" GridPane.columnSpan="2" GridPane.rowIndex="1" GridPane.hgrow="ALWAYS" />
+
+                <!-- Fila 2: Fecha Entrada y Fecha Caducidad -->
+                <DatePicker fx:id="datePickerFechaEntrada" promptText="Fecha de Entrada" styleClass="input-field" GridPane.columnSpan="2" GridPane.rowIndex="2" GridPane.hgrow="ALWAYS" />
+                <DatePicker fx:id="datePickerFechaCaducidad" promptText="Fecha de Caducidad" styleClass="input-field" GridPane.columnSpan="2" GridPane.rowIndex="3" GridPane.hgrow="ALWAYS" />
+
+                <!-- Fila 3: Estado -->
+                <ComboBox fx:id="cmbIdState" promptText="Seleccionar Estado" styleClass="input-field" GridPane.columnSpan="2" GridPane.rowIndex="4" GridPane.hgrow="ALWAYS" />
+
+                <!-- Configurar las filas para un tamaño adecuado -->
+                <rowConstraints>
+                    <RowConstraints />
+                    <RowConstraints />
+                    <RowConstraints />
+                    <RowConstraints />
+                    <RowConstraints />
+                </rowConstraints>
+            </GridPane>
+
+                <!-- Botones en HBox -->
+                <HBox alignment="CENTER" spacing="10" styleClass="button-container">
+                    <children>
+                        <Button fx:id="btnAdd" styleClass="boton-guardar" text="Agregar" />
+                        <Button fx:id="btnUpdate" styleClass="boton-actualizar" text="Actualizar" />
+                        <Button fx:id="btnDelete" styleClass="boton-eliminar" text="Eliminar" />
+                        <Button fx:id="btnClear" styleClass="boton-cancelar" text="Limpiar" />
+                    </children>
+                </HBox>
+            </VBox>
+        </VBox>
     </children>
 </AnchorPane>
