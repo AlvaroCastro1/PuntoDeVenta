@@ -9,49 +9,40 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dulceria.controller.VentasController">
-    <HBox spacing="10">
-        <!-- Columna izquierda con la tabla de ventas -->
-        <VBox spacing="10">
-            <Label text="Lista de Ventas" />
-            <TableView fx:id="tablaVentas" prefHeight="380.0" prefWidth="322.0">
-                <columns>
-                    <TableColumn fx:id="colIdVenta" text="ID Venta" />
-                    <TableColumn fx:id="colFechaVenta" text="Fecha" />
-                    <TableColumn fx:id="colTotalVenta" text="Total" />
-                    <TableColumn fx:id="colEstadoVenta" text="Estado" />
-                </columns>
-            <VBox.margin>
-               <Insets />
-            </VBox.margin>
-            </TableView>
-         <HBox.margin>
-            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-         </HBox.margin>
-        </VBox>
+<AnchorPane styleClass="main-container" stylesheets="@../css/estilos.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dulceria.controller.VentasController">
+    <children>
+        <!-- Contenedor principal horizontal -->
+        <HBox spacing="20" AnchorPane.topAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.bottomAnchor="50.0">
+            <!-- Columna izquierda con la tabla de ventas -->
+            <VBox spacing="10" HBox.hgrow="ALWAYS">
+                <Label styleClass="titulo-principal" text="Lista de Ventas" />
+                <TableView fx:id="tablaVentas" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colIdVenta" text="ID Venta" />
+                        <TableColumn fx:id="colFechaVenta" text="Fecha" />
+                        <TableColumn fx:id="colTotalVenta" text="Total" />
+                        <TableColumn fx:id="colEstadoVenta" text="Estado" />
+                    </columns>
+                </TableView>
+            </VBox>
 
-        <!-- Columna derecha con la tabla de detalles -->
-        <VBox spacing="10">
-            <Label text="Detalles de la Venta Seleccionada" />
-            <TableView fx:id="tablaDetalles" prefWidth="402.0">
-                <columns>
-                    <TableColumn fx:id="colProducto" text="Producto" />
-                    <TableColumn fx:id="colCantidad" text="Cantidad" />
-                    <TableColumn fx:id="colLote" text="Lote" />
-                    <TableColumn fx:id="colPrecioUnitario" text="Precio Unitario" />
-                    <TableColumn fx:id="colCostoUnitario" text="Costo Unitario" />
-                    <TableColumn fx:id="colEstadoProd" text="Estado" />
-                </columns>
-            </TableView>
-         <HBox.margin>
-            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-         </HBox.margin>
-        </VBox>
-      <padding>
-         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-      </padding>
-    </HBox>
+            <!-- Columna derecha con la tabla de detalles -->
+            <VBox spacing="10" HBox.hgrow="ALWAYS">
+                <Label styleClass="titulo-principal" text="Detalles de la Venta Seleccionada" />
+                <TableView fx:id="tablaDetalles" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colProducto" text="Producto" />
+                        <TableColumn fx:id="colCantidad" text="Cantidad" />
+                        <TableColumn fx:id="colLote" text="Lote" />
+                        <TableColumn fx:id="colPrecioUnitario" text="Precio Unitario" />
+                        <TableColumn fx:id="colCostoUnitario" text="Costo Unitario" />
+                        <TableColumn fx:id="colEstadoProd" text="Estado" />
+                    </columns>
+                </TableView>
+            </VBox>
+        </HBox>
 
-    <!-- Botón abajo -->
-    <Button onAction="#cancelarVenta" text="Cancelar Venta" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="20.0" />
+        <!-- Botón abajo -->
+        <Button styleClass="boton-actualizar" onAction="#cancelarVenta" text="Cancelar Venta" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" />
+    </children>
 </AnchorPane>
