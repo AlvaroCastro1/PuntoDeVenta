@@ -21,7 +21,7 @@
         <HBox alignment="CENTER_LEFT" spacing="10" styleClass="main-container">
             <Label styleClass="titulo-principal" text="Entrada" />
             <Label styleClass="form-label" text="Fecha Entrada:" />
-            <DatePicker fx:id="fechaEntradaPicker" />
+            <DatePicker styleClass="form-datepicker" fx:id="fechaEntradaPicker" />
          <BorderPane.margin>
             <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
          </BorderPane.margin>
