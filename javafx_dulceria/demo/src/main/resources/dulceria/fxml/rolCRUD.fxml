@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1" fx:controller="dulceria.controller.RolController">
+<AnchorPane styleClass="main-container" stylesheets="@../css/estilos.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1" fx:controller="dulceria.controller.RolController">
     <VBox spacing="15" AnchorPane.topAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.bottomAnchor="20.0">
         <!-- Título principal -->
         <Label styleClass="titulo-principal" text="Gestión de Roles" alignment="CENTER" />
