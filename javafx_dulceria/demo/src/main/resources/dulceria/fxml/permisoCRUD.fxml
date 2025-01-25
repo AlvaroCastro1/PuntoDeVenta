@@ -9,30 +9,41 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dulceria.controller.PermisoController">
-    <VBox spacing="10">
-        <!-- Campos de texto para Nombre y Descripción -->
-        <TextField fx:id="txtNombre" promptText="Nombre del Permiso" />
-        <TextArea fx:id="txtDescripcion" promptText="Descripción" />
+<AnchorPane styleClass="main-container" stylesheets="@../css/estilos.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dulceria.controller.PermisoController">
+    <VBox spacing="15" AnchorPane.topAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.bottomAnchor="20.0">
+        <!-- Título principal con clase 'titulo-principal' -->
+        <Label text="Gestión de Permisos" styleClass="titulo-principal" alignment="CENTER" />
 
-        <!-- Contenedor HBox para los botones, alineados horizontalmente -->
-        <HBox alignment="CENTER" spacing="10">
-            <Button onAction="#crearPermiso" text="Crear Permiso" />
-            <Button onAction="#actualizarPermiso" text="Actualizar Permiso" />
-            <Button onAction="#eliminarPermiso" text="Eliminar Permiso" />
-            <Button onAction="#limpiarCampos" text="Cancelar" />
-        </HBox>
+        <!-- Contenedor para el formulario y botones con 'details-pane' -->
+        <VBox spacing="15" styleClass="details-pane">
+            <!-- Campo de texto para el nombre del permiso -->
+            <TextField fx:id="txtNombre" promptText="Nombre del Permiso" VBox.vgrow="NEVER" />
 
-        <!-- Tabla de Permisos -->
-        <TableView fx:id="tblPermisos" prefHeight="249.0" prefWidth="600">
+            <!-- Área de texto para la descripción -->
+            <TextArea fx:id="txtDescripcion" promptText="Descripción" VBox.vgrow="NEVER" />
+
+            <!-- Contenedor de botones con clases específicas para cada acción -->
+            <HBox alignment="CENTER" spacing="15">
+                <Button onAction="#crearPermiso" text="Crear Permiso" styleClass="boton-guardar" />
+                <Button onAction="#actualizarPermiso" text="Actualizar Permiso" styleClass="boton-actualizar" />
+                <Button onAction="#eliminarPermiso" text="Eliminar Permiso" styleClass="boton-eliminar" />
+                <Button onAction="#limpiarCampos" text="Cancelar" styleClass="boton-cancelar" />
+            </HBox>
+        </VBox>
+
+        <!-- Tabla de permisos aparte -->
+        <TableView fx:id="tblPermisos" VBox.vgrow="ALWAYS">
             <columns>
-                <TableColumn fx:id="colNombre" maxWidth="300.0" minWidth="150.0" prefWidth="150.0" text="Nombre" />
-                <TableColumn fx:id="colDescripcion" maxWidth="500.0" minWidth="450.0" prefWidth="450.0" text="Descripción" />
+                <TableColumn fx:id="colNombre" text="Nombre" minWidth="150.0" maxWidth="300.0" />
+                <TableColumn fx:id="colDescripcion" text="Descripción" minWidth="450.0" maxWidth="500.0" />
             </columns>
         </TableView>
-      <padding>
-         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-      </padding>
+
+        <!-- Configuración de márgenes generales -->
+        <padding>
+            <Insets top="20" right="20" bottom="20" left="20" />
+        </padding>
     </VBox>
 </AnchorPane>
