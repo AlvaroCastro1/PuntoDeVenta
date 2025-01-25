@@ -1,53 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="dulceria.controller.EntradaController">
+<BorderPane styleClass="main-container" stylesheets="@../css/estilos.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1" fx:controller="dulceria.controller.EntradaController">
     <top>
-        <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-padding: 10; -fx-background-color: #f0f0f0;">
-            <Label text="Entrada" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
-            <Label text="Fecha Entrada:"/>
-            <DatePicker fx:id="fechaEntradaPicker"/>
+        <!-- Encabezado -->
+        <HBox alignment="CENTER_LEFT" spacing="10" styleClass="main-container">
+            <Label styleClass="titulo-principal" text="Entrada" />
+            <Label styleClass="form-label" text="Fecha Entrada:" />
+            <DatePicker fx:id="fechaEntradaPicker" />
+         <BorderPane.margin>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+         </BorderPane.margin>
         </HBox>
     </top>
+
     <center>
-        <HBox spacing="20" style="-fx-padding: 10;">
-            <!-- Formulario a la izquierda -->
-            <VBox spacing="10" style="-fx-padding: 10; -fx-border-color: #d0d0d0; -fx-border-width: 1;">
-                <Label text="Formulario" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
-                <GridPane hgap="10" vgap="10">
-                    <Label text="Producto:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                    <ComboBox fx:id="productoComboBox" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+        <!-- Contenedor principal -->
+        <HBox spacing="20" style="-fx-padding: 10;" HBox.hgrow="ALWAYS">
+            <!-- Formulario -->
+            <VBox spacing="15" style="-fx-padding: 10; -fx-border-color: #d0d0d0; -fx-border-width: 1;" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+                <Label styleClass="titulo-principal" text="Formulario" />
+                <GridPane hgap="10" vgap="10" GridPane.vgrow="ALWAYS">
+                    <Label styleClass="form-label" text="Producto:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                    <ComboBox fx:id="productoComboBox" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" />
 
-                    <Label text="Cantidad:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                    <TextField fx:id="cantidadTextField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                    <Label styleClass="form-label" text="Cantidad:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                    <TextField fx:id="cantidadTextField" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
 
-                    <Label text="Fecha Caducidad:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-                    <DatePicker fx:id="fechaCaducidadPicker" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                    <Label styleClass="form-label" text="Fecha Caducidad:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                    <DatePicker styleClass="form-datepicker" fx:id="fechaCaducidadPicker" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" />
 
-                    <Button text="Agregar" fx:id="agregarButton" GridPane.rowIndex="3" GridPane.columnIndex="1" onAction="#agregarDetalle"/>
+                    <Button styleClass="boton-guardar" fx:id="agregarButton" onAction="#agregarDetalle" text="Agregar" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+               <columnConstraints>
+                  <ColumnConstraints />
+                  <ColumnConstraints />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+               </rowConstraints>
                 </GridPane>
             </VBox>
 
-            <!-- Tabla a la derecha -->
-            <VBox spacing="10" style="-fx-padding: 10; -fx-border-color: #d0d0d0; -fx-border-width: 1;">
-                <Label text="Productos Agregados" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
-                <TableView fx:id="Entradas" style="-fx-padding: 10;">
+            <!-- Tabla -->
+            <VBox spacing="15" style="-fx-padding: 10; -fx-border-color: #d0d0d0; -fx-border-width: 1;" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+                <Label styleClass="titulo-principal" text="Productos Agregados" />
+                <TableView fx:id="Entradas" VBox.vgrow="ALWAYS">
                     <columns>
-                        <TableColumn fx:id="productoColumn" text="Producto"/>
-                        <TableColumn fx:id="precioColumn" text="Precio"/>
-                        <TableColumn fx:id="cantidadColumn" text="Cantidad"/>
-                        <TableColumn fx:id="costoColumn" text="Costo"/>
+                        <TableColumn fx:id="productoColumn" text="Producto" />
+                        <TableColumn fx:id="precioColumn" text="Precio" />
+                        <TableColumn fx:id="cantidadColumn" text="Cantidad" />
+                        <TableColumn fx:id="costoColumn" text="Costo" />
                     </columns>
                 </TableView>
-                <HBox spacing="10" alignment="CENTER_RIGHT" style="-fx-padding: 10;">
-                    <Label text="Total: $" style="-fx-font-size: 14px;"/>
-                    <Label fx:id="totalLabel" text="0.00" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                <HBox alignment="CENTER_RIGHT" spacing="10">
+                    <Label style="-fx-font-size: 14px;" styleClass="form-label" text="Total: $" />
+                    <Label fx:id="totalLabel" style="-fx-font-size: 14px; -fx-font-weight: bold;" styleClass="form-label" text="0.00" />
                 </HBox>
-                <HBox spacing="10" alignment="CENTER_RIGHT">
-                    <Button text="Guardar" fx:id="guardarButton" onAction="#guardarEntrada_bd"/>
+                <HBox alignment="CENTER_RIGHT" spacing="10">
+                    <Button styleClass="boton-guardar" fx:id="guardarButton" onAction="#guardarEntrada_bd" text="Guardar" />
                 </HBox>
             </VBox>
         </HBox>
