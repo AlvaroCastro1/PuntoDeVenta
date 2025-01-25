@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
@@ -11,27 +12,38 @@
 <?import javafx.scene.layout.VBox?>
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1" fx:controller="dulceria.controller.RolController">
-    <VBox alignment="CENTER" spacing="10">
-        <TextField fx:id="txtNombreRol" promptText="Nombre del Rol" />
-        <TextArea fx:id="txtDescripcion" promptText="Descripción" />
+    <VBox spacing="15" AnchorPane.topAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.bottomAnchor="20.0">
+        <!-- Título principal -->
+        <Label styleClass="titulo-principal" text="Gestión de Roles" alignment="CENTER" />
 
-        <!-- HBox para los botones -->
-        <HBox alignment="CENTER" spacing="10">
-            <Button onAction="#crearRol" text="Crear Rol" />
-            <Button onAction="#actualizarRol" text="Actualizar Rol" />
-            <Button onAction="#eliminarRol" text="Eliminar Rol" />
-            <Button onAction="#limpiarCampos" text="Cancelar" />
-        </HBox>
+        <!-- Contenedor para el formulario y botones -->
+        <VBox spacing="10" styleClass="details-pane">
+            <!-- Campo de texto para el nombre del rol -->
+            <TextField fx:id="txtNombreRol" promptText="Nombre del Rol" VBox.vgrow="NEVER" />
 
-        <TableView fx:id="tblRoles" prefHeight="301.0" prefWidth="602.0">
+            <!-- Área de texto para la descripción -->
+            <TextArea fx:id="txtDescripcion" promptText="Descripción" VBox.vgrow="NEVER" />
+
+            <!-- Contenedor de botones -->
+            <HBox alignment="CENTER" spacing="15">
+                <Button styleClass="boton-guardar" onAction="#crearRol" text="Crear Rol" />
+                <Button styleClass="boton-actualizar" onAction="#actualizarRol" text="Actualizar Rol" />
+                <Button styleClass="boton-eliminar" onAction="#eliminarRol" text="Eliminar Rol" />
+                <Button styleClass="boton-cancelar" onAction="#limpiarCampos" text="Cancelar" />
+            </HBox>
+        </VBox>
+
+        <!-- Tabla de roles aparte -->
+        <TableView fx:id="tblRoles" VBox.vgrow="ALWAYS">
             <columns>
-                <TableColumn fx:id="colNombreRol" maxWidth="250.0" minWidth="150.0" prefWidth="150.0" text="Nombre Rol" />
-                <TableColumn fx:id="colDescripcion" maxWidth="500.0" minWidth="200.0" prefWidth="450.0" text="Descripción" />
+                <TableColumn fx:id="colNombreRol" text="Nombre Rol" minWidth="150.0" maxWidth="300.0" />
+                <TableColumn fx:id="colDescripcion" text="Descripción" minWidth="200.0" />
             </columns>
         </TableView>
 
+        <!-- Configuración de márgenes generales -->
         <padding>
-            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            <Insets top="20" right="20" bottom="20" left="20" />
         </padding>
     </VBox>
 </AnchorPane>
