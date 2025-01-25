@@ -7,38 +7,45 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="410.0" prefWidth="890.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1" fx:controller="dulceria.controller.VentaController">
+<AnchorPane styleClass="main-container" stylesheets="@../css/estilos.css" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dulceria.controller.VentaController">
     <children>
         <!-- Título de la interfaz -->
-        <Label layoutX="20" layoutY="20" text="Registro de Venta" />
+        <Label styleClass="titulo-principal" text="Registro de Venta" AnchorPane.topAnchor="20.0" AnchorPane.leftAnchor="20.0" />
 
-        <!-- Contenedor para los productos -->
-        <VBox alignment="TOP_LEFT" layoutX="20" layoutY="60" spacing="10">
-            <Label text="Producto:" />
-            <ComboBox fx:id="comboProducto" prefWidth="200" />
-            <Label text="Precio Unitario:" />
-            <TextField fx:id="txtPrecioUnitario" editable="false" prefWidth="200" />
-            <Button onAction="#agregarProducto" prefWidth="200" text="Agregar Producto" />
-        </VBox>
+        <!-- Contenedor principal -->
+        <HBox spacing="20" AnchorPane.topAnchor="60.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.bottomAnchor="20.0">
+            <!-- Formulario para los productos -->
+            <VBox styleClass="details-pane" spacing="10" HBox.hgrow="NEVER">
+                <Label styleClass="form-label" text="Producto:" />
+                <ComboBox fx:id="comboProducto" />
+                <Label styleClass="form-label" text="Precio Unitario:" />
+                <TextField fx:id="txtPrecioUnitario" editable="false" />
+                <Button styleClass="boton-guardar" onAction="#agregarProducto" text="Agregar Producto" />
+            </VBox>
 
-        <!-- Tabla de productos seleccionados -->
-        <TableView fx:id="tablaVenta" layoutX="250" layoutY="60" prefHeight="200" prefWidth="600">
-            <columns>
-                <TableColumn fx:id="colConsecutivo" prefWidth="45" text="Num." />
-                <TableColumn fx:id="colProducto" prefWidth="150" text="Producto" />
-                <TableColumn fx:id="colCantidad" prefWidth="100" text="Cantidad" />
-                <TableColumn fx:id="colPrecioUnitario" prefWidth="150" text="Precio Unitario" />
-                <TableColumn fx:id="colTotal" prefWidth="100" text="Total" />
-            </columns>
-        </TableView>
+            <!-- Contenedor de tabla y resumen -->
+            <VBox spacing="20" HBox.hgrow="ALWAYS">
+                <!-- Tabla de productos seleccionados -->
+                <TableView fx:id="tablaVenta" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colConsecutivo" text="Num." />
+                        <TableColumn fx:id="colProducto" text="Producto" />
+                        <TableColumn fx:id="colCantidad" text="Cantidad" />
+                        <TableColumn fx:id="colPrecioUnitario" text="Precio Unitario" />
+                        <TableColumn fx:id="colTotal" text="Total" />
+                    </columns>
+                </TableView>
 
-        <!-- Resumen de la venta -->
-        <VBox layoutX="250" layoutY="270" spacing="10">
-            <Label text="Resumen de la Venta:" />
-            <Label fx:id="lblTotal" text="Total: $0.00" />
-            <Button onAction="#guardarVenta" prefWidth="200" text="Registrar Venta" />
-        </VBox>
+                <!-- Resumen de la venta -->
+                <VBox styleClass="details-pane" spacing="10" alignment="CENTER_RIGHT">
+                    <Label styleClass="form-label" text="Resumen de la Venta:" style="-fx-font-weight: bold;" />
+                    <Label styleClass="form-label" fx:id="lblTotal" text="Total: $0.00" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+                    <Button styleClass="boton-guardar" onAction="#guardarVenta" text="Registrar Venta" />
+                </VBox>
+            </VBox>
+        </HBox>
     </children>
 </AnchorPane>
