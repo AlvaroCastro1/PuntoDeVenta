@@ -32,7 +32,7 @@
         <!-- Contenedor principal -->
         <HBox spacing="20" style="-fx-padding: 10;" HBox.hgrow="ALWAYS">
             <!-- Formulario -->
-            <VBox spacing="15" style="-fx-padding: 10; -fx-border-color: #d0d0d0; -fx-border-width: 1;" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+            <VBox spacing="15" styleClass="details-pane" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
                 <Label styleClass="titulo-principal" text="Formulario" />
                 <GridPane hgap="10" vgap="10" GridPane.vgrow="ALWAYS">
                     <Label styleClass="form-label" text="Producto:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
@@ -59,7 +59,7 @@
             </VBox>
 
             <!-- Tabla -->
-            <VBox spacing="15" style="-fx-padding: 10; -fx-border-color: #d0d0d0; -fx-border-width: 1;" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+            <VBox spacing="15" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
                 <Label styleClass="titulo-principal" text="Productos Agregados" />
                 <TableView fx:id="Entradas" VBox.vgrow="ALWAYS">
                     <columns>
