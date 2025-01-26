@@ -370,3 +370,42 @@ Button:hover {
     -fx-text-fill: #f0f0f0;
     -fx-font-size: 10px;
 }
+
+/* Estilo para la ListView */
+.root.dark-mode .listView {
+    -fx-background-color: #444444; /* Fondo oscuro */
+    -fx-text-fill: #ffffff; /* Texto blanco */
+    -fx-border-color: #1abc9c; /* Borde oscuro */
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+}
+
+/* Estilo para los ítems de la ListView */
+.root.dark-mode .listView .list-cell {
+    -fx-background-color: #444444;
+    -fx-text-fill: #ffffff;
+    -fx-padding: 10px;
+    -fx-border-width: 0;
+    -fx-border-color: transparent;
+}
+
+/* Estilo para los ítems de la ListView al pasar el ratón */
+.root.dark-mode .listView .list-cell:hover {
+    -fx-background-color: #555555; /* Color cuando el mouse pasa sobre el item */
+}
+
+/* Selección de ítem de la ListView */
+.root.dark-mode .listView .cell:selected {
+    -fx-background-color: #6C757D; /* Color para el ítem seleccionado */
+    -fx-text-fill: #ffffff; /* Texto blanco cuando está seleccionado */
+}
+
+/* Fondo de la ListView cuando no hay elementos */
+.root.dark-mode .listView:empty {
+    -fx-background-color: #121212; /* Fondo más oscuro cuando está vacío */
+}
+
+/* Ajustes de borde */
+.root.dark-mode .listView .list-cell:focused {
+    -fx-background-color: #444444;
+}
