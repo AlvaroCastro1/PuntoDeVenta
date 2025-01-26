@@ -1,51 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="dulceria.controller.RolPermisoController" spacing="20" alignment="CENTER">
-    <Label text="Gestión de Rol-Permiso" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+<VBox alignment="CENTER" spacing="20" styleClass="main-container" stylesheets="@../css/estilos.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dulceria.controller.RolPermisoController">
+    <Label styleClass="titulo-principal" text="Gestión de Rol-Permiso" />
 
-    <!-- Selección de Usuario y Rol -->
-    <HBox spacing="10" alignment="CENTER">
-        <VBox>
-            <Label text="Rol"/>
-            <ComboBox fx:id="comboBoxRol" prefWidth="200" promptText="Seleccionar Rol"/>
-        </VBox>
-        <VBox>
-            <Label text="Permiso"/>
-            <ComboBox fx:id="comboBoxPermiso" prefWidth="200" promptText="Seleccionar Permiso"/>
-        </VBox>
-    </HBox>
+    <VBox spacing="15" styleClass="details-pane" VBox.vgrow="NEVER">
+        <!-- Selección de Usuario y Rol -->
+        <HBox alignment="CENTER" spacing="10">
+            <VBox>
+                <Label styleClass="form-label" text="Rol" />
+                <ComboBox fx:id="comboBoxRol" prefWidth="200" promptText="Seleccionar Rol" />
+            </VBox>
+            <VBox>
+                <Label styleClass="form-label" text="Permiso" />
+                <ComboBox fx:id="comboBoxPermiso" prefWidth="200" promptText="Seleccionar Permiso" />
+            </VBox>
+        </HBox>
 
-    <!-- Botones de Acción -->
-    <HBox spacing="15" alignment="CENTER">
-        <Button text="Asignar" onAction="#agregarRelacion"/>
-        <Button text="Eliminar" onAction="#eliminarRelacion"/>
-    </HBox>
+        <!-- Botones de Acción -->
+        <HBox alignment="CENTER" spacing="15">
+            <Button styleClass="boton-guardar" onAction="#agregarRelacion" text="Asignar" />
+            <Button styleClass="boton-eliminar" onAction="#eliminarRelacion" text="Eliminar" />
+        </HBox>
+    </VBox>
 
     <!-- Tabla Relaciones Rol-Permiso -->
-    <VBox spacing="10" alignment="CENTER">
-        <Label text="Relaciones Rol-Permiso"/>
-        <TableView fx:id="tablaRolPermiso" prefWidth="500" prefHeight="200">
+    <VBox alignment="CENTER" spacing="10">
+        <Label styleClass="titulo-principal" text="Relaciones Rol-Permiso" />
+        <TableView fx:id="tablaRolPermiso" prefHeight="200" prefWidth="500">
             <columns>
-                <TableColumn fx:id="columnaRol" text="Rol" prefWidth="250"/>
-                <TableColumn fx:id="columnaPermiso" text="Permiso" prefWidth="250"/>
+                <TableColumn fx:id="columnaRol" prefWidth="250" text="Rol" />
+                <TableColumn fx:id="columnaPermiso" prefWidth="250" text="Permiso" />
             </columns>
         </TableView>
     </VBox>
+   <padding>
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+   </padding>
 </VBox>

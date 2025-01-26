@@ -1,52 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-
-<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="dulceria.controller.UsuarioRolController" spacing="20" alignment="CENTER">
-    <Label text="Gestión de Usuario-Rol" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+<VBox alignment="CENTER" spacing="20" styleClass="main-container" stylesheets="@../css/estilos.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dulceria.controller.UsuarioRolController">
+    <!-- Título -->
+    <Label styleClass="titulo-principal" text="Gestión de Usuario-Rol" />
 
     <!-- Selección de Usuario y Rol -->
-    <HBox spacing="10" alignment="CENTER">
-        <VBox>
-            <Label text="Usuario"/>
-            <ComboBox fx:id="comboUsuario" prefWidth="200"/>
-        </VBox>
-        <VBox>
-            <Label text="Rol"/>
-            <ComboBox fx:id="comboRol" prefWidth="200"/>
-        </VBox>
-    </HBox>
+    <VBox styleClass="details-pane" spacing="15" VBox.vgrow="NEVER">
+        <HBox alignment="CENTER" spacing="20" styleClass="selector-container">
+            <VBox spacing="5">
+                <Label styleClass="form-label" text="Usuario" />
+                <ComboBox fx:id="comboUsuario" prefWidth="200" promptText="Seleccionar Usuario" styleClass="combo-box" />
+            </VBox>
+            <VBox spacing="5">
+                <Label styleClass="form-label" text="Rol" />
+                <ComboBox fx:id="comboRol" prefWidth="200" styleClass="combo-box" promptText="Seleccionar Rol" />
+            </VBox>
+        </HBox>
 
-    <!-- Botones de Acción -->
-    <HBox spacing="15" alignment="CENTER">
-        <Button text="Asignar Rol" onAction="#asignarRol"/>
-        <Button text="Eliminar Rol" onAction="#eliminarRol"/>
-    </HBox>
+        <!-- Botones de Acción -->
+        <HBox alignment="CENTER" spacing="15" styleClass="action-buttons">
+            <Button onAction="#asignarRol" styleClass="boton-guardar" text="Asignar Rol" />
+            <Button onAction="#eliminarRol" styleClass="boton-eliminar" text="Eliminar Rol" />
+        </HBox>
+    </VBox>
+    
 
     <!-- Tabla Relaciones Usuario-Rol -->
-    <VBox spacing="10" alignment="CENTER">
-        <Label text="Relaciones Usuario-Rol"/>
-        <TableView fx:id="tablaUsuarioRol" prefWidth="500" prefHeight="200">
+    <VBox alignment="CENTER" spacing="10" styleClass="tabla-container">
+        <Label styleClass="titulo-principal" text="Relaciones Usuario-Rol" />
+        <TableView fx:id="tablaUsuarioRol" prefHeight="200" styleClass="tabla">
             <columns>
-                <TableColumn fx:id="columnaUsuario" text="Usuario" prefWidth="250"/>
-                <TableColumn fx:id="columnaRol" text="Rol" prefWidth="250"/>
+                <TableColumn fx:id="columnaUsuario" prefWidth="250" text="Usuario" />
+                <TableColumn fx:id="columnaRol" prefWidth="250" text="Rol" />
             </columns>
         </TableView>
     </VBox>
+   <padding>
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+   </padding>
 </VBox>
