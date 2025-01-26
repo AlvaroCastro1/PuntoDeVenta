@@ -12,7 +12,11 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
+import javafx.scene.layout.Region;
+import javafx.util.Duration;
 
 public class App extends Application {
 
@@ -110,18 +114,39 @@ public class App extends Application {
         }
     }
 
-    // Mostrar el Sidebar con animación
+    // Mostrar el Sidebar con animación suave
     private void showSidebar(Parent sidebar) {
+        if (!root.getChildren().contains(sidebar)) {
+            root.setLeft(sidebar); // Añadir el Sidebar nuevamente al layout
+        }
+        
         slideAnimation.setToX(0); // Mover el Sidebar a su posición visible
         slideAnimation.play();
-        isSidebarVisible = true;
+    
+        // Animación para expandir el espacio del Sidebar
+        Timeline expandAnimation = new Timeline(
+            new KeyFrame(Duration.millis(300), 
+                new KeyValue(((Region) sidebar).prefWidthProperty(), 200)) // Ancho final
+        );
+        expandAnimation.setOnFinished(event -> isSidebarVisible = true); // Actualizar estado
+        expandAnimation.play();
     }
-
-    // Ocultar el Sidebar con animación
+    
+    // Ocultar el Sidebar con animación suave
     private void hideSidebar(Parent sidebar) {
         slideAnimation.setToX(-200); // Mover el Sidebar fuera de la pantalla (ocultarlo)
         slideAnimation.play();
-        isSidebarVisible = false;
+    
+        // Animación para colapsar el espacio del Sidebar
+        Timeline collapseAnimation = new Timeline(
+            new KeyFrame(Duration.millis(300), 
+                new KeyValue(((Region) sidebar).prefWidthProperty(), 0)) // Ancho final
+        );
+        collapseAnimation.setOnFinished(event -> {
+            root.setLeft(null); // Remover el Sidebar del diseño después de la animación
+            isSidebarVisible = false; // Actualizar estado
+        });
+        collapseAnimation.play();
     }
 
     // Crear la vista para una pantalla específica
