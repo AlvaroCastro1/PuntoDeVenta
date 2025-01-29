@@ -409,3 +409,22 @@ Button:hover {
 .root.dark-mode .listView .list-cell:focused {
     -fx-background-color: #444444;
 }
+
+/* Estilos para la pantalla de carga */
+.loading-pane {
+    -fx-background-color: rgba(255, 255, 255, 0.8); /* Fondo semitransparente */
+}
+
+.loading-indicator {
+    -fx-progress-color: #0091EA; /* Color del indicador de carga */
+    -fx-pref-width: 50;
+    -fx-pref-height: 50;
+}
+
+.dark-mode .loading-pane {
+    -fx-background-color: rgba(45, 45, 45, 0.8); /* Fondo semitransparente para modo oscuro */
+}
+
+.dark-mode .loading-indicator {
+    -fx-progress-color: #00BFFF; /* Color del indicador de carga para modo oscuro */
+}

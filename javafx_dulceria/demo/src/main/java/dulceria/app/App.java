@@ -7,13 +7,15 @@ import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
-import javafx.util.Duration;
+import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
+import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.scene.layout.Region;
 import javafx.util.Duration;
@@ -23,42 +25,33 @@ public class App extends Application {
     private boolean isSidebarVisible = false; // Estado inicial del Sidebar
     private TranslateTransition slideAnimation; // Animación de barrido
     private BorderPane root; // Declaración de root como campo de clase
-
+    private boolean modoOscuro = true; // Variable para guardar el estado del tema
 
     private static Usuario usuarioAutenticado;
 
-    private boolean modoOscuro = true; // Variable para guardar el estado del tema
-
-    public boolean isModoOscuro() {
-        return modoOscuro;
-    }
-
-    public void setModoOscuro(boolean modoOscuro) {
-        this.modoOscuro = modoOscuro;
-    }
-
     @Override
     public void start(Stage primaryStage) throws Exception {
+        // Inicializar root
+        root = new BorderPane();
+
         // Cargar el archivo FXML para la pantalla de login
         FXMLLoader loginLoader = new FXMLLoader(getClass().getResource("/dulceria/fxml/login.fxml"));
         Parent loginView = loginLoader.load();
 
         // Configurar la escena del login
         Scene loginScene = new Scene(loginView, 700, 300);
-    
-        // Verificar y aplicar el tema oscuro si está habilitado
-        if (isModoOscuro()) { // Suponiendo que tienes un método isModoOscuro() en la clase App
-            loginScene.getRoot().getStyleClass().add("dark-mode"); // Añadir la clase CSS para el tema oscuro
-        }
-    
+
+        // Aplicar el tema según el valor de modoOscuro
+        aplicarTema(loginScene);
+
         // Añadir la hoja de estilos principal
         loginScene.getStylesheets().add(getClass().getResource("/dulceria/css/login.css").toExternalForm());
-    
+
         // Configurar el título y mostrar la ventana
         primaryStage.setTitle("Login");
         primaryStage.setScene(loginScene);
         primaryStage.show();
-        
+
         // Suponemos que el controlador de login tiene una forma de validar el login
         LoginController loginController = loginLoader.getController();
         loginController.setApp(this, primaryStage); // Pasamos la instancia de App y el Stage
@@ -67,18 +60,21 @@ public class App extends Application {
     // Método para cambiar a la vista principal con Sidebar
     public void showMainView(Stage primaryStage) {
         try {
+            // Mostrar el indicador de carga
+            showLoadingIndicator();
+
+            // Aquí aseguramos que root esté correctamente inicializado
             FXMLLoader sidebarLoader = new FXMLLoader(getClass().getResource("/dulceria/fxml/sidebar.fxml"));
             Parent sidebar = sidebarLoader.load();
-    
+
             SidebarController sidebarController = sidebarLoader.getController();
             sidebarController.setApp(this);
-    
-            root = new BorderPane();
-            root.setLeft(sidebar);
+
+            root.setLeft(sidebar); // Ahora root ya está inicializado
             root.setCenter(createView("Pantalla de inicio"));
-    
+
             slideAnimation = new TranslateTransition(Duration.millis(300), sidebar);
-    
+
             root.setOnMouseMoved(event -> {
                 if (event.getX() < 10 && !isSidebarVisible) {
                     showSidebar(sidebar);
@@ -86,32 +82,82 @@ public class App extends Application {
                     hideSidebar(sidebar);
                 }
             });
-    
+
             Scene mainScene = new Scene(root, 800, 600);
-    
-            // Verificar el estado del tema y aplicar el CSS correspondiente
-            if (isModoOscuro()) {
-                mainScene.getRoot().getStyleClass().add("dark-mode");
-            }
-    
+
+            // Aplicar el tema según el valor de modoOscuro
+            aplicarTema(mainScene);
+
+            // Añadir la hoja de estilos principal
             mainScene.getStylesheets().add(getClass().getResource("/dulceria/css/styles.css").toExternalForm());
-            primaryStage.setTitle("Sidebar con animación");
-            primaryStage.setScene(mainScene);
+
+            // Agregar una transición de desvanecimiento antes de cambiar la escena
+            FadeTransition fadeOut = new FadeTransition(Duration.millis(500), root);
+            fadeOut.setFromValue(1);
+            fadeOut.setToValue(0);
+            fadeOut.setOnFinished(event -> {
+                primaryStage.setTitle("Sidebar con animación");
+                primaryStage.setScene(mainScene);
+                fadeIn(mainScene);
+            });
+
+            fadeOut.play();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    // Función para hacer un fade-in en la escena
+    private void fadeIn(Scene scene) {
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(500), scene.getRoot());
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
+        fadeIn.play();
+    }
+
     public void changeView(String fxmlPath) {
         try {
+            // Mostrar el indicador de carga
+            showLoadingIndicator();
+            
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent view = loader.load();
-            root.setCenter(view); // Reemplazar el contenido central
+
+            // Aplicar una transición de desvanecimiento suave
+            FadeTransition fadeOut = new FadeTransition(Duration.millis(300), root.getCenter());
+            fadeOut.setFromValue(1);
+            fadeOut.setToValue(0);
+            fadeOut.setOnFinished(event -> {
+                root.setCenter(view);
+                FadeTransition fadeIn = new FadeTransition(Duration.millis(300), root.getCenter());
+                fadeIn.setFromValue(0);
+                fadeIn.setToValue(1);
+                fadeIn.play();
+            });
+            fadeOut.play();
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("No se pudo cargar la vista: " + fxmlPath);
         }
+    }
+
+    // Método para mostrar el indicador de carga
+    private void showLoadingIndicator() {
+        if (root == null) {
+            root = new BorderPane(); // Asegurarse de que root esté inicializado si aún no lo está
+        }
+
+        ProgressIndicator progressIndicator = new ProgressIndicator();
+        progressIndicator.getStyleClass().add("loading-indicator"); // Aplicar clase CSS
+
+        StackPane loadingPane = new StackPane(progressIndicator);
+        loadingPane.getStyleClass().add("loading-pane"); // Aplicar clase CSS
+        root.setCenter(loadingPane);
+
+        // Simular una carga más larga con una pausa
+        PauseTransition pause = new PauseTransition(Duration.seconds(5)); // Duración de 5 segundos
+        pause.play();
     }
 
     // Mostrar el Sidebar con animación suave
@@ -157,6 +203,18 @@ public class App extends Application {
         return view;
     }
 
+    // Aplicar el tema según el valor de modoOscuro
+    private void aplicarTema(Scene scene) {
+        if (isModoOscuro()) {
+            scene.getRoot().getStyleClass().add("dark-mode");
+        } else {
+            scene.getRoot().getStyleClass().add("light-mode");
+        }
+    
+        // Añadir la hoja de estilos principal
+        scene.getStylesheets().add(getClass().getResource("/dulceria/css/estilos.css").toExternalForm());
+    }
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -168,5 +226,13 @@ public class App extends Application {
 
     public static void setUsuarioAutenticado(Usuario usuario) {
         usuarioAutenticado = usuario;
+    }
+
+    public boolean isModoOscuro() {
+        return modoOscuro;
+    }
+
+    public void setModoOscuro(boolean modoOscuro) {
+        this.modoOscuro = modoOscuro;
     }
 }
