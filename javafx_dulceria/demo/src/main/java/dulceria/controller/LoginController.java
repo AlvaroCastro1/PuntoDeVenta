@@ -113,7 +113,7 @@ public class LoginController {
             }
         
             scene.getStylesheets().clear();
-            scene.getStylesheets().add(getClass().getResource("/dulceria/css/login.css").toExternalForm());
+            scene.getStylesheets().add(getClass().getResource("/dulceria/css/estilos.css").toExternalForm());
         }
         
 

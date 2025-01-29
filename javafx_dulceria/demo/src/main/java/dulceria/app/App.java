@@ -45,7 +45,7 @@ public class App extends Application {
         aplicarTema(loginScene);
 
         // Añadir la hoja de estilos principal
-        loginScene.getStylesheets().add(getClass().getResource("/dulceria/css/login.css").toExternalForm());
+        loginScene.getStylesheets().add(getClass().getResource("/dulceria/css/estilos.css").toExternalForm());
 
         // Configurar el título y mostrar la ventana
         primaryStage.setTitle("Login");
@@ -89,7 +89,7 @@ public class App extends Application {
             aplicarTema(mainScene);
 
             // Añadir la hoja de estilos principal
-            mainScene.getStylesheets().add(getClass().getResource("/dulceria/css/styles.css").toExternalForm());
+            mainScene.getStylesheets().add(getClass().getResource("/dulceria/css/estilos.css").toExternalForm());
 
             // Agregar una transición de desvanecimiento antes de cambiar la escena
             FadeTransition fadeOut = new FadeTransition(Duration.millis(500), root);

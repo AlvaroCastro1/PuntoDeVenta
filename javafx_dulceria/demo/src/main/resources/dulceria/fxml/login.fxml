@@ -5,10 +5,10 @@
 
 <VBox xmlns:fx="http://javafx.com/fxml" 
       alignment="CENTER" spacing="20" fx:controller="dulceria.controller.LoginController"
-      stylesheets="@../css/login.css" styleClass="login-container">
+      stylesheets="@../css/estilos.css" styleClass="main-container">
 
     <!-- Título -->
-    <Label text="Iniciar Sesión" styleClass="title"/>
+    <Label text="Iniciar Sesión" styleClass="titulo-principal"/>
 
     <!-- Formulario -->
     <GridPane hgap="15" vgap="15" alignment="CENTER" styleClass="form-grid">
