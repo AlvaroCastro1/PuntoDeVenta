@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.ScrollPane?>
 
-<ScrollPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dulceria.controller.SidebarController" fx:id="sidebarScrollPane" fitToWidth="true" pannable="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" stylesheets="@../css/sidebar.css">
+<ScrollPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dulceria.controller.SidebarController" fx:id="sidebarScrollPane" fitToWidth="true" pannable="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" stylesheets="@../css/estilos.css">
     <VBox fx:id="sidebar" spacing="10" styleClass="sidebar-container" >
         <Button text="Inicio" fx:id="homeButton" onAction="#navigateToHome" styleClass="sidebar-button" maxWidth="200"/>
         <Button text="Configuración" fx:id="screen1Button" onAction="#navigateToConfiguracion" styleClass="sidebar-button" maxWidth="200"/>
