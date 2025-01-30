@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.Priority?>
+
+<BorderPane styleClass="main-container" stylesheets="@../css/estilos.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dulceria.controller.DashboardController">
+    <top>
+        <VBox>
+            <!-- Información del Usuario Logueado -->
+            <HBox alignment="CENTER">
+                <Label fx:id="usuarioLogueadoLabel" styleClass="titulo-principal" />
+            </HBox>
+            <!-- Línea divisoria -->
+            <Separator style="-fx-pref-height: 1; -fx-background-color: black;">
+                <VBox.margin>
+                   <Insets bottom="10.0" top="10.0" />
+                </VBox.margin>
+            </Separator>
+        </VBox>
+    </top>
+
+    <center>
+        <VBox spacing="20">
+            <!-- Gráfica de Ventas por Mes (BarChart) -->
+            <VBox spacing="10" HBox.hgrow="ALWAYS">
+                <Label styleClass="titulo-principal" text="Ventas por Mes" />
+                <BarChart fx:id="ventasPorMesChart">
+                    <xAxis>
+                        <CategoryAxis label="Mes" styleClass="category-axis" />
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis label="Ventas" styleClass="category-axis" />
+                    </yAxis>
+                </BarChart>
+            </VBox>
+
+            <!-- Gráfica de Producto Más Vendido (BarChart) -->
+            <VBox spacing="10" HBox.hgrow="ALWAYS">
+                <Label styleClass="titulo-principal" text="Producto Más Vendido" />
+                <BarChart fx:id="productoMasVendidoChart">
+                    <xAxis>
+                        <CategoryAxis label="Producto" />
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis label="Cantidad Vendida" />
+                    </yAxis>
+                </BarChart>
+            </VBox>
+
+            <!-- Gráfica de Ganancias vs Pérdidas (PieChart) -->
+            <VBox spacing="10" HBox.hgrow="ALWAYS">
+                <Label styleClass="titulo-principal" text="Ganancias vs Pérdidas" />
+                <PieChart fx:id="gananciasVsPerdidasChart" />
+            </VBox>
+        </VBox>
+    </center>
+
+    <right>
+        <VBox spacing="20" VBox.vgrow="ALWAYS">
+            <!-- Producto con Más Existencias (BarChart) -->
+            <VBox spacing="10">
+                <Label styleClass="titulo-principal" text="Producto con Más Existencias" />
+                <BarChart fx:id="productoMasExistenciasChart">
+                    <xAxis>
+                        <CategoryAxis label="Producto" />
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis label="Cantidad" />
+                    </yAxis>
+                </BarChart>
+            </VBox>
+
+            <!-- Producto con Pocas Existencias (BarChart) -->
+            <VBox spacing="10">
+                <Label styleClass="titulo-principal" text="Producto con Pocas Existencias" />
+                <BarChart fx:id="productoPocasExistenciasChart">
+                    <xAxis>
+                        <CategoryAxis label="Producto" />
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis label="Cantidad" />
+                    </yAxis>
+                </BarChart>
+            </VBox>
+        </VBox>
+    </right>
+
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+</BorderPane>

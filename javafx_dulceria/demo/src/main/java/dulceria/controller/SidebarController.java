@@ -20,7 +20,7 @@ public class SidebarController {
     private void navigateToHome(ActionEvent event) {
         System.out.println("Navegando a Pantalla de inicio");
         // Lógica de navegación
-        app.changeView("/dulceria/fxml/pantallaInicio.fxml");
+        app.changeView("/dulceria/fxml/dashboard.fxml");
     }
 
     @FXML

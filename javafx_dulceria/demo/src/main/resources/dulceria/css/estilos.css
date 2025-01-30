@@ -288,6 +288,37 @@ Button:hover {
     -fx-text-fill: #e74c3c;
 }
 
+.chart {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #555555;
+}
+
+.axis-label{
+    -fx-text-fill: #555555;
+}
+
+.chart-plot-background{
+    -fx-background-color: transparent;
+}
+
+.axis {
+    -fx-tick-label-fill: #555555;
+}
+ 
+.axis-tick-mark {
+    -fx-stroke: #555555;
+    -fx-stroke-width: 2; 
+}
+
+.axis-minor-tick-mark {
+    -fx-stroke: #555555;
+}
+
+.chart-pie-label { /*this is what you need for labels*/
+    -fx-fill: #555555;
+    -fx-font-size: 1em;
+}
+
 /*-----------------------------------------------Modo Oscuro----------------------------------------------------*/
 .dark-mode {
     -fx-background-color: #2c3e50;  /* Fondo oscuro */
@@ -546,3 +577,64 @@ Button:hover {
     -fx-background-color: #16a085; /* Fondo verde oscuro */
     -fx-text-fill: white;
 }
+
+/* Modo Oscuro */
+.root.dark-mode .chart {
+    -fx-background-color: #2c3e50;
+    -fx-text-fill: white;
+}
+
+.root.dark-mode .axis-label{
+    -fx-text-fill: white;
+}
+
+.root.dark-mode .chart-plot-background{
+    -fx-background-color: transparent;
+}
+
+.root.dark-mode .axis {
+    -fx-tick-label-fill: #f8f8f8;
+}
+ 
+.root.dark-mode .axis-tick-mark {
+    -fx-stroke: #b1b99a;
+    -fx-stroke-width: 2; 
+}
+
+.root.dark-mode .axis-minor-tick-mark {
+    -fx-stroke: #b1b99a;
+}
+
+.root.dark-mode .chart-pie-label {
+    -fx-fill: #b1b99a;
+    -fx-font-size: 1em;
+}
+
+.default-color0.chart-bar {
+    -fx-bar-fill: #3498db; /* Azul */
+}
+
+.default-color1.chart-bar {
+    -fx-bar-fill: #e74c3c; /* Rojo */
+}
+
+.default-color2.chart-bar {
+    -fx-bar-fill: #2ecc71; /* Verde */
+}
+
+.default-color3.chart-bar {
+    -fx-bar-fill: #f39c12; /* Naranja */
+}
+
+.default-color4.chart-bar {
+    -fx-bar-fill: #9b59b6; /* Morado */
+}
+
+.default-color0.chart-pie {
+    -fx-pie-color: #2ecc71; /* Verde para Ganancias */
+}
+
+.default-color1.chart-pie {
+    -fx-pie-color: #e74c3c; /* Rojo para Pérdidas */
+}
+

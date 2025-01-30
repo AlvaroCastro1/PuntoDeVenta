@@ -62,19 +62,27 @@ public class App extends Application {
         try {
             // Mostrar el indicador de carga
             showLoadingIndicator();
-
-            // Aquí aseguramos que root esté correctamente inicializado
+    
+            // Cargar el Sidebar
             FXMLLoader sidebarLoader = new FXMLLoader(getClass().getResource("/dulceria/fxml/sidebar.fxml"));
             Parent sidebar = sidebarLoader.load();
-
+    
             SidebarController sidebarController = sidebarLoader.getController();
             sidebarController.setApp(this);
-
-            root.setLeft(sidebar); // Ahora root ya está inicializado
-            root.setCenter(createView("Pantalla de inicio"));
-
+    
+            root.setLeft(sidebar); // Añadir el Sidebar a la izquierda
+    
+            // Cargar el archivo FXML específico (por ejemplo, dashboard.fxml)
+            FXMLLoader dashboardLoader = new FXMLLoader(getClass().getResource("/dulceria/fxml/dashboard.fxml"));
+            Parent dashboardView = dashboardLoader.load();
+    
+            // Establecer el archivo FXML cargado en el centro del BorderPane
+            root.setCenter(dashboardView);
+    
+            // Configurar la animación del Sidebar
             slideAnimation = new TranslateTransition(Duration.millis(300), sidebar);
-
+    
+            // Configurar eventos para mostrar/ocultar el Sidebar
             root.setOnMouseMoved(event -> {
                 if (event.getX() < 10 && !isSidebarVisible) {
                     showSidebar(sidebar);
@@ -82,27 +90,28 @@ public class App extends Application {
                     hideSidebar(sidebar);
                 }
             });
-
+    
+            // Crear la escena principal
             Scene mainScene = new Scene(root, 800, 600);
-
+    
             // Aplicar el tema según el valor de modoOscuro
             aplicarTema(mainScene);
-
+    
             // Añadir la hoja de estilos principal
             mainScene.getStylesheets().add(getClass().getResource("/dulceria/css/estilos.css").toExternalForm());
-
+    
             // Agregar una transición de desvanecimiento antes de cambiar la escena
             FadeTransition fadeOut = new FadeTransition(Duration.millis(500), root);
             fadeOut.setFromValue(1);
             fadeOut.setToValue(0);
             fadeOut.setOnFinished(event -> {
-                primaryStage.setTitle("Sidebar con animación");
+                primaryStage.setTitle("Vista Principal");
                 primaryStage.setScene(mainScene);
                 fadeIn(mainScene);
             });
-
+    
             fadeOut.play();
-
+    
         } catch (Exception e) {
             e.printStackTrace();
         }
