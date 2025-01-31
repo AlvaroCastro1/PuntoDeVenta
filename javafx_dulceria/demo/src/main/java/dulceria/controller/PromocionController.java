@@ -6,6 +6,8 @@ import dulceria.DatabaseConnection;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -49,6 +51,8 @@ public class PromocionController {
     private TextField txtValorDescuento;
     @FXML
     private TextField txtPrecio;
+    @FXML
+    private TextField txtBusqueda;
     @FXML
     private DatePicker dpFechaInicio;
     @FXML
@@ -132,6 +136,33 @@ public class PromocionController {
 
         CargarProdComboBox();
         cargarPromociones();
+
+        // Envolver la lista en un FilteredList
+    FilteredList<Promocion> filteredData = new FilteredList<>(listaPromociones, p -> true);
+
+    // Escuchar cambios en el campo de búsqueda
+    txtBusqueda.textProperty().addListener((observable, oldValue, newValue) -> {
+        filteredData.setPredicate(promocion -> {
+            if (newValue == null || newValue.isEmpty()) {
+                return true;
+            }
+            String lowerCaseFilter = newValue.toLowerCase();
+            return promocion.getNombre().toLowerCase().contains(lowerCaseFilter) ||
+                   promocion.getTipo().toLowerCase().contains(lowerCaseFilter) ||
+                   promocion.getTipo().toLowerCase().contains(lowerCaseFilter) ||
+                   String.valueOf(promocion.getCantidadNecesaria()).contains(lowerCaseFilter) ||
+                   String.valueOf(promocion.getPrecioFinal()).contains(lowerCaseFilter) ||
+                   String.valueOf(promocion.getValorDescuento()).contains(lowerCaseFilter);
+        });
+    });
+
+    // Enlazar la lista filtrada con una SortedList
+    SortedList<Promocion> sortedData = new SortedList<>(filteredData);
+    sortedData.comparatorProperty().bind(tblPromociones.comparatorProperty());
+
+    // Asignar los datos a la tabla
+    tblPromociones.setItems(sortedData);
+
     }
 
 
