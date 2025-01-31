@@ -2,12 +2,14 @@ package dulceria.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Optional;
 
 import dulceria.DatabaseConnection;
@@ -32,7 +34,7 @@ public class LoteController {
     @FXML
     private TableColumn<Lote, Integer> colId, colIdProducto, colCantidad, colIdState;
     @FXML
-    private TableColumn<Lote, Date> colFechaCaducidad;
+    private TableColumn<Lote, String> colFechaCaducidad;
     @FXML
     private Button btnAdd, btnUpdate, btnDelete, btnClear;
 
@@ -50,11 +52,13 @@ public class LoteController {
         colId.setCellValueFactory(cellData -> cellData.getValue().idProperty().asObject());
         colIdProducto.setCellValueFactory(cellData -> cellData.getValue().idProductoProperty().asObject());
         colCantidad.setCellValueFactory(cellData -> cellData.getValue().cantidadProperty().asObject());
-        colFechaCaducidad.setCellValueFactory(cellData -> 
-            new SimpleObjectProperty<java.sql.Date>(
-                new java.sql.Date(cellData.getValue().getFechaCaducidad().getTime())
-            )
-        );
+        colFechaCaducidad.setCellValueFactory(cellData -> {
+            java.util.Date fecha = cellData.getValue().getFechaCaducidad();
+            return new SimpleStringProperty(fecha != null ? fecha.toString() : "Sin fecha");
+        });
+
+
+
         colIdState.setCellValueFactory(cellData -> cellData.getValue().idStateProperty().asObject());
 
         loadComboBoxData();
@@ -76,7 +80,12 @@ public class LoteController {
             // Rellenar los campos con los datos del lote seleccionado
             txtCantidad.setText(String.valueOf(lote.getCantidad()));
             datePickerFechaEntrada.setValue(new java.sql.Date(lote.getFechaEntrada().getTime()).toLocalDate()); 
-            datePickerFechaCaducidad.setValue(new java.sql.Date(lote.getFechaCaducidad().getTime()).toLocalDate());
+            if (lote.getFechaCaducidad() != null) {
+                datePickerFechaCaducidad.setValue(new java.sql.Date(lote.getFechaCaducidad().getTime()).toLocalDate());
+            } else {
+                // Si es null, se puede dejar el campo vacío o poner una fecha por defecto
+                datePickerFechaCaducidad.setValue(null);  // O puedes poner un valor por defecto
+            }
             cmbIdProducto.setValue(productoList.stream().filter(p -> p.getId() == lote.getIdProducto()).findFirst().orElse(null));
             cmbIdState.setValue(stateList.stream().filter(s -> s.getId() == lote.getIdState()).findFirst().orElse(null));
         }
@@ -179,72 +188,120 @@ public class LoteController {
     }
 
     private void addLote() {
+        // Validar los campos antes de realizar el insert
+        if (cmbIdProducto.getValue() == null) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Error", "Debe seleccionar un producto.");
+            return;
+        }
+        if (txtCantidad.getText().isEmpty() || !txtCantidad.getText().matches("\\d+")) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Error", "La cantidad debe ser un número válido.");
+            return;
+        }
+        if (cmbIdState.getValue() == null) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Error", "Debe seleccionar un estado.");
+            return;
+        }
+        if (datePickerFechaEntrada.getValue() == null) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Error", "Debe seleccionar una fecha de entrada.");
+            return;
+        }
+    
         try (Connection conn = dbConnection.getConnection()) {
             String sql = "INSERT INTO lote (id_producto, cantidad, fecha_caducidad, fecha_entrada, id_state) VALUES (?, ?, ?, ?, ?)";
             PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, cmbIdProducto.getValue().getId());  // Obtener el id del producto seleccionado
+    
+            // Obtener el id del producto seleccionado
+            stmt.setInt(1, cmbIdProducto.getValue().getId());
+            // Validar que la cantidad sea un número entero válido
             stmt.setInt(2, Integer.parseInt(txtCantidad.getText()));
-
-            // Convertimos la fecha seleccionada en DatePicker a LocalDate
+    
+            // Validar y convertir la fecha de caducidad
             LocalDate fechaCaducidad = datePickerFechaCaducidad.getValue();
             if (fechaCaducidad != null) {
                 stmt.setDate(3, Date.valueOf(fechaCaducidad));  // Convertir LocalDate a Date
             } else {
                 stmt.setDate(3, null);  // Si no se seleccionó ninguna fecha, ponemos null
             }
+    
+            // Validar y convertir la fecha de entrada
             LocalDate fechaEntrada = datePickerFechaEntrada.getValue();
-            if (fechaEntrada != null) {
-                stmt.setDate(4, Date.valueOf(fechaEntrada));  // Convertir LocalDate a Date
-            } else {
-                stmt.setDate(4, null);  // Si no se seleccionó ninguna fecha, ponemos null
-            }
-
-            stmt.setInt(5, cmbIdState.getValue().getId());  // Obtener el id del estado seleccionado
-
+            stmt.setDate(4, Date.valueOf(fechaEntrada));  // Convertir LocalDate a Date
+    
+            // Obtener el id del estado seleccionado
+            stmt.setInt(5, cmbIdState.getValue().getId());
+    
             stmt.executeUpdate();
             loadData();
             clearFields();
+            mostrarAlerta(Alert.AlertType.INFORMATION, "Información", "Se guardó el nuevo lote.");
         } catch (SQLException e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error", "Error al agregar "+ e.getMessage());
+            mostrarAlerta(Alert.AlertType.ERROR, "Error", "Error al agregar el lote: " + e.getMessage());
         }
     }
 
     private void updateLote() {
+        // Validar que se haya seleccionado un lote
+        Lote selectedLote = tableLote.getSelectionModel().getSelectedItem();  // Obtener el lote seleccionado de la tabla
+        if (selectedLote == null) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Selección inválida", "Selecciona un lote para actualizar");
+            return;
+        }
+    
+        // Validar que el producto esté seleccionado
+        if (cmbIdProducto.getValue() == null) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Error", "Debe seleccionar un producto.");
+            return;
+        }
+    
+        // Validar que la cantidad sea un número válido
+        if (txtCantidad.getText().isEmpty() || !txtCantidad.getText().matches("\\d+")) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Error", "La cantidad debe ser un número válido.");
+            return;
+        }
+    
+        // Validar que el estado esté seleccionado
+        if (cmbIdState.getValue() == null) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Error", "Debe seleccionar un estado.");
+            return;
+        }
+    
+        // Validar que la fecha de entrada esté seleccionada
+        if (datePickerFechaEntrada.getValue() == null) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Error", "Debe seleccionar una fecha de entrada.");
+            return;
+        }
+    
         try (Connection conn = dbConnection.getConnection()) {
-            Lote selectedLote = tableLote.getSelectionModel().getSelectedItem();  // Obtener el lote seleccionado de la tabla
-            if (selectedLote == null) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Selección inválida", "Selecciona un lote para actualizar");
-                return;
-            }
-
             String sql = "UPDATE lote SET id_producto = ?, cantidad = ?, fecha_caducidad = ?, fecha_entrada = ?, id_state = ? WHERE id = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
+    
+            // Obtener el id del producto seleccionado
             stmt.setInt(1, cmbIdProducto.getValue().getId());
+            // Validar que la cantidad sea un número entero válido
             stmt.setInt(2, Integer.parseInt(txtCantidad.getText()));
-
-            // Convertimos la fecha seleccionada en DatePicker a LocalDate
+    
+            // Validar y convertir la fecha de caducidad
             LocalDate fechaCaducidad = datePickerFechaCaducidad.getValue();
             if (fechaCaducidad != null) {
                 stmt.setDate(3, Date.valueOf(fechaCaducidad));  // Convertir LocalDate a Date
             } else {
                 stmt.setDate(3, null);  // Si no se seleccionó ninguna fecha, ponemos null
             }
+    
+            // Convertir la fecha de entrada
             LocalDate fechaEntrada = datePickerFechaEntrada.getValue();
-            if (fechaEntrada != null) {
-                stmt.setDate(4, Date.valueOf(fechaEntrada));  // Convertir LocalDate a Date
-            } else {
-                stmt.setDate(4, null);  // Si no se seleccionó ninguna fecha, ponemos null
-            }
-
+            stmt.setDate(4, Date.valueOf(fechaEntrada));  // Convertir LocalDate a Date
+    
+            // Obtener el id del estado seleccionado
             stmt.setInt(5, cmbIdState.getValue().getId());
             stmt.setInt(6, selectedLote.getId());  // Usamos el ID del lote seleccionado en la tabla
-
+    
             stmt.executeUpdate();
             loadData();
             mostrarAlerta(Alert.AlertType.INFORMATION, "Lote Actualizado", "El lote fue actualizado correctamente.");
             clearFields();
         } catch (SQLException e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error", "Error al actualizar.");
+            mostrarAlerta(Alert.AlertType.ERROR, "Error", "Error al actualizar: " + e.getMessage());
         }
     }
 
