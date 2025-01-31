@@ -20,6 +20,7 @@
             <!-- Sección Tabla -->
             <VBox spacing="10" styleClass="tabla-seccion">
                 <Label style="-fx-font-size: 16; -fx-font-weight: bold;" styleClass="titulo-principal" text="Lista de Productos" />
+                <TextField fx:id="txtBusqueda" promptText="Filtrar productos"/>
                 <TableView fx:id="tableProductos" prefHeight="400.0" VBox.vgrow="ALWAYS">
                     <columns>
                         <TableColumn fx:id="colId" prefWidth="80.0" text="ID" />

@@ -8,6 +8,8 @@ import dulceria.model.Usuario;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -53,7 +55,7 @@ public class ProductoController {
 
 
     @FXML
-    private TextField txtNombre, txtCodigo, txtCategoria, txtPrecio, txtCosto;
+    private TextField txtNombre, txtCodigo, txtCategoria, txtPrecio, txtCosto, txtBusqueda;
 
     @FXML
     private TextArea txtDescripcion;
@@ -77,6 +79,30 @@ public class ProductoController {
         configureTable();
         loadProductos();
         Usuario u = App.getUsuarioAutenticado();
+
+        // Envolver la lista en un FilteredList
+    FilteredList<Producto> filteredData = new FilteredList<>(productos, p -> true);
+
+    // Escuchar cambios en el campo de búsqueda
+    txtBusqueda.textProperty().addListener((observable, oldValue, newValue) -> {
+        filteredData.setPredicate(producto -> {
+            if (newValue == null || newValue.isEmpty()) {
+                return true;
+            }
+            String lowerCaseFilter = newValue.toLowerCase();
+            return producto.getNombre().toLowerCase().contains(lowerCaseFilter) ||
+                   producto.getCategoria().toLowerCase().contains(lowerCaseFilter) ||
+                   String.valueOf(producto.getPrecio()).contains(lowerCaseFilter);
+        });
+    });
+
+    // Enlazar la lista filtrada con una SortedList
+    SortedList<Producto> sortedData = new SortedList<>(filteredData);
+    sortedData.comparatorProperty().bind(tableProductos.comparatorProperty());
+
+    // Asignar los datos a la tabla
+    tableProductos.setItems(sortedData);
+        
     }
 
     private void configureTable() {
