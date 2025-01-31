@@ -653,6 +653,7 @@ public class VentaController {
         // Crear el menú contextual
         ContextMenu contextMenu = new ContextMenu();
         MenuItem eliminarItem = new MenuItem("Eliminar");
+        MenuItem reducirCantidadItem = new MenuItem("Reducir cantidad");
     
         // Configurar la acción del menú "Eliminar"
         eliminarItem.setOnAction(event -> {
@@ -664,7 +665,32 @@ public class VentaController {
             }
         });
     
-        contextMenu.getItems().add(eliminarItem);
+        // Configurar la acción del menú "Reducir cantidad"
+        reducirCantidadItem.setOnAction(event -> {
+            VentaProducto productoSeleccionado = tablaVenta.getSelectionModel().getSelectedItem();
+            if (productoSeleccionado != null) {
+                int cantidadActual = productoSeleccionado.getCantidad();
+                
+                if (cantidadActual > 1) {
+                    // Reducir la cantidad del producto
+                    productoSeleccionado.setCantidad(cantidadActual - 1);
+    
+                    // Si el producto es una promoción, desactivar el estado de promoción
+                    if (productoSeleccionado.isPromocion()) {
+                        productoSeleccionado.setPromocion(false);
+                        productoSeleccionado.setNombre(productoSeleccionado.getProducto().getNombre());
+                    }
+    
+                    tablaVenta.refresh(); // Refrescar la tabla para mostrar los cambios
+                } else {
+                    // Si la cantidad es 1, eliminar el producto de la tabla
+                    tablaVenta.getItems().remove(productoSeleccionado);
+                }
+                actualizarTotal();
+            }
+        });
+    
+        contextMenu.getItems().addAll(reducirCantidadItem, eliminarItem);
     
         // Asignar el menú contextual a las filas de la tabla
         tablaVenta.setRowFactory(tv -> {
