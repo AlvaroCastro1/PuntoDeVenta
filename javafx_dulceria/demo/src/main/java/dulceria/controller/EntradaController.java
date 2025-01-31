@@ -49,6 +49,8 @@ public class EntradaController {
     @FXML
     private Label totalLabel;
     @FXML
+    private CheckBox checkSinCaducidad;
+    @FXML
     private Button guardarButton;
 
     private DatabaseConnection dbConnection;
@@ -78,6 +80,14 @@ public class EntradaController {
             new SimpleDoubleProperty(cellData.getValue().getProducto().getCosto()).asObject());
 
     
+        checkSinCaducidad.setOnAction(event -> {
+            if (checkSinCaducidad.isSelected()) {
+                fechaCaducidadPicker.setDisable(true);
+                fechaCaducidadPicker.setValue(null); // Limpiar la fecha
+            } else {
+                fechaCaducidadPicker.setDisable(false);
+            }
+        });
 
         // Asignar la lista de detalles a la tabla
         Entradas.setItems(detallesEntrada);
@@ -250,7 +260,7 @@ public class EntradaController {
         Producto productoSeleccionado = productoComboBox.getValue();
         String cantidadTexto = cantidadTextField.getText();
         Date fechaEntrada = Date.from(fechaEntradaPicker.getValue().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
-        Date fechaCaducidad = Date.from(fechaCaducidadPicker.getValue().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+        Date fechaCaducidad = null;
 
         // Validar que se haya seleccionado un producto
         if (productoSeleccionado == null) {
@@ -259,7 +269,7 @@ public class EntradaController {
         }
 
         // Validar que los campos no estén vacíos
-        if (cantidadTexto.isEmpty() || fechaCaducidad == null || fechaEntrada == null) {
+        if (cantidadTexto.isEmpty() || fechaEntrada == null) {
             mostrarAlerta(Alert.AlertType.ERROR, "Error", "Debe completar todos los campos.");
             return;
         }
@@ -277,10 +287,12 @@ public class EntradaController {
             return;
         }
 
-        // Validar que la fecha de entrada no sea posterior a la fecha de caducidad
-        if (fechaEntrada.after(fechaCaducidad)) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error", "La fecha de entrada no puede ser posterior a la fecha de caducidad.");
-            return;
+        if (!checkSinCaducidad.isSelected()) { // Solo validar si el producto tiene fecha de caducidad
+            fechaCaducidad = Date.from(fechaCaducidadPicker.getValue().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+            if (fechaEntrada.after(fechaCaducidad)) {
+                mostrarAlerta(Alert.AlertType.ERROR, "Error", "La fecha de entrada no puede ser posterior a la fecha de caducidad.");
+                return;
+            }
         }
 
         // Crear el objeto Lote
@@ -418,7 +430,11 @@ public class EntradaController {
                     try (PreparedStatement pstmtLote = connection.prepareStatement(insertLoteSQL, Statement.RETURN_GENERATED_KEYS)) {
                         pstmtLote.setInt(1, lote.getIdProducto());
                         pstmtLote.setInt(2, lote.getCantidad());
-                        pstmtLote.setDate(3, new java.sql.Date(lote.getFechaCaducidad().getTime()));
+                        if (lote.getFechaCaducidad() != null) {
+                            pstmtLote.setDate(3, new java.sql.Date(lote.getFechaCaducidad().getTime()));
+                        } else {
+                            pstmtLote.setNull(3, java.sql.Types.DATE); // Si es null, se inserta como NULL en la BD
+                        }                        
                         pstmtLote.setTimestamp(4, new Timestamp(lote.getFechaEntrada().getTime()));
                         pstmtLote.setInt(5, lote.getIdState());
 

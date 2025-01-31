@@ -53,7 +53,7 @@ CREATE TABLE lote (
     id INT AUTO_INCREMENT NOT NULL,
     id_producto INT NOT NULL,           -- Relación con producto
     cantidad INT NOT NULL,              -- Cantidad disponible en este lote
-    fecha_caducidad DATE NOT NULL,      -- Fecha de caducidad del lote
+    fecha_caducidad DATE NULL,      -- Fecha de caducidad del lote
     fecha_entrada DATETIME NOT NULL,    -- Fecha en que el lote fue ingresado al inventario
     id_state INT NOT NULL DEFAULT 1,    -- Estado del lote (Activo, Caducado)
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
