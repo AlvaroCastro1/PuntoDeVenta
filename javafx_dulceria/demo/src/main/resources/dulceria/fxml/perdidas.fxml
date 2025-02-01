@@ -5,16 +5,19 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.TextField?>
 
 <VBox spacing="20" styleClass="main-container" stylesheets="@../css/estilos.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1" fx:controller="dulceria.controller.PerdidaController">
     <!-- Título -->
     <Label styleClass="titulo-principal" text="Registro de Pérdidas" />
 
+    <TextField fx:id="txtBusqueda" promptText="Filtrar promociones" />
     <!-- Tabla -->
     <TableView fx:id="tablePerdidas" VBox.vgrow="ALWAYS">
         <columns>
             <TableColumn fx:id="colId" text="ID" />
             <TableColumn fx:id="colProducto" text="Producto" />
+            <TableColumn fx:id="colFecha" text="Fecha" />
             <TableColumn fx:id="colLote" text="Lote" />
             <TableColumn fx:id="colCantidad" text="Cantidad" />
             <TableColumn fx:id="colCostoUnitario" text="Costo Unitario" />
