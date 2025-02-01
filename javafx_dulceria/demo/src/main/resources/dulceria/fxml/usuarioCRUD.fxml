@@ -1,67 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<AnchorPane styleClass="main-container" stylesheets="@../css/estilos.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dulceria.controller.UsuarioController">
-    <HBox spacing="20" AnchorPane.topAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.bottomAnchor="20.0">
-        
-        <!-- Columna de la tabla de usuarios (lado izquierdo) -->
-        <VBox alignment="CENTER_LEFT" spacing="10" HBox.hgrow="ALWAYS">
-            <TableView fx:id="tblUsuarios" prefHeight="400" VBox.vgrow="ALWAYS">
-                <columns>
-                    <TableColumn fx:id="colId" text="ID" />
-                    <TableColumn fx:id="colNombre" text="Nombre" />
-                    <TableColumn fx:id="colEmail" text="Email" />
-                    <TableColumn fx:id="colTel" text="Telefono" />
-                </columns>
-            </TableView>
-        </VBox>
+<BorderPane styleClass="main-container" stylesheets="@../css/estilos.css"
+            xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="dulceria.controller.UsuarioController">
 
-        <!-- Columna de los formularios y botones (lado derecho) -->
-        <VBox alignment="CENTER_LEFT" spacing="15" VBox.vgrow="ALWAYS">
-            <!-- Título principal con clase 'titulo-principal' -->
-            <Label text="Gestión de Usuarios" styleClass="titulo-principal" alignment="CENTER" />
+    <center>
+        <AnchorPane>
+            <HBox spacing="20" styleClass="main-container" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+                  AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+                <!-- Sección Tabla -->
+                <VBox spacing="10" styleClass="tabla-seccion" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS">
+                    <Label styleClass="titulo-principal" text="Lista de Usuarios" />
+                    <TextField fx:id="txtBusqueda" promptText="Filtrar usuarios" maxWidth="Infinity" />
+                    <TableView fx:id="tblUsuarios" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="colId" text="ID" />
+                            <TableColumn fx:id="colNombre" text="Nombre" />
+                            <TableColumn fx:id="colEmail" text="Email" />
+                            <TableColumn fx:id="colTel" text="Teléfono" />
+                        </columns>
+                    </TableView>
+                </VBox>
 
-            <!-- Contenedor para los formularios y botones con 'details-pane' -->
-            <VBox styleClass="details-pane" spacing="15" VBox.vgrow="NEVER">
-                <!-- Campos de texto para Nombre, Email, Teléfono -->
-                <TextField fx:id="txtNombre" promptText="Nombre del Usuario" />
-                <TextField fx:id="txtEmail" promptText="Email" />
-                <TextField fx:id="txtTel" promptText="Teléfono" />
+                <!-- Sección Formulario -->
+                <VBox alignment="CENTER_LEFT" spacing="15" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS">
+                    <Label text="Gestión de Usuarios" styleClass="titulo-principal" alignment="CENTER" />
 
-                <!-- ComboBoxes para Estado y Roles -->
-                <ComboBox fx:id="cmbEstado" promptText="Selecciona el estado" />
-                <ComboBox fx:id="cmbRoles" promptText="Selecciona un Rol" />
+                    <!-- Contenedor de formularios -->
+                    <VBox styleClass="details-pane" spacing="15" VBox.vgrow="ALWAYS">
+                        <TextField fx:id="txtNombre" promptText="Nombre del Usuario" maxWidth="Infinity" />
+                        <TextField fx:id="txtEmail" promptText="Email" maxWidth="Infinity" />
+                        <TextField fx:id="txtTel" promptText="Teléfono" maxWidth="Infinity" />
 
-                <!-- Botones para asignar y eliminar roles -->
-                <HBox alignment="CENTER" spacing="10">
-                    <Button onAction="#asignarRol" text="Asignar Rol" styleClass="boton-guardar" />
-                    <Button onAction="#eliminarRol" text="Eliminar Rol" styleClass="boton-eliminar" />
-                </HBox>
+                        <ComboBox fx:id="cmbEstado" promptText="Selecciona el estado" maxWidth="Infinity" />
+                        <ComboBox fx:id="cmbRoles" promptText="Selecciona un Rol" maxWidth="Infinity" />
 
-                <!-- ListView para mostrar los roles asignados -->
-                <Label styleClass="form-label" text="Roles asignados:" />
-                <ListView styleClass="listView" fx:id="listRolesUsuario" VBox.vgrow="ALWAYS" />
+                        <HBox alignment="CENTER" spacing="10">
+                            <Button onAction="#asignarRol" text="Asignar Rol" styleClass="boton-guardar"
+                                    HBox.hgrow="ALWAYS" />
+                            <Button onAction="#eliminarRol" text="Eliminar Rol" styleClass="boton-eliminar"
+                                    HBox.hgrow="ALWAYS" />
+                        </HBox>
 
-                <!-- Botones de acción con clases específicas -->
-                <HBox alignment="CENTER" spacing="10">
-                    <Button onAction="#actualizarUsuario" text="Actualizar" styleClass="boton-actualizar" />
-                    <Button onAction="#cambiarContrasena" text="Cambiar Contraseña" styleClass="boton-cancelar" />
-                    <Button onAction="#eliminarUsuario" text="Eliminar" styleClass="boton-eliminar" />
-                    <Button onAction="#limpiarCampos" text="Cancelar" styleClass="boton-cancelar" />
-                </HBox>
-            </VBox>
-        </VBox>
+                        <Label styleClass="form-label" text="Roles asignados:" />
+                        <ListView fx:id="listRolesUsuario" VBox.vgrow="ALWAYS" />
 
-    </HBox>
-</AnchorPane>
+                        <!-- Botones de acción -->
+                        <HBox alignment="CENTER" spacing="10">
+                            <Button onAction="#actualizarUsuario" text="Actualizar" styleClass="boton-actualizar"
+                                    HBox.hgrow="ALWAYS" />
+                            <Button onAction="#cambiarContrasena" text="Cambiar Contraseña" styleClass="boton-cancelar"
+                                    HBox.hgrow="ALWAYS" />
+                            <Button onAction="#eliminarUsuario" text="Eliminar" styleClass="boton-eliminar"
+                                    HBox.hgrow="ALWAYS" />
+                            <Button onAction="#limpiarCampos" text="Cancelar" styleClass="boton-cancelar"
+                                    HBox.hgrow="ALWAYS" />
+                        </HBox>
+                    </VBox>
+                </VBox>
+            </HBox>
+        </AnchorPane>
+    </center>
+
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+</BorderPane>

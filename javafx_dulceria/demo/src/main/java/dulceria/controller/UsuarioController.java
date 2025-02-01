@@ -14,6 +14,8 @@ import dulceria.DAO.UsuarioDAO;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -55,7 +57,8 @@ public class UsuarioController {
     private ComboBox<Rol> cmbRoles;  // ComboBox para roles
     @FXML 
     private ListView<Rol> listRolesUsuario;  // ListView para roles asignados
-
+    @FXML
+    private TextField txtBusqueda;
 
 
     private UsuarioDAO usuarioDAO;
@@ -77,6 +80,33 @@ public class UsuarioController {
         configurarTabla();
         cargarUsuarios();
         cargarRolesDisponibles();
+
+        // Envolver la lista en un FilteredList
+        FilteredList<Usuario> filteredData = new FilteredList<>(listaUsuarios, p -> true);
+
+        // Escuchar cambios en el campo de búsqueda
+        txtBusqueda.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredData.setPredicate(usuario -> {
+                if (newValue == null || newValue.isEmpty()) {
+                    return true; // Mostrar todos los usuarios si no hay filtro
+                }
+                String lowerCaseFilter = newValue.toLowerCase();
+
+                // Comparar con los atributos de Usuario
+                return String.valueOf(usuario.getId()).contains(lowerCaseFilter) ||
+                    usuario.getNombre().toLowerCase().contains(lowerCaseFilter) ||
+                    usuario.getEmail().toLowerCase().contains(lowerCaseFilter) ||
+                    usuario.getTelefono().toLowerCase().contains(lowerCaseFilter) ||
+                    (usuario.isEstado() ? "activo" : "inactivo").contains(lowerCaseFilter);
+            });
+        });
+
+        // Enlazar la lista filtrada con una SortedList para mantener el ordenamiento
+        SortedList<Usuario> sortedData = new SortedList<>(filteredData);
+        sortedData.comparatorProperty().bind(tblUsuarios.comparatorProperty());
+
+        // Asignar los datos filtrados a la tabla
+        tblUsuarios.setItems(sortedData);
     }
 
     private void configurarTabla() {
