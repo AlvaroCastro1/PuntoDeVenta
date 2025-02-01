@@ -1,12 +1,15 @@
 package dulceria.controller;
 
 import dulceria.model.Venta;
+import dulceria.model.VentaProducto;
 import dulceria.model.DetalleVenta;
 import dulceria.model.Producto;
 import dulceria.DatabaseConnection;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -14,6 +17,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.sql.Connection;
@@ -34,6 +38,7 @@ public class VentasController {
     @FXML private TableColumn<DetalleVenta, Integer> colLote;
     @FXML private TableColumn<DetalleVenta, Double> colPrecioUnitario;
     @FXML private TableColumn<DetalleVenta, Double> colCostoUnitario;
+    @FXML private TextField txtBusqueda;
 
     private ContextMenu contextMenu;
     private final ObservableList<Venta> ventas = FXCollections.observableArrayList();
@@ -50,6 +55,32 @@ public class VentasController {
                 cargarDetalles(newSelection.getId());
             }
         });
+
+        // Envolver la lista en un FilteredList
+        FilteredList<Venta> filteredData = new FilteredList<>(ventas, p -> true);
+
+        // Escuchar cambios en el campo de búsqueda
+        txtBusqueda.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredData.setPredicate(venta -> {
+                if (newValue == null || newValue.isEmpty()) {
+                    return true; // Mostrar todas las ventas si no hay filtro
+                }
+                String lowerCaseFilter = newValue.toLowerCase();
+
+                // Comparar con los atributos de Venta
+                return String.valueOf(venta.getId()).contains(lowerCaseFilter) ||
+                    venta.getFecha().toLowerCase().contains(lowerCaseFilter) ||
+                    String.valueOf(venta.getTotal()).contains(lowerCaseFilter) ||
+                    venta.getEstado().toLowerCase().contains(lowerCaseFilter);
+            });
+        });
+
+        // Enlazar la lista filtrada con una SortedList para mantener el ordenamiento
+        SortedList<Venta> sortedData = new SortedList<>(filteredData);
+        sortedData.comparatorProperty().bind(tablaVentas.comparatorProperty());
+
+        // Asignar los datos filtrados a la tabla
+        tablaVentas.setItems(sortedData);
     }
 
     private void configurarTablas() {
