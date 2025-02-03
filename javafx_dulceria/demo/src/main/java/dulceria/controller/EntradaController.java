@@ -1,14 +1,13 @@
 package dulceria.controller;
 
 import dulceria.DatabaseConnection;
+import dulceria.app.App;
 import dulceria.model.DetalleEntrada;
-import dulceria.model.Entrada;
 import dulceria.model.Lote;
 import dulceria.model.Producto;
-
+import dulceria.model.Usuario;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.Alert.AlertType;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -62,9 +61,11 @@ public class EntradaController {
     private ObservableList<DetalleEntrada> detallesEntrada = FXCollections.observableArrayList();
     private DetalleEntrada detalleSeleccionado; // Detalle seleccionado para modificar
     
+    private Usuario usuario;
 
     @FXML
     private void initialize() {
+        usuario = App.getUsuarioAutenticado();
         fechaEntradaPicker.setValue(LocalDate.now());
         CargarProdComboBox();
         configurarMenuTabla();
@@ -426,7 +427,7 @@ public class EntradaController {
                     Lote lote = detalle.getLote();
 
                     // Insertar lote
-                    String insertLoteSQL = "INSERT INTO lote (id_producto, cantidad, fecha_caducidad, fecha_entrada, id_state) VALUES (?, ?, ?, ?, ?)";
+                    String insertLoteSQL = "INSERT INTO lote (id_producto, cantidad, fecha_caducidad, fecha_entrada, id_state, id_usuario) VALUES (?, ?, ?, ?, ?, ?)";
                     try (PreparedStatement pstmtLote = connection.prepareStatement(insertLoteSQL, Statement.RETURN_GENERATED_KEYS)) {
                         pstmtLote.setInt(1, lote.getIdProducto());
                         pstmtLote.setInt(2, lote.getCantidad());
@@ -437,6 +438,7 @@ public class EntradaController {
                         }                        
                         pstmtLote.setTimestamp(4, new Timestamp(lote.getFechaEntrada().getTime()));
                         pstmtLote.setInt(5, lote.getIdState());
+                        pstmtLote.setInt(6, usuario.getId());
 
                         pstmtLote.executeUpdate();
                         ResultSet rs = pstmtLote.getGeneratedKeys();
@@ -447,12 +449,13 @@ public class EntradaController {
                 }
 
                 // Paso 2: Insertar entrada
-                String insertEntradaSQL = "INSERT INTO entrada (fecha, total, id_state) VALUES (?, ?, ?)";
+                String insertEntradaSQL = "INSERT INTO entrada (fecha, total, id_state, id_usuario) VALUES (?, ?, ?, ?)";
                 int entradaId = 0; // Variable para almacenar el ID de la entrada recién insertada
                 try (PreparedStatement pstmtEntrada = connection.prepareStatement(insertEntradaSQL, Statement.RETURN_GENERATED_KEYS)) {
                     pstmtEntrada.setTimestamp(1, new Timestamp(System.currentTimeMillis()));  // Fecha actual
                     pstmtEntrada.setDouble(2, Double.parseDouble(totalLabel.getText()));  // Asumimos que tienes un método para calcular el total
                     pstmtEntrada.setInt(3, 1);  // El estado de la entrada ("disponible")
+                    pstmtEntrada.setInt(4, usuario.getId());
 
                     pstmtEntrada.executeUpdate();
                     ResultSet rsEntrada = pstmtEntrada.getGeneratedKeys();
