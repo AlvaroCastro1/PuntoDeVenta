@@ -12,8 +12,10 @@ import java.util.List;
 import java.util.Optional;
 
 import dulceria.DatabaseConnection;
+import dulceria.app.App;
 import dulceria.model.Producto;
 import dulceria.model.Promocion;
+import dulceria.model.Usuario;
 import dulceria.model.VentaProducto;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -59,9 +61,11 @@ public class VentaController {
     private final ObservableList<VentaProducto> listaVenta = FXCollections.observableArrayList();
     private final ObservableList<Producto> productos = FXCollections.observableArrayList();
 
+    private Usuario usuario;
+
     @FXML
     public void initialize() {
-
+        usuario = App.getUsuarioAutenticado();
         configurarContextMenu();
         // Configurar columnas de la tabla
         colConsecutivo.setCellValueFactory(new PropertyValueFactory<>("num"));
@@ -144,7 +148,7 @@ public class VentaController {
             });
     
         } catch (SQLException e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error", "Error al cargar ComboBox: " + e.getMessage());
+            mostrarAlerta("Error", "Error al cargar ComboBox: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
@@ -163,14 +167,14 @@ public class VentaController {
         System.out.println(cantidad_producto);
 
         if (productoSeleccionado == null) {
-            mostrarAlerta("Error", "Seleccione un producto antes de agregar.");
+            mostrarAlerta("Error", "Seleccione un producto antes de agregar.", Alert.AlertType.ERROR);
             return;
         }
     
         // Validar existencia del producto en la base de datos
         int existenciasDisponibles = obtenerExistenciasProducto(productoSeleccionado.getId());
         if (existenciasDisponibles <= 0) {
-            mostrarAlerta("Error", "El producto seleccionado no tiene existencias disponibles.");
+            mostrarAlerta("Error", "El producto seleccionado no tiene existencias disponibles.", Alert.AlertType.ERROR);
             return;
         }
     
@@ -184,7 +188,7 @@ public class VentaController {
     
         // Validar si se puede añadir al detalle sin exceder las existencias
         if (cantidad_producto >= existenciasDisponibles) {
-            mostrarAlerta("Error", "No se pueden añadir más unidades de este producto. Existencias disponibles: " + existenciasDisponibles);
+            mostrarAlerta("Error", "No se pueden añadir más unidades de este producto. Existencias disponibles: " + existenciasDisponibles, Alert.AlertType.ERROR);
             return;
         }
     
@@ -198,7 +202,7 @@ public class VentaController {
             int nuevaCantidad = ventaProducto.getCantidad() + 1;
     
             if (nuevaCantidad > existenciasDisponibles) {
-                mostrarAlerta("Error", "No puedes agregar más de las existencias disponibles: " + existenciasDisponibles);
+                mostrarAlerta("Error", "No puedes agregar más de las existencias disponibles: " + existenciasDisponibles, Alert.AlertType.ERROR);
                 return;
             }
     
@@ -288,7 +292,7 @@ public class VentaController {
     
         } catch (SQLException e) {
             e.printStackTrace();
-            mostrarAlerta("Error", "Ocurrió un error al consultar las promociones activas: " + e.getMessage());
+            mostrarAlerta("Error", "Ocurrió un error al consultar las promociones activas: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     
         return promociones;
@@ -305,7 +309,7 @@ public class VentaController {
                 return rs.getInt("total_existencias");
             }
         } catch (SQLException e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error", "Error al obtener existencias del producto: " + e.getMessage());
+            mostrarAlerta("Error", "Error al obtener existencias del producto: " + e.getMessage(), Alert.AlertType.ERROR);
         }
         return 0;
     }
@@ -326,12 +330,12 @@ public class VentaController {
             connection.setAutoCommit(false); // Inicia la transacción
     
             // 1. Insertar la venta
-            String sqlVenta = "INSERT INTO venta (total, fecha, id_state) VALUES (?, ?, ?)";
+            String sqlVenta = "INSERT INTO venta (total, fecha, id_state, id_usuario) VALUES (?, ?, ?, ?)";
             stmtVenta = connection.prepareStatement(sqlVenta, Statement.RETURN_GENERATED_KEYS);
             stmtVenta.setDouble(1, calcularTotalVenta());
             stmtVenta.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
             stmtVenta.setInt(3, 6); // Estado pagado
-    
+            stmtVenta.setInt(4, usuario.getId());
             int rowsInserted = stmtVenta.executeUpdate();
             if (rowsInserted == 0) {
                 throw new SQLException("Error al guardar la venta. No se insertó ninguna fila.");
@@ -438,7 +442,7 @@ public class VentaController {
     
             // Confirmar la transacción
             connection.commit();
-            mostrarAlerta("Éxito", "La venta se guardó correctamente con todos sus detalles.");
+            mostrarAlerta("Éxito", "La venta se guardó correctamente con todos sus detalles.", Alert.AlertType.INFORMATION);
     
             // Limpia la lista de la venta actual
             listaVenta.clear();
@@ -454,7 +458,7 @@ public class VentaController {
                 }
             }
             e.printStackTrace();
-            mostrarAlerta("Error", "No se pudo guardar la venta: " + e.getMessage());
+            mostrarAlerta("Error", "No se pudo guardar la venta: " + e.getMessage(), Alert.AlertType.ERROR);
         } finally {
             // Cerrar recursos
             if (generatedKeys != null) try { generatedKeys.close(); } catch (SQLException ignored) {}
@@ -467,35 +471,7 @@ public class VentaController {
             if (connection != null) try { connection.close(); } catch (SQLException ignored) {}
         }
     }
-    
-    @FXML
-    /*private void guardarVenta() {
-        Connection connection = null;
-    
-        try {
-            // Iniciar conexión y transacción
-            connection = DatabaseConnection.getConnection();
-            connection.setAutoCommit(false);
-    
-            // Validar existencias
-            validarExistencias(connection);
-    
-            // Insertar venta y obtener ID
-            int idVenta = insertarVenta(connection);
-            // Procesar detalles de venta y actualizar lotes
-            procesarDetallesVenta(connection, idVenta);
-    
-            // Confirmar transacción
-            connection.commit();
-            mostrarAlerta("Información", "Venta registrada correctamente.", Alert.AlertType.CONFIRMATION);
-            limpiarFormulario();
-        } catch (SQLException e) {
-            manejarErrorTransaccion(connection, e);
-        } finally {
-            cerrarConexion(connection);
-        }
-    }
-    */
+
     private void validarExistencias(Connection connection) throws SQLException {
         String sql = "SELECT SUM(cantidad) FROM lote WHERE id_producto = ? AND cantidad >= ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -510,135 +486,10 @@ public class VentaController {
             }
         }
     }
-    
-    private int insertarVenta(Connection connection) throws SQLException {
-        String sql = "INSERT INTO venta (total, fecha, id_state) VALUES (?, ?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            stmt.setDouble(1, calcularTotalVenta());
-            stmt.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now())); // Fecha actual
-            stmt.setInt(3, 1); // Estado inicial
-            stmt.executeUpdate();
-    
-            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    int idVenta = generatedKeys.getInt(1);
-                    // "ID de la venta generada: " + idVenta
-                    return idVenta;
-                } else {
-                    throw new SQLException("Error al obtener el ID de la venta.");
-                }
-            }
-        }
-    }
-    
-    private void procesarDetallesVenta(Connection connection, int idVenta) throws SQLException {
-        String sqlDetalle = "INSERT INTO detalle_venta (" +
-                "id_venta, id_producto, id_lote, costo_unitario, " +
-                "precio_unitario, cantidad, id_promocion, descuento_aplicado" +
-                ") VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        String sqlBuscarLote = "SELECT id, cantidad, fecha_caducidad FROM lote " +
-                "WHERE id_producto = ? AND cantidad >= ? ORDER BY fecha_caducidad ASC LIMIT 1";
-        String sqlActualizarLote = "UPDATE lote SET cantidad = cantidad - ? WHERE id = ?";
-        String sqlBuscarCostoProducto = "SELECT precio FROM producto WHERE id = ?";
-    
-        try (
-                PreparedStatement detalleStmt = connection.prepareStatement(sqlDetalle);
-                PreparedStatement buscarLoteStmt = connection.prepareStatement(sqlBuscarLote);
-                PreparedStatement actualizarLoteStmt = connection.prepareStatement(sqlActualizarLote);
-                PreparedStatement buscarCostoProductoStmt = connection.prepareStatement(sqlBuscarCostoProducto)
-        ) {
-            for (VentaProducto producto : tablaVenta.getItems()) {
-                int idLote = obtenerLote(connection, buscarLoteStmt, producto);
-                double costoUnitario = obtenerCostoProducto(connection, buscarCostoProductoStmt, producto);
-    
-                // Insertar detalle de venta
-                detalleStmt.setInt(1, idVenta);
-                detalleStmt.setInt(2, producto.getProducto().getId());
-                detalleStmt.setInt(3, idLote);
-                detalleStmt.setDouble(4, costoUnitario);
-                detalleStmt.setDouble(5, producto.getPrecioUnitario());
-                detalleStmt.setInt(6, producto.getCantidad());
-                detalleStmt.setObject(7, null); // Puede ser null
-                detalleStmt.setObject(8, null); // Puede ser null
-                detalleStmt.addBatch();
-    
-                // Actualizar lote
-                actualizarLoteStmt.setInt(1, producto.getCantidad());
-                actualizarLoteStmt.setInt(2, idLote);
-                actualizarLoteStmt.addBatch();
-            }
-    
-            detalleStmt.executeBatch();
-            actualizarLoteStmt.executeBatch();
-        }
-    }
-    
-    private int obtenerLote(Connection connection, PreparedStatement stmt, VentaProducto producto) throws SQLException {
-        stmt.setInt(1, producto.getProducto().getId());
-        stmt.setInt(2, producto.getCantidad());
-    
-        try (ResultSet rs = stmt.executeQuery()) {
-            if (rs.next()) {
-                return rs.getInt("id");
-            } else {
-                throw new SQLException("No se encontró un lote disponible para el producto: " + producto.getProducto().getNombre());
-            }
-        }
-    }
-    
-    private double obtenerCostoProducto(Connection connection, PreparedStatement stmt, VentaProducto producto) throws SQLException {
-        stmt.setInt(1, producto.getProducto().getId());
-        try (ResultSet rs = stmt.executeQuery()) {
-            if (rs.next()) {
-                return rs.getDouble("precio");
-            } else {
-                throw new SQLException("No se encontró el costo del producto: " + producto.getProducto().getNombre());
-            }
-        }
-    }
-    
-    private void manejarErrorTransaccion(Connection connection, SQLException e) {
-        if (connection != null) {
-            try {
-                connection.rollback();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
-        }
-        mostrarAlerta("Error", "Error al guardar la venta: " + e.getMessage(), Alert.AlertType.ERROR);
-    }
-    
-    private void cerrarConexion(Connection connection) {
-        if (connection != null) {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-    
 
     private void actualizarTotal() {
         double total = listaVenta.stream().mapToDouble(VentaProducto::getTotal).sum();
         lblTotal.setText(String.format("Total: $%.2f", total));
-    }
-
-    private void mostrarAlerta(String titulo, String mensaje) {
-        Alert alerta = new Alert(Alert.AlertType.INFORMATION);
-        alerta.setTitle(titulo);
-        alerta.setHeaderText(null);
-        alerta.setContentText(mensaje);
-        alerta.showAndWait();
-    }
-
-    // Modelo para un producto en la tabla
-    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
-        Alert alerta = new Alert(tipo);
-        alerta.setTitle(titulo);
-        alerta.setHeaderText(null);
-        alerta.setContentText(mensaje);
-        alerta.showAndWait();
     }
 
     private void actualizarConsecutivos() {
