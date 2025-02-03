@@ -2,18 +2,17 @@ package dulceria.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import java.sql.*;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Optional;
 
 import dulceria.DatabaseConnection;
+import dulceria.app.App;
 import dulceria.model.Producto;
+import dulceria.model.Usuario;
 import dulceria.model.Lote;
 import dulceria.model.Estado;
 
@@ -38,6 +37,8 @@ public class LoteController {
     @FXML
     private Button btnAdd, btnUpdate, btnDelete, btnClear;
 
+    private Usuario usuario;
+
     private ObservableList<Lote> loteList = FXCollections.observableArrayList();
     private ObservableList<Producto> productoList = FXCollections.observableArrayList();  // Lista de productos
     private ObservableList<Estado> stateList = FXCollections.observableArrayList();
@@ -49,6 +50,7 @@ public class LoteController {
     }
 
     public void initialize() {
+        usuario = App.getUsuarioAutenticado();
         colId.setCellValueFactory(cellData -> cellData.getValue().idProperty().asObject());
         colIdProducto.setCellValueFactory(cellData -> cellData.getValue().idProductoProperty().asObject());
         colCantidad.setCellValueFactory(cellData -> cellData.getValue().cantidadProperty().asObject());
@@ -207,7 +209,7 @@ public class LoteController {
         }
     
         try (Connection conn = dbConnection.getConnection()) {
-            String sql = "INSERT INTO lote (id_producto, cantidad, fecha_caducidad, fecha_entrada, id_state) VALUES (?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO lote (id_producto, cantidad, fecha_caducidad, fecha_entrada, id_state, id_usuario) VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement stmt = conn.prepareStatement(sql);
     
             // Obtener el id del producto seleccionado
@@ -229,6 +231,8 @@ public class LoteController {
     
             // Obtener el id del estado seleccionado
             stmt.setInt(5, cmbIdState.getValue().getId());
+
+            stmt.setInt(6, usuario.getId());
     
             stmt.executeUpdate();
             loadData();
