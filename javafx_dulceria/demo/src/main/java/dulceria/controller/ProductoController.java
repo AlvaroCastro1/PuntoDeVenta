@@ -74,11 +74,12 @@ public class ProductoController {
 
     private ObservableList<ProductoImagen> listaImagenes = FXCollections.observableArrayList();
 
+    Usuario usuario;
     @FXML
     public void initialize() {
         configureTable();
         loadProductos();
-        Usuario u = App.getUsuarioAutenticado();
+        usuario = App.getUsuarioAutenticado();
 
         // Envolver la lista en un FilteredList
     FilteredList<Producto> filteredData = new FilteredList<>(productos, p -> true);
@@ -405,7 +406,7 @@ public class ProductoController {
     }
 
     public void guardarProductoConImagenes(Producto producto, ObservableList<ProductoImagen> listaImagenes) {
-        String sqlProducto = "INSERT INTO producto (nombre, codigo, descripcion, categoria, precio, costo) VALUES (?, ?, ?, ?, ?, ?)";
+        String sqlProducto = "INSERT INTO producto (nombre, codigo, descripcion, categoria, precio, costo, id_usuario) VALUES (?, ?, ?, ?, ?, ?, ?)";
         String sqlImagen = "INSERT INTO producto_imagen (producto_id, imagen, descripcion) VALUES (?, ?, ?)";
     
         try (Connection conn = dbConnection.getConnection()) {
@@ -421,6 +422,7 @@ public class ProductoController {
                 stmtProducto.setString(4, producto.getCategoria());
                 stmtProducto.setDouble(5, producto.getPrecio());
                 stmtProducto.setDouble(6, producto.getCosto());
+                stmtProducto.setDouble(7, usuario.getId());
     
                 int filasProducto = stmtProducto.executeUpdate();
                 if (filasProducto == 0) {
