@@ -1,7 +1,6 @@
 package dulceria.model;
 
 import javafx.beans.property.*;
-import java.time.LocalDate;
 
 public class Promocion {
 
@@ -11,8 +10,6 @@ public class Promocion {
     private final DoubleProperty valorDescuento = new SimpleDoubleProperty();
     private final IntegerProperty cantidadNecesaria = new SimpleIntegerProperty();
     private final DoubleProperty precioFinal = new SimpleDoubleProperty();
-    private final ObjectProperty<LocalDate> fechaInicio = new SimpleObjectProperty<>();
-    private final ObjectProperty<LocalDate> fechaFin = new SimpleObjectProperty<>();
     private final BooleanProperty activo = new SimpleBooleanProperty();
     private Producto producto;
 
@@ -24,7 +21,7 @@ public class Promocion {
         this.producto = producto;
     }
 
-    public Promocion(int id, Producto p, String nombre, String tipo, double valorDescuento, int cantidadNecesaria,double precioFinal, LocalDate fechaInicio, LocalDate fechaFin, boolean activo) {
+    public Promocion(int id, Producto p, String nombre, String tipo, double valorDescuento, int cantidadNecesaria,double precioFinal, boolean activo) {
         this.id.set(id);
         this.producto = p;
         this.nombre.set(nombre);
@@ -32,8 +29,6 @@ public class Promocion {
         this.valorDescuento.set(valorDescuento);
         this.cantidadNecesaria.set(cantidadNecesaria);
         this.precioFinal.set(precioFinal);
-        this.fechaInicio.set(fechaInicio);
-        this.fechaFin.set(fechaFin);
         this.activo.set(activo);
     }
 
@@ -59,14 +54,6 @@ public class Promocion {
 
     public DoubleProperty precioFinalProperty() {
         return precioFinal;
-    }
-
-    public ObjectProperty<LocalDate> fechaInicioProperty() {
-        return fechaInicio;
-    }
-
-    public ObjectProperty<LocalDate> fechaFinProperty() {
-        return fechaFin;
     }
 
     public BooleanProperty activoProperty() {
@@ -119,22 +106,6 @@ public class Promocion {
 
     public void setPrecioFinal(double precioFinal) {
         this.precioFinal.set(precioFinal);
-    }
-
-    public LocalDate getFechaInicio() {
-        return fechaInicio.get();
-    }
-
-    public void setFechaInicio(LocalDate fechaInicio) {
-        this.fechaInicio.set(fechaInicio);
-    }
-
-    public LocalDate getFechaFin() {
-        return fechaFin.get();
-    }
-
-    public void setFechaFin(LocalDate fechaFin) {
-        this.fechaFin.set(fechaFin);
     }
 
     public boolean isActivo() {

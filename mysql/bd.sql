@@ -150,8 +150,6 @@ CREATE TABLE promocion (
     valor_descuento DECIMAL(10, 2) NULL, -- Porcentaje o monto fijo
     precio_final DECIMAL(10, 2) NULL, -- Precio final calculado, si aplica
     cantidad_necesaria INT NOT NULL DEFAULT 1, -- Cantidad mínima del producto
-    fecha_inicio DATE NOT NULL,
-    fecha_fin DATE NOT NULL,
     activo BIT NOT NULL DEFAULT 1, -- Si la promoción está activa
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

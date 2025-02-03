@@ -1,8 +1,10 @@
 package dulceria.controller;
 
 import dulceria.model.Promocion;
+import dulceria.model.Usuario;
 import dulceria.model.Producto;
 import dulceria.DatabaseConnection;
+import dulceria.app.App;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -15,9 +17,6 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.sql.*;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 public class PromocionController {
@@ -36,10 +35,6 @@ public class PromocionController {
     @FXML
     private TableColumn<Promocion, Double> colPromocionDescuento;
     @FXML
-    private TableColumn<Promocion, LocalDate> colPromocionInicio;
-    @FXML
-    private TableColumn<Promocion, LocalDate> colPromocionFin;
-    @FXML
     private TableColumn<Promocion, String> colPromocionActivo;
 
     // Detalles de promoción
@@ -54,10 +49,6 @@ public class PromocionController {
     @FXML
     private TextField txtBusqueda;
     @FXML
-    private DatePicker dpFechaInicio;
-    @FXML
-    private DatePicker dpFechaFin;
-    @FXML
     private CheckBox chkActivo;
 
     // Productos asociados
@@ -71,9 +62,11 @@ public class PromocionController {
     private ObservableList<Promocion> listaPromociones;
     private ObservableList<Producto> listaProductos;
     private Promocion promocionSeleccionada;
+    private Usuario usuario;
 
     @FXML
     public void initialize() {
+        usuario = App.getUsuarioAutenticado();
         // Inicializar listas
         listaPromociones = FXCollections.observableArrayList();
         listaProductos = FXCollections.observableArrayList(); // Llenar con productos disponibles
@@ -85,8 +78,6 @@ public class PromocionController {
             new SimpleStringProperty(cellData.getValue().getProducto().getNombre()));
         colPromocionTipo.setCellValueFactory(new PropertyValueFactory<>("tipo"));
         colPromocionDescuento.setCellValueFactory(new PropertyValueFactory<>("valorDescuento"));
-        colPromocionInicio.setCellValueFactory(new PropertyValueFactory<>("fechaInicio"));
-        colPromocionFin.setCellValueFactory(new PropertyValueFactory<>("fechaFin"));
         colPromocionActivo.setCellValueFactory(new PropertyValueFactory<>("activo"));
         colPromocionActivo.setCellValueFactory(cellData -> {
             return new SimpleStringProperty(cellData.getValue().isActivo() ? "Activo" : "Inactivo");
@@ -169,7 +160,7 @@ public class PromocionController {
     private void cargarPromociones() {
         // Consulta SQL para obtener todas las promociones
         String query = "SELECT p.id, p.id_producto, p.nombre, p.tipo, p.valor_descuento, p.precio_final, " +
-                       "p.cantidad_necesaria, p.fecha_inicio, p.fecha_fin, p.activo, p.created_at, p.updated_at, " +
+                       "p.cantidad_necesaria, p.activo, p.created_at, p.updated_at, " +
                        "pr.id AS id_producto, pr.nombre AS nombre_producto, pr.codigo AS codigo_producto, " +
                        "pr.precio AS precio_producto, pr.costo AS costo_producto " +
                        "FROM promocion p " +
@@ -188,13 +179,8 @@ public class PromocionController {
                 double valorDescuento = rs.getDouble("valor_descuento");
                 double precioFinal = rs.getDouble("precio_final");
                 int cantidadNecesaria = rs.getInt("cantidad_necesaria");
-                Date fechaInicio = rs.getDate("fecha_inicio");
-                Date fechaFin = rs.getDate("fecha_fin");
                 boolean activo = rs.getBoolean("activo");
     
-                // Convertir fechas a LocalDate
-                LocalDate fechaInicioLocal = fechaInicio != null ? fechaInicio.toLocalDate() : null;
-                LocalDate fechaFinLocal = fechaFin != null ? fechaFin.toLocalDate() : null;
     
                 // Crear el objeto Producto
                 Producto producto = new Producto(
@@ -208,8 +194,7 @@ public class PromocionController {
                 );
     
                 // Crear el objeto Promocion y agregarlo a la lista
-                Promocion promocion = new Promocion(id, producto, nombre, tipo, valorDescuento, cantidadNecesaria, precioFinal, 
-                                                    fechaInicioLocal, fechaFinLocal, activo);
+                Promocion promocion = new Promocion(id, producto, nombre, tipo, valorDescuento, cantidadNecesaria, precioFinal, activo);
                 listaPromociones.add(promocion);
             }
         } catch (SQLException e) {
@@ -272,18 +257,6 @@ public class PromocionController {
             return;
         }
 
-        // Validar fechas de inicio y fin
-        LocalDate fechaInicio = dpFechaInicio.getValue();
-        LocalDate fechaFin = dpFechaFin.getValue();
-        if (fechaInicio == null || fechaFin == null) {
-            mostrarAlerta("Información", "Por favor, selecciona las fechas de inicio y fin de la promoción.", Alert.AlertType.WARNING);
-            return;
-        }
-        if (fechaFin.isBefore(fechaInicio)) {
-            mostrarAlerta("Información", "La fecha de fin no puede ser anterior a la fecha de inicio.", Alert.AlertType.WARNING);
-            return;
-        }
-
         // Validar cantidad necesaria
         String cantidadTexto = txtCantidadNecesaria.getText();
         int cantidad;
@@ -307,8 +280,6 @@ public class PromocionController {
             descuento,
             cantidad,
             precio,
-            fechaInicio,
-            fechaFin,
             chkActivo.isSelected()
         );
 
@@ -318,7 +289,7 @@ public class PromocionController {
             connection.setAutoCommit(false);
 
             // 1. Insertar en la tabla 'promocion'
-            String queryPromocion = "INSERT INTO promocion (id_producto, nombre, tipo, valor_descuento, precio_final, cantidad_necesaria, fecha_inicio, fecha_fin, activo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String queryPromocion = "INSERT INTO promocion (id_producto, nombre, tipo, valor_descuento, precio_final, cantidad_necesaria, activo, id_usuario) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             try (PreparedStatement stmt = connection.prepareStatement(queryPromocion, Statement.RETURN_GENERATED_KEYS)) {
                 stmt.setInt(1, productoSeleccionado.getId());
                 stmt.setString(2, promocion.getNombre());
@@ -326,9 +297,8 @@ public class PromocionController {
                 stmt.setDouble(4, promocion.getValorDescuento());
                 stmt.setDouble(5, promocion.getPrecioFinal());
                 stmt.setInt(6, Integer.parseInt(txtCantidadNecesaria.getText()));  // Cantidad mínima necesaria
-                stmt.setDate(7, Date.valueOf(promocion.getFechaInicio()));
-                stmt.setDate(8, Date.valueOf(promocion.getFechaFin()));
-                stmt.setBoolean(9, promocion.isActivo());
+                stmt.setBoolean(7, promocion.isActivo());
+                stmt.setInt(8, usuario.getId());
 
                 int affectedRows = stmt.executeUpdate();
                 if (affectedRows == 0) {
@@ -430,8 +400,6 @@ public class PromocionController {
             txtValorDescuento.setText(String.valueOf(promocionSeleccionada.getValorDescuento()) + "%"); // Si es porcentaje
             txtPrecio.setText(String.valueOf(promocionSeleccionada.getPrecioFinal()));
             txtCantidadNecesaria.setText(String.valueOf(promocionSeleccionada.getCantidadNecesaria()));
-            dpFechaInicio.setValue(promocionSeleccionada.getFechaInicio());
-            dpFechaFin.setValue(promocionSeleccionada.getFechaFin());
             chkActivo.setSelected(promocionSeleccionada.isActivo());
             
         } else {
@@ -600,8 +568,6 @@ public class PromocionController {
         txtValorDescuento.clear();
         cmbProducto.getSelectionModel().clearSelection();
         txtPrecio.clear();
-        dpFechaInicio.setValue(null);
-        dpFechaFin.setValue(null);
         chkActivo.setSelected(false);
         tblPromociones.refresh();
         txtCantidadNecesaria.clear();

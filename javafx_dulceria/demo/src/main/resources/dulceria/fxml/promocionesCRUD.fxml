@@ -30,8 +30,6 @@
                         <TableColumn fx:id="colProducto" prefWidth="200" styleClass="table-column" text="Producto" />
                         <TableColumn fx:id="colPromocionTipo" prefWidth="150" styleClass="table-column" text="Tipo" />
                         <TableColumn fx:id="colPromocionDescuento" prefWidth="85" styleClass="table-column" text="Descuento" />
-                        <TableColumn fx:id="colPromocionInicio" prefWidth="150" styleClass="table-column" text="Fecha Inicio" />
-                        <TableColumn fx:id="colPromocionFin" prefWidth="150" styleClass="table-column" text="Fecha Fin" />
                         <TableColumn fx:id="colPromocionActivo" prefWidth="100" styleClass="table-column" text="Activo" />
                     </columns>
                 </TableView>
@@ -63,14 +61,8 @@
                     <Label styleClass="form-label" text="Precio Final:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
                     <TextField fx:id="txtPrecio" promptText="Precio final de la promo" styleClass="form-textfield" GridPane.columnIndex="1" GridPane.rowIndex="5" />
 
-                    <Label styleClass="form-label" text="Fecha Inicio:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
-                    <DatePicker fx:id="dpFechaInicio" styleClass="form-datepicker" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-
-                    <Label styleClass="form-label" text="Fecha Fin:" GridPane.columnIndex="0" GridPane.rowIndex="7" />
-                    <DatePicker fx:id="dpFechaFin" styleClass="form-datepicker" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-
-                    <Label styleClass="form-label" text="Activo:" GridPane.columnIndex="0" GridPane.rowIndex="8" />
-                    <CheckBox fx:id="chkActivo" styleClass="form-checkbox" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+                    <Label styleClass="form-label" text="Activo:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+                    <CheckBox fx:id="chkActivo" styleClass="form-checkbox" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                <rowConstraints>
                   <RowConstraints />
                   <RowConstraints />

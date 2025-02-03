@@ -260,11 +260,10 @@ public class VentaController {
     private List<Promocion> obtenerPromocionesActivasParaProducto(Producto producto) {
         List<Promocion> promociones = new ArrayList<>();
         String query = "SELECT id, id_producto, nombre, tipo, valor_descuento, precio_final, cantidad_necesaria, " + 
-            "fecha_inicio, fecha_fin, activo " + 
+            "activo " + 
             "FROM promocion " + 
             "WHERE id_producto = ? " + 
-            "AND activo = 1 " + 
-            "AND CURDATE() BETWEEN fecha_inicio AND fecha_fin ";
+            "AND activo = 1 " ;
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
@@ -282,8 +281,6 @@ public class VentaController {
                         resultSet.getDouble("valor_descuento"),
                         resultSet.getInt("cantidad_necesaria"),
                         resultSet.getDouble("precio_final"),
-                        resultSet.getDate("fecha_inicio").toLocalDate(),
-                        resultSet.getDate("fecha_fin").toLocalDate(),
                         resultSet.getBoolean("activo")
                     );
                     promociones.add(promocion);
