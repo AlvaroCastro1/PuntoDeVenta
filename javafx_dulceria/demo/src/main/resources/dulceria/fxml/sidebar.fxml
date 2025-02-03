@@ -6,23 +6,23 @@
 
 <ScrollPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dulceria.controller.SidebarController" fx:id="sidebarScrollPane" fitToWidth="true" pannable="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" stylesheets="@../css/estilos.css">
     <VBox fx:id="sidebar" spacing="10" styleClass="sidebar-container" >
-        <Button text="Inicio" fx:id="homeButton" onAction="#navigateToHome" styleClass="sidebar-button" maxWidth="200"/>
-        <Button text="Configuración" fx:id="screen1Button" onAction="#navigateToConfiguracion" styleClass="sidebar-button" maxWidth="200"/>
-        <Button text="Promociones" fx:id="screen2Button" onAction="#navigateToPromocion" styleClass="sidebar-button" maxWidth="200"/>
-        <Button text="Estados" fx:id="screen2Button" onAction="#navigateToEstados" styleClass="sidebar-button" maxWidth="200"/>
-        <Button text="Productos" fx:id="screen3Button" onAction="#navigateToProductos" styleClass="sidebar-button" maxWidth="200"/>
-        <Button text="Lotes" fx:id="screen3Button" onAction="#navigateToLotes" styleClass="sidebar-button" maxWidth="200"/>
-        <Button text="Entradas" fx:id="screen3Button" onAction="#navigateToEntradas" styleClass="sidebar-button" maxWidth="200"/>
-        <Button text="Nueva Entrada" fx:id="screen3Button" onAction="#navigateToEntrada" styleClass="sidebar-button" maxWidth="200"/>
-        <Button text="Perdidas" fx:id="screen3Button" onAction="#navigateToPerdidas" styleClass="sidebar-button" maxWidth="200"/>
-        <Button text="Nueva Venta" fx:id="screen3Button" onAction="#navigateToVenta" styleClass="sidebar-button" maxWidth="200"/>
-        <Button text="Ventas" fx:id="screen3Button" onAction="#navigateToVentas" styleClass="sidebar-button" maxWidth="200"/>
-        <Button text="Roles" fx:id="screen4Button" onAction="#navigateToRoles" styleClass="sidebar-button" maxWidth="200"/>
-        <Button text="Permisos" fx:id="screen5Button" onAction="#navigateToPermisos" styleClass="sidebar-button" maxWidth="200"/>
-        <Button text="Usuarios" fx:id="screen5Button" onAction="#navigateToUsuarios" styleClass="sidebar-button" maxWidth="200"/>
-        <Button text="Crear Usuario" fx:id="screen5Button" onAction="#navigateToCrearUsuario" styleClass="sidebar-button" maxWidth="200"/>
-        <Button text="Rol usuario" fx:id="screen5Button" onAction="#navigateToRolUsuario" styleClass="sidebar-button" maxWidth="200"/>
-        <Button text="Rol Permiso" fx:id="screen5Button" onAction="#navigateToRolPermiso" styleClass="sidebar-button" maxWidth="200"/>
-        <Button text="Modo Claro/Oscuro" onAction="#toggleModoOscuro" styleClass="sidebar-button" maxWidth="200"/>
+        <Button text="Inicio" fx:id="btnInicio" onAction="#navigateToHome" styleClass="sidebar-button" maxWidth="200"/>
+        <Button text="Configuración" fx:id="btnConfiguracion" onAction="#navigateToConfiguracion" styleClass="sidebar-button" maxWidth="200"/>
+        <Button text="Promociones" fx:id="btnPromociones" onAction="#navigateToPromocion" styleClass="sidebar-button" maxWidth="200"/>
+        <Button text="Estados" fx:id="btnEstados" onAction="#navigateToEstados" styleClass="sidebar-button" maxWidth="200"/>
+        <Button text="Productos" fx:id="btnProductos" onAction="#navigateToProductos" styleClass="sidebar-button" maxWidth="200"/>
+        <Button text="Lotes" fx:id="btnLotes" onAction="#navigateToLotes" styleClass="sidebar-button" maxWidth="200"/>
+        <Button text="Entradas" fx:id="btnEntradas" onAction="#navigateToEntradas" styleClass="sidebar-button" maxWidth="200"/>
+        <Button text="Nueva Entrada" fx:id="btnNuevaEntrada" onAction="#navigateToEntrada" styleClass="sidebar-button" maxWidth="200"/>
+        <Button text="Perdidas" fx:id="btnPerdidas" onAction="#navigateToPerdidas" styleClass="sidebar-button" maxWidth="200"/>
+        <Button text="Nueva Venta" fx:id="btnNuevaVenta" onAction="#navigateToVenta" styleClass="sidebar-button" maxWidth="200"/>
+        <Button text="Ventas" fx:id="btnVentas" onAction="#navigateToVentas" styleClass="sidebar-button" maxWidth="200"/>
+        <Button text="Roles" fx:id="btnRoles" onAction="#navigateToRoles" styleClass="sidebar-button" maxWidth="200"/>
+        <Button text="Permisos" fx:id="btnPermisos" onAction="#navigateToPermisos" styleClass="sidebar-button" maxWidth="200"/>
+        <Button text="Usuarios" fx:id="btnUsuarios" onAction="#navigateToUsuarios" styleClass="sidebar-button" maxWidth="200"/>
+        <Button text="Crear Usuario" fx:id="btnCrearUsuario" onAction="#navigateToCrearUsuario" styleClass="sidebar-button" maxWidth="200"/>
+        <Button text="Rol usuario" fx:id="btnRolUsuario" onAction="#navigateToRolUsuario" styleClass="sidebar-button" maxWidth="200"/>
+        <Button text="Rol Permiso" fx:id="btnRolPermiso" onAction="#navigateToRolPermiso" styleClass="sidebar-button" maxWidth="200"/>
+        <Button text="Modo Claro/Oscuro" fx:id="btnModoOscuro" onAction="#toggleModoOscuro" styleClass="sidebar-button" maxWidth="200"/>
     </VBox>
 </ScrollPane>

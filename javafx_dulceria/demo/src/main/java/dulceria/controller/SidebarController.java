@@ -1,40 +1,160 @@
 package dulceria.controller;
 
 import dulceria.app.App;
+import dulceria.model.Rol;
+import dulceria.model.Usuario;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 
 public class SidebarController {
 
-    private App app; // Referencia a la instancia de App
+    @FXML private Button btnInicio;
+    @FXML private Button btnConfiguracion;
+    @FXML private Button btnPromociones;
+    @FXML private Button btnEstados;
+    @FXML private Button btnProductos;
+    @FXML private Button btnLotes;
+    @FXML private Button btnEntradas;
+    @FXML private Button btnNuevaEntrada;
+    @FXML private Button btnPerdidas;
+    @FXML private Button btnNuevaVenta;
+    @FXML private Button btnVentas;
+    @FXML private Button btnRoles;
+    @FXML private Button btnPermisos;
+    @FXML private Button btnUsuarios;
+    @FXML private Button btnCrearUsuario;
+    @FXML private Button btnRolUsuario;
+    @FXML private Button btnRolPermiso;
+    @FXML private Button btnModoOscuro;
 
-    // Método para establecer la referencia de App
+    private App app;
+    private Usuario usuario;
+
     public void setApp(App app) {
         this.app = app;
+        usuario = App.getUsuarioAutenticado();
+        configurarBotonesSegunRol();
+    }
+
+    private void configurarBotonesSegunRol() {
+        deshabilitarTodo(); // Deshabilitamos todos los botones por defecto
+
+        for (Rol rol : usuario.getRoles()) {
+            switch (rol.getNombreRol()) {
+                case "Desarrollador":
+                case "Soporte Técnico":
+                    habilitarBotonesCompletos();
+                    break;
+                case "Administrador":
+                    habilitarAdministrador();
+                    break;
+                case "Vendedor":
+                    habilitarVendedor();
+                    break;
+                default:
+                    // ya están deshabilitados por defecto
+                    break;
+            }
+        }
+    }
+
+    private void habilitarAdministrador() {
+        habilitarBotonesCompletos();
+        btnRolUsuario.setDisable(true);
+        btnRolPermiso.setDisable(true);
+        btnRoles.setDisable(true);
+        btnPermisos.setDisable(true);
+    }
+
+    private void habilitarVendedor() {
+        btnInicio.setDisable(false);
+        btnConfiguracion.setDisable(true);
+        btnPromociones.setDisable(false);
+        btnEstados.setDisable(true);
+        btnProductos.setDisable(false);
+        btnLotes.setDisable(false);
+        btnEntradas.setDisable(false);
+        btnNuevaEntrada.setDisable(false);
+        btnPerdidas.setDisable(true);
+        btnNuevaVenta.setDisable(false);
+        btnVentas.setDisable(true);
+        btnRoles.setDisable(true);
+        btnPermisos.setDisable(true);
+        btnUsuarios.setDisable(true);
+        btnCrearUsuario.setDisable(true);
+        btnRolUsuario.setDisable(true);
+        btnRolPermiso.setDisable(true);
+        btnModoOscuro.setDisable(false);
+    }
+
+    private void habilitarBotonesCompletos() {
+        btnInicio.setDisable(false);
+        btnConfiguracion.setDisable(false);
+        btnPromociones.setDisable(false);
+        btnEstados.setDisable(false);
+        btnProductos.setDisable(false);
+        btnLotes.setDisable(false);
+        btnEntradas.setDisable(false);
+        btnNuevaEntrada.setDisable(false);
+        btnPerdidas.setDisable(false);
+        btnNuevaVenta.setDisable(false);
+        btnVentas.setDisable(false);
+        btnRoles.setDisable(false);
+        btnPermisos.setDisable(false);
+        btnUsuarios.setDisable(false);
+        btnCrearUsuario.setDisable(false);
+        btnRolUsuario.setDisable(false);
+        btnRolPermiso.setDisable(false);
+        btnModoOscuro.setDisable(false);
+    }
+
+    private void deshabilitarTodo() {
+        // Deshabilitar todos los botones al inicio
+        btnInicio.setDisable(true);
+        btnConfiguracion.setDisable(true);
+        btnPromociones.setDisable(true);
+        btnEstados.setDisable(true);
+        btnProductos.setDisable(true);
+        btnLotes.setDisable(true);
+        btnEntradas.setDisable(true);
+        btnNuevaEntrada.setDisable(true);
+        btnPerdidas.setDisable(true);
+        btnNuevaVenta.setDisable(true);
+        btnVentas.setDisable(true);
+        btnRoles.setDisable(true);
+        btnPermisos.setDisable(true);
+        btnUsuarios.setDisable(true);
+        btnCrearUsuario.setDisable(true);
+        btnRolUsuario.setDisable(true);
+        btnRolPermiso.setDisable(true);
+        btnModoOscuro.setDisable(true);
     }
 
     // Métodos de navegación
     @FXML
     private void navigateToHome(ActionEvent event) {
         System.out.println("Navegando a Pantalla de inicio");
-        // Lógica de navegación
         app.changeView("/dulceria/fxml/dashboard.fxml");
     }
 
     @FXML
     private void navigateToConfiguracion(ActionEvent event) {
         System.out.println("Navegando a Pantalla Configuración");
-        // Lógica de navegación
         app.changeView("/dulceria/fxml/pantallaConfiguracion.fxml");
     }
 
     @FXML
     private void navigateToEstados(ActionEvent event) {
-        System.out.println("Navegando a Pantalla de Estados");
-        // Lógica de navegación
-        app.changeView("/dulceria/fxml/cStateCRUD.fxml");
+        if (tienePermiso("Administrador")) {
+            System.out.println("Navegando a Pantalla de Estados");
+            app.changeView("/dulceria/fxml/cStateCRUD.fxml");
+        } else {
+            mostrarAlerta("Error", "No tienes permisos para acceder a esta pantalla.", AlertType.ERROR);
+        }
     }
 
     @FXML
@@ -151,4 +271,20 @@ public class SidebarController {
         scene.getStylesheets().add(getClass().getResource("/dulceria/css/estilos.css").toExternalForm());
     }
 
+    private boolean tienePermiso(String rolNombre) {
+        for (Rol rol : usuario.getRoles()) {
+            if (rol.getNombreRol().equals(rolNombre)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void mostrarAlerta(String titulo, String mensaje, AlertType tipo) {
+        Alert alerta = new Alert(tipo);
+        alerta.setTitle(titulo);
+        alerta.setHeaderText(null);
+        alerta.setContentText(mensaje);
+        alerta.showAndWait();
+    }
 }

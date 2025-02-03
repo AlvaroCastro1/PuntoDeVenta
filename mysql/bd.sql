@@ -181,7 +181,7 @@ CREATE TABLE rol (
 INSERT INTO rol (id, nombre, descripcion) VALUES
     (1, 'Administrador', 'Acceso completo al sistema'),
     (2, 'Moderador', 'Puede gestionar contenido y usuarios'),
-    (3, 'Usuario', 'Usuario estándar con permisos básicos'),
+    (3, 'Vendedor', 'Usuario estándar con permisos básicos'),
     (4, 'Invitado', 'Acceso limitado solo para ver información'),
     (5, 'Soporte Técnico', 'Resuelve problemas técnicos del sistema'),
     (6, 'Supervisor', 'Supervisa y monitorea actividades'),
@@ -278,7 +278,7 @@ CREATE TRIGGER asignar_rol_por_defecto
 AFTER INSERT ON usuario
 FOR EACH ROW
 BEGIN
-    -- Asignamos el rol con id=3 (Usuario) al usuario recién creado
+    -- Asignamos el rol con id=3 (vendedor) al usuario recién creado
     INSERT INTO usuario_rol (id_usuario, id_rol)
     VALUES (NEW.id, 3);
 END //
