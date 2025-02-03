@@ -235,6 +235,9 @@ public class GeneradorPDF {
                            "FROM perdida pe " +
                            "JOIN producto p ON pe.id_producto = p.id " +
                            "JOIN lote l ON pe.id_lote = l.id " +
+                           "WHERE " + 
+                           "MONTH(pe.created_at) = MONTH(CURRENT_DATE) " +  // Filtro para el mes actual
+                           "AND YEAR(pe.created_at) = YEAR(CURRENT_DATE) " +  // Filtro para el año actual
                            "ORDER BY p.nombre";
             
             // Encabezado para el reporte
@@ -271,18 +274,23 @@ public class GeneradorPDF {
         public static List<String[]> obtenerDatosVentas() {
             List<String[]> datos = new ArrayList<>();
             
-            // Consulta SQL para obtener los datos de ventas
+            // Consulta SQL para obtener los datos de ventas con el nombre del usuario
             String query = "SELECT " +
                            "v.fecha, " +
                            "v.total AS total_venta, " +
-                           "COUNT(dv.id_producto) AS cantidad_productos " +
+                           "COUNT(dv.id_producto) AS cantidad_productos, " +
+                           "u.nombre AS nombre_usuario " +
                            "FROM venta v " +
                            "JOIN detalle_venta dv ON v.id = dv.id_venta " +
-                           "GROUP BY v.fecha, v.total " +
+                           "JOIN usuario u ON v.id_usuario = u.id " +
+                           "WHERE " + 
+                           "MONTH(v.created_at) = MONTH(CURRENT_DATE) " +  // Filtro para el mes actual
+                           "AND YEAR(v.created_at) = YEAR(CURRENT_DATE) " +  // Filtro para el año actual
+                           "GROUP BY v.fecha, v.total, u.nombre " +
                            "ORDER BY v.fecha DESC";
             
             // Encabezado para el reporte
-            String[] encabezado = {"Fecha", "Total Venta", "Cantidad de Productos"};
+            String[] encabezado = {"Fecha", "Total Venta", "Cantidad de Productos", "Vendedor"};
             
             // Agregar encabezado a la lista de datos
             datos.add(encabezado);
@@ -294,10 +302,11 @@ public class GeneradorPDF {
         
                 // Procesar cada fila de resultados
                 while (rs.next()) {
-                    String[] fila = new String[3];  // La fila tiene 3 columnas según la consulta
+                    String[] fila = new String[4];  // 4 columnas
                     fila[0] = rs.getString("fecha");  // Fecha de la venta
                     fila[1] = String.format("%.2f", rs.getDouble("total_venta"));  // Total de la venta
                     fila[2] = String.valueOf(rs.getInt("cantidad_productos"));  // Cantidad de productos vendidos
+                    fila[3] = rs.getString("nombre_usuario");  // Nombre del usuario que registró la venta
                     
                     // Agregar la fila a la lista de datos
                     datos.add(fila);
@@ -320,7 +329,9 @@ public class GeneradorPDF {
                            "FROM promocion p " +
                            "LEFT JOIN detalle_venta dv ON p.id = dv.id_promocion " +
                            "LEFT JOIN venta v ON dv.id_venta = v.id " +
-                           "WHERE p.activo = 1 " +  // Solo promociones activas
+                           "WHERE " + 
+                           "MONTH(dv.created_at) = MONTH(CURRENT_DATE) " +  // Filtro para el mes actual
+                           "AND YEAR(dv.created_at) = YEAR(CURRENT_DATE) " +  // Filtro para el año actual
                            "GROUP BY p.nombre " +
                            "ORDER BY cantidad_vendida DESC";
             
@@ -337,7 +348,7 @@ public class GeneradorPDF {
         
                 // Procesar cada fila de resultados
                 while (rs.next()) {
-                    String[] fila = new String[2];  // La fila tiene 2 columnas según la consulta
+                    String[] fila = new String[2];  // 2 columnas
                     fila[0] = rs.getString("promocion");  // Nombre de la promoción
                     fila[1] = String.valueOf(rs.getInt("cantidad_vendida"));  // Cantidad vendida de la promoción
                     
@@ -363,6 +374,8 @@ public class GeneradorPDF {
                            "JOIN producto p ON dv.id_producto = p.id " +
                            "JOIN venta v ON dv.id_venta = v.id " +
                            "WHERE v.id_state = 6 " +  // Solo ventas pagadas
+                           "AND MONTH(dv.created_at) = MONTH(CURRENT_DATE) " +  // Filtro para el mes actual
+                           "AND YEAR(dv.created_at) = YEAR(CURRENT_DATE) " +  // Filtro para el año actual
                            "GROUP BY p.nombre " +
                            "ORDER BY cantidad_vendida DESC";
             
@@ -405,6 +418,8 @@ public class GeneradorPDF {
                            "JOIN producto p ON dv.id_producto = p.id " +
                            "JOIN venta v ON dv.id_venta = v.id " +
                            "WHERE v.id_state = 6 " +  // Solo ventas pagadas
+                           "AND MONTH(dv.created_at) = MONTH(CURRENT_DATE) " +  // Filtro para el mes actual
+                           "AND YEAR(dv.created_at) = YEAR(CURRENT_DATE) " +  // Filtro para el año actual
                            "GROUP BY p.nombre " +
                            "ORDER BY cantidad_vendida ASC";  // Orden ascendente
             
