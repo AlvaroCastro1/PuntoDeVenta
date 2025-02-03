@@ -158,6 +158,7 @@ public class PromocionController {
 
 
     private void cargarPromociones() {
+        listaPromociones.clear();
         // Consulta SQL para obtener todas las promociones
         String query = "SELECT p.id, p.id_producto, p.nombre, p.tipo, p.valor_descuento, p.precio_final, " +
                        "p.cantidad_necesaria, p.activo, p.created_at, p.updated_at, " +
@@ -214,10 +215,9 @@ public class PromocionController {
             mostrarAlerta("Información", "Por favor, ingresa un nombre para la promoción.", Alert.AlertType.WARNING);
             return;
         }
-        
-        // validar producto
+        // Validar producto
         Producto productoSeleccionado = cmbProducto.getValue();
-        if (productoSeleccionado == null ) {
+        if (productoSeleccionado == null) {
             mostrarAlerta("Información", "Por favor, seleccione un producto para la promoción.", Alert.AlertType.WARNING);
             return;
         }
@@ -233,7 +233,7 @@ public class PromocionController {
         String descuentoTexto = txtValorDescuento.getText();
         double descuento;
         try {
-            descuento = Double.parseDouble(descuentoTexto.replace("%", "").trim()); // Eliminar "%" si es ingresado
+            descuento = Double.parseDouble(descuentoTexto.replace("%", "").trim());
             if (descuento < 0 || descuento > 100) {
                 mostrarAlerta("Información", "El descuento debe ser mayor a 0.", Alert.AlertType.WARNING);
                 return;
@@ -242,13 +242,13 @@ public class PromocionController {
             mostrarAlerta("Información", "El descuento debe ser un valor numérico válido.", Alert.AlertType.WARNING);
             return;
         }
-
-        // validar precio final
+    
+        // Validar precio final
         String precioTexto = txtPrecio.getText();
         double precio;
         try {
             precio = Double.parseDouble(precioTexto.trim());
-            if (precio < 0 ) {
+            if (precio < 0) {
                 mostrarAlerta("Información", "El precio debe ser mayor a 0.", Alert.AlertType.WARNING);
                 return;
             }
@@ -256,13 +256,13 @@ public class PromocionController {
             mostrarAlerta("Información", "El precio debe ser un valor numérico válido.", Alert.AlertType.WARNING);
             return;
         }
-
+    
         // Validar cantidad necesaria
         String cantidadTexto = txtCantidadNecesaria.getText();
         int cantidad;
         try {
             cantidad = Integer.parseInt(cantidadTexto.trim());
-            if (cantidad < 0 ) {
+            if (cantidad < 0) {
                 mostrarAlerta("Información", "La cantidad debe ser mayor a 0.", Alert.AlertType.WARNING);
                 return;
             }
@@ -271,6 +271,11 @@ public class PromocionController {
             return;
         }
 
+        if (!chkActivo.isSelected()){
+            mostrarAlerta("Información", "La promocion debe estar activa.", Alert.AlertType.WARNING);
+            return;
+        }
+    
         // Crear objeto de Promoción
         Promocion promocion = new Promocion(
             0,
@@ -282,49 +287,58 @@ public class PromocionController {
             precio,
             chkActivo.isSelected()
         );
-
+    
         // Guardar la promoción en la base de datos
         try (Connection connection = DatabaseConnection.getConnection()) {
             // Iniciar una transacción
             connection.setAutoCommit(false);
-
-            // 1. Insertar en la tabla 'promocion'
-            String queryPromocion = "INSERT INTO promocion (id_producto, nombre, tipo, valor_descuento, precio_final, cantidad_necesaria, activo, id_usuario) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-            try (PreparedStatement stmt = connection.prepareStatement(queryPromocion, Statement.RETURN_GENERATED_KEYS)) {
-                stmt.setInt(1, productoSeleccionado.getId());
-                stmt.setString(2, promocion.getNombre());
-                stmt.setString(3, promocion.getTipo());
-                stmt.setDouble(4, promocion.getValorDescuento());
-                stmt.setDouble(5, promocion.getPrecioFinal());
-                stmt.setInt(6, Integer.parseInt(txtCantidadNecesaria.getText()));  // Cantidad mínima necesaria
-                stmt.setBoolean(7, promocion.isActivo());
-                stmt.setInt(8, usuario.getId());
-
-                int affectedRows = stmt.executeUpdate();
-                if (affectedRows == 0) {
-                    connection.rollback();
-                    mostrarAlerta("Error", "No se pudo guardar la promoción.", Alert.AlertType.ERROR);
-                    return;
+    
+            try {
+                // 1. Desactivar todas las promociones activas para este producto
+                String desactivarSQL = "UPDATE promocion SET activo = 0 WHERE id_producto = ?";
+                try (PreparedStatement desactivarStmt = connection.prepareStatement(desactivarSQL)) {
+                    desactivarStmt.setInt(1, productoSeleccionado.getId());
+                    desactivarStmt.executeUpdate();  // No es necesario verificar filas afectadas
                 }
-
-                // Obtener el ID generado para la promoción
-                ResultSet generatedKeys = stmt.getGeneratedKeys();
-                if (generatedKeys.next()) {
-                    int promocionId = generatedKeys.getInt(1);
-                    promocion.setId(promocionId); // Establecer el ID generado en el objeto
-
-                    // Si todo fue bien, confirmar la transacción
-                    connection.commit();
-
-                    // Agregar a la lista de promociones
-                    listaPromociones.add(promocion);
-                    mostrarAlerta("Éxito", "Promoción guardada exitosamente.", Alert.AlertType.INFORMATION);
-                    limpiarFormularioPromocion();
-                } else {
-                    connection.rollback();
-                    mostrarAlerta("Error", "No se pudo obtener el ID de la promoción.", Alert.AlertType.ERROR);
-                    return;
+    
+                // 2. Insertar la nueva promoción
+                String queryPromocion = "INSERT INTO promocion (id_producto, nombre, tipo, valor_descuento, precio_final, cantidad_necesaria, activo, id_usuario) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                try (PreparedStatement stmt = connection.prepareStatement(queryPromocion, Statement.RETURN_GENERATED_KEYS)) {
+                    stmt.setInt(1, productoSeleccionado.getId());
+                    stmt.setString(2, promocion.getNombre());
+                    stmt.setString(3, promocion.getTipo());
+                    stmt.setDouble(4, promocion.getValorDescuento());
+                    stmt.setDouble(5, promocion.getPrecioFinal());
+                    stmt.setInt(6, cantidad);  // Cantidad mínima necesaria
+                    stmt.setBoolean(7, promocion.isActivo());  // Esta es la nueva promoción activa
+                    stmt.setInt(8, usuario.getId());
+    
+                    int affectedRows = stmt.executeUpdate();
+                    if (affectedRows == 0) {
+                        connection.rollback();
+                        mostrarAlerta("Error", "No se pudo guardar la promoción.", Alert.AlertType.ERROR);
+                        return;
+                    }
+    
+                    // Obtener el ID generado para la promoción
+                    ResultSet generatedKeys = stmt.getGeneratedKeys();
+                    if (generatedKeys.next()) {
+                        int promocionId = generatedKeys.getInt(1);
+                        promocion.setId(promocionId);
+    
+                        // Confirmar la transacción
+                        connection.commit();
+    
+                        // Actualizar la lista de promociones
+                        listaPromociones.add(promocion);
+                        mostrarAlerta("Éxito", "Promoción guardada exitosamente y promociones anteriores desactivadas.", Alert.AlertType.INFORMATION);
+                        limpiarFormularioPromocion();
+                    } else {
+                        connection.rollback();
+                        mostrarAlerta("Error", "No se pudo obtener el ID de la promoción.", Alert.AlertType.ERROR);
+                    }
                 }
+    
             } catch (SQLException e) {
                 connection.rollback();
                 mostrarAlerta("Error", "Ocurrió un error al guardar la promoción: " + e.getMessage(), Alert.AlertType.ERROR);
@@ -332,6 +346,8 @@ public class PromocionController {
         } catch (SQLException e) {
             mostrarAlerta("Error", "No se pudo establecer la conexión con la base de datos: " + e.getMessage(), Alert.AlertType.ERROR);
         }
+        limpiarFormularioPromocion();
+        cargarPromociones();
     }
 
     @FXML
@@ -367,22 +383,39 @@ public class PromocionController {
     }
 
     private void actualizarEstadoPromocion(Promocion promocion) {
-        String sql = "UPDATE promocion SET activo = ? WHERE id = ?";
+        String desactivarTodasSql = "UPDATE promocion SET activo = false WHERE id_producto = ?";
+        String activarSeleccionadaSql = "UPDATE promocion SET activo = true WHERE id = ?";
     
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getConnection()) {
+            connection.setAutoCommit(false);  // Iniciar transacción
     
-            stmt.setBoolean(1, promocion.isActivo());
-            stmt.setInt(2, promocion.getId());
-    
-            int filasAfectadas = stmt.executeUpdate();
-    
-            if (filasAfectadas == 0) {
-                mostrarAlerta("Advertencia", "No se pudo actualizar el estado de la promoción.", Alert.AlertType.WARNING);
+            // Desactivar todas las promociones del producto
+            try (PreparedStatement desactivarStmt = connection.prepareStatement(desactivarTodasSql)) {
+                desactivarStmt.setInt(1, promocion.getProducto().getId());
+                desactivarStmt.executeUpdate();
             }
+    
+            // Si la promoción seleccionada debe activarse, la activamos después de desactivar todas
+            if (promocion.isActivo()) {
+                try (PreparedStatement activarStmt = connection.prepareStatement(activarSeleccionadaSql)) {
+                    activarStmt.setInt(1, promocion.getId());
+                    activarStmt.executeUpdate();
+                }
+            }
+    
+            connection.commit();  // Confirmar cambios
+    
+            // Mensajes informativos
+            if (promocion.isActivo()) {
+                mostrarAlerta("Información", "La promoción ha sido activada y las demás promociones del producto fueron desactivadas.", Alert.AlertType.INFORMATION);
+            } else {
+                mostrarAlerta("Información", "Todas las promociones del producto han sido desactivadas.", Alert.AlertType.INFORMATION);
+            }
+    
         } catch (SQLException e) {
-            mostrarAlerta("Error", "Ocurrió un error al actualizar el estado: " + e.getMessage(), Alert.AlertType.ERROR);
+            mostrarAlerta("Error", "Ocurrió un error al actualizar el estado de las promociones: " + e.getMessage(), Alert.AlertType.ERROR);
         }
+        cargarPromociones();
     }
 
     private void cargarDetallesPromocion(Promocion promocionSeleccionada) {
