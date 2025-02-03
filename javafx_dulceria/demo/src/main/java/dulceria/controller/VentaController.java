@@ -388,18 +388,8 @@ public class VentaController {
                 stmtDetalle.setDouble(10, ventaProducto.getTotal());
     
                 stmtDetalle.addBatch();
-            }
     
-            for (VentaProducto ventaProducto : listaVenta) {
-                // Buscar el lote con la fecha de caducidad más próxima
-                stmtLote.setInt(1, ventaProducto.getProducto().getId());
-                loteResult = stmtLote.executeQuery();
-                Integer idLote = null;
-                if (loteResult.next()) {
-                    idLote = loteResult.getInt("id");
-                }
-            
-                // Actualizar el stock del lote
+                // Actualizar el stock del lote (si hay un lote asignado)
                 if (idLote != null) {
                     String sqlActualizarLote = "UPDATE lote SET cantidad = cantidad - ? WHERE id = ?";
                     try (PreparedStatement stmtActualizarLote = connection.prepareStatement(sqlActualizarLote)) {
@@ -408,32 +398,9 @@ public class VentaController {
                         stmtActualizarLote.executeUpdate();
                     }
                 }
-            
-                // Buscar el descuento aplicado desde la tabla promocion
-                Double descuentoAplicado = 0.0;
-                if (ventaProducto.getId_promocion() != 0) {
-                    stmtPromocion.setInt(1, ventaProducto.getId_promocion());
-                    promocionResult = stmtPromocion.executeQuery();
-                    if (promocionResult.next()) {
-                        descuentoAplicado = promocionResult.getDouble("valor_descuento");
-                    }
-                }
-            
-                // Insertar el detalle de la venta
-                stmtDetalle.setInt(1, idVenta);
-                stmtDetalle.setInt(2, ventaProducto.getProducto().getId());
-                stmtDetalle.setObject(3, idLote); // Puede ser null si no hay lotes disponibles
-                stmtDetalle.setInt(4, 6); // Estado pagado
-                stmtDetalle.setDouble(5, ventaProducto.getProducto().getCosto());
-                stmtDetalle.setDouble(6, ventaProducto.getProducto().getPrecio());
-                stmtDetalle.setInt(7, ventaProducto.getCantidad());
-                stmtDetalle.setObject(8, ventaProducto.getId_promocion() == 0 ? null : ventaProducto.getId_promocion()); // Puede ser null
-                stmtDetalle.setDouble(9, descuentoAplicado);
-                stmtDetalle.setDouble(10, ventaProducto.getTotal());
-            
-                stmtDetalle.addBatch();
             }
-            
+    
+            // Ejecutar los detalles de la venta en batch
             int[] rowsDetalles = stmtDetalle.executeBatch();
             System.out.println("Detalles guardados: " + rowsDetalles.length);
     
@@ -441,7 +408,7 @@ public class VentaController {
             connection.commit();
             mostrarAlerta("Éxito", "La venta se guardó correctamente con todos sus detalles.", Alert.AlertType.INFORMATION);
     
-            // Limpia la lista de la venta actual
+            // Limpiar la lista de la venta actual
             listaVenta.clear();
             actualizarTotal();
     
