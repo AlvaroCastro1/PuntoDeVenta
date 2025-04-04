@@ -348,3 +348,5 @@ ON SCHEDULE EVERY 1 DAY
 STARTS '2025-01-20 00:00:00'  -- Fecha y hora de inicio
 DO
   CALL insertar_perdidas_caducadas();
+
+INSERT INTO `usuario` VALUES (1,'Administrador','administrador@mail.com','$2a$10$XGDDF17aaBDqQPo7rdtdjO90Us67BlwVEfSUjEGNjY63WEPZKdyGW',_binary '','2025-01-14 04:25:03','2025-01-15 02:33:18','1234567890',1)
