@@ -1,0 +1,36 @@
+# Java specific
+*.class
+*.jar
+*.war
+*.ear
+
+# JavaFX specific
+/build/
+out/
+*.log
+
+# IntelliJ IDEA specific
+.idea/
+*.iml
+*.iws
+
+# Eclipse specific
+.project
+.classpath
+.settings/
+
+# NetBeans specific
+nbproject/
+build/
+nbbuild/
+dist/
+nbdist/
+*.nb-gradle/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# VsCode specific
+.vscode/
+.settings/
