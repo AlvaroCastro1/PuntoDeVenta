@@ -21,6 +21,18 @@ INSERT INTO cState (id,nombre_estado) VALUES
     (9,'Reservado'),
     (10,'En proceso');
 
+-- 11. usuarios
+CREATE TABLE usuario (
+    id INT AUTO_INCREMENT NOT NULL,  -- ID único del usuario
+    nombre NVARCHAR(100) NOT NULL,  -- Nombre del usuario
+    correo NVARCHAR(100) NOT NULL UNIQUE,  -- Correo electrónico (único)
+    telefono NVARCHAR(20) NOT NULL UNIQUE,
+    contrasena NVARCHAR(255) NOT NULL,  -- Contraseña encriptada
+    estado BIT NOT NULL DEFAULT 1,  -- Estado: 1 = activo, 0 = inactivo
+    fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,  -- Fecha de creación
+    fecha_ultima_actualizacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,  -- Fecha de última actualización
+    CONSTRAINT PK_usuario PRIMARY KEY (id)
+);
 
 -- 2. Tabla para productos
 CREATE TABLE producto (
@@ -155,19 +167,6 @@ CREATE TABLE promocion (
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT PK_promocion PRIMARY KEY (id),
     CONSTRAINT FK_promocion_producto FOREIGN KEY (id_producto) REFERENCES producto(id) ON DELETE CASCADE
-);
-
--- 11. usuarios
-CREATE TABLE usuario (
-    id INT AUTO_INCREMENT NOT NULL,  -- ID único del usuario
-    nombre NVARCHAR(100) NOT NULL,  -- Nombre del usuario
-    correo NVARCHAR(100) NOT NULL UNIQUE,  -- Correo electrónico (único)
-    telefono NVARCHAR(20) NOT NULL UNIQUE,
-    contrasena NVARCHAR(255) NOT NULL,  -- Contraseña encriptada
-    estado BIT NOT NULL DEFAULT 1,  -- Estado: 1 = activo, 0 = inactivo
-    fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,  -- Fecha de creación
-    fecha_ultima_actualizacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,  -- Fecha de última actualización
-    CONSTRAINT PK_usuario PRIMARY KEY (id)
 );
 
 -- 12. roles
@@ -349,4 +348,4 @@ STARTS '2025-01-20 00:00:00'  -- Fecha y hora de inicio
 DO
   CALL insertar_perdidas_caducadas();
 
-INSERT INTO `usuario` VALUES (1,'Administrador','administrador@mail.com','$2a$10$XGDDF17aaBDqQPo7rdtdjO90Us67BlwVEfSUjEGNjY63WEPZKdyGW',_binary '','2025-01-14 04:25:03','2025-01-15 02:33:18','1234567890',1)
+INSERT INTO `usuario` VALUES (1,'Administrador','administrador@mail.com','1234567890','$2a$10$XGDDF17aaBDqQPo7rdtdjO90Us67BlwVEfSUjEGNjY63WEPZKdyGW',1, '2025-01-14 04:25:03','2025-01-15 02:33:18');
