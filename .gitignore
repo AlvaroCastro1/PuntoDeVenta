@@ -34,3 +34,6 @@ Thumbs.db
 # VsCode specific
 .vscode/
 .settings/
+
+# impresora
+*.raw

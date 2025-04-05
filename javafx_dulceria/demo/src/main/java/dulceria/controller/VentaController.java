@@ -662,7 +662,7 @@ public class VentaController {
     private void imprimirTicket(String contenido) {
         try {
             // Usar la clase ImpresoraTicket que ya tienes
-            dulceria.model.ImpresoraTicket.imprimirTicket(contenido);
+            dulceria.app.ImpresoraTicket.imprimirTicket(contenido);
         } catch (Exception e) {
             mostrarAlerta("Advertencia", "La venta se guardó pero no se pudo imprimir el ticket: " + e.getMessage(), Alert.AlertType.WARNING);
         }
