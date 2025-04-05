@@ -7,21 +7,25 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import dulceria.DatabaseConnection;
 import dulceria.app.App;
+import dulceria.app.ImpresoraTicket;
 import dulceria.model.Producto;
 import dulceria.model.Promocion;
 import dulceria.model.Usuario;
 import dulceria.model.VentaProducto;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
@@ -33,6 +37,8 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseEvent;
 
 public class VentaController {
 
@@ -89,7 +95,79 @@ public class VentaController {
             }
         });
 
+        configurarLectorCodigoBarras();
+
+        // Capturar eventos de clic en la escena
+        tablaVenta.sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (newScene != null) {
+                newScene.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> {
+                    Platform.runLater(() -> txtCodigoBarras.requestFocus());
+                });
+            }
+        });
+
+         // Listener para cuando se abre/cierra el ComboBox
+        comboProducto.showingProperty().addListener((obs, wasShowing, isNowShowing) -> {
+            if (!isNowShowing) {
+                Platform.runLater(() -> txtCodigoBarras.requestFocus());
+            }
+        });
+        
+        
+        configurarFocoAutomatico();
         actualizarTotal();
+    }
+
+    @FXML
+    private TextField txtCodigoBarras;
+
+    private void configurarLectorCodigoBarras() {
+        txtCodigoBarras.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                String codigo = txtCodigoBarras.getText().trim();
+                if (!codigo.isEmpty()) {
+                    buscarProductoPorCodigo(codigo);
+                    txtCodigoBarras.clear();
+                }
+                event.consume();
+                // Forzar foco nuevamente después de procesar
+                Platform.runLater(() -> txtCodigoBarras.requestFocus());
+            }
+        });
+    }
+    private void configurarFocoAutomatico() {
+        txtCodigoBarras.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (!newVal && !comboProducto.isShowing()) { // Solo recuperar foco si el ComboBox no está abierto
+                Platform.runLater(() -> {
+                    Node focusedNode = tablaVenta.getScene().getFocusOwner();
+                    if (focusedNode != null && !esComponenteVenta(focusedNode)) {
+                        txtCodigoBarras.requestFocus();
+                    }
+                });
+            }
+        });
+    }
+    
+    private boolean esComponenteVenta(Node node) {
+        return node == comboProducto || 
+               node == txtPrecioUnitario || 
+               node == tablaVenta || 
+               node.getParent() == comboProducto.getEditor(); // Considerar el editor interno del ComboBox
+    }
+    
+    // Método para buscar producto por código
+    private void buscarProductoPorCodigo(String codigo) {
+        System.out.println(productos);
+        Optional<Producto> producto = productos.stream()
+            .filter(p -> codigo.equals(p.getCodigo()))
+            .findFirst();
+
+        if (producto.isPresent()) {
+            comboProducto.setValue(producto.get());
+            agregarProductoSeleccionado();
+        } else {
+            mostrarAlerta("Error", "Producto no encontrado con código: " + codigo, Alert.AlertType.ERROR);
+        }
     }
 
     private void cargarProductosDesdeBD() {
@@ -154,6 +232,10 @@ public class VentaController {
 
     @FXML
     private void agregarProducto(ActionEvent event) {
+        agregarProductoSeleccionado();
+    }
+
+    public void agregarProductoSeleccionado(){
         // Validar que se haya seleccionado un producto
         Producto productoSeleccionado = comboProducto.getValue();
 
@@ -313,6 +395,11 @@ public class VentaController {
 
     @FXML
     private void guardarVenta() {
+        if (listaVenta.isEmpty()) {
+            mostrarAlerta("Error", "No hay productos para vender", Alert.AlertType.ERROR);
+            return;
+        }
+        
         Connection connection = null;
         PreparedStatement stmtVenta = null;
         PreparedStatement stmtDetalle = null;
@@ -408,6 +495,11 @@ public class VentaController {
             connection.commit();
             mostrarAlerta("Éxito", "La venta se guardó correctamente con todos sus detalles.", Alert.AlertType.INFORMATION);
     
+            // Generar e imprimir el ticket
+            String contenidoTicket = generarContenidoTicket();
+            imprimirTicket(contenidoTicket);
+            
+            mostrarAlerta("Éxito", "La venta se guardó correctamente y se imprimió el ticket.", Alert.AlertType.INFORMATION);
             // Limpiar la lista de la venta actual
             listaVenta.clear();
             actualizarTotal();
@@ -540,4 +632,42 @@ public class VentaController {
     }
     
 
+    private String generarContenidoTicket() {
+        StringBuilder ticket = new StringBuilder();
+        
+        // Detalles de los productos
+        ticket.append(String.format("%-20s %5s %10s %10s\n", "Producto", "Cant.", "P. Unit.", "Subtotal"));
+        for (VentaProducto item : listaVenta) {
+            String nombre = item.getNombre().length() > 20 ? item.getNombre().substring(0, 17) + "..." : item.getNombre();
+            ticket.append(String.format("%-20s %5d %10.2f %10.2f\n", 
+                nombre,
+                item.getCantidad(),
+                item.getPrecioUnitario(),
+                item.getTotal()));
+            
+            if(item.isPromocion()) {
+                ticket.append("  (Promoción aplicada)\n");
+            }
+        }
+        
+        // Totales
+        ticket.append("\n================================================\n");
+        ticket.append(String.format("TOTAL: $%.2f\n", calcularTotalVenta()));
+        ticket.append("================================================\n");
+        ticket.append("¡Gracias por su compra!\n");
+        
+        return ticket.toString();
+    }
+
+    private void imprimirTicket(String contenido) {
+        try {
+            // Usar la clase ImpresoraTicket que ya tienes
+            dulceria.model.ImpresoraTicket.imprimirTicket(contenido);
+        } catch (Exception e) {
+            mostrarAlerta("Advertencia", "La venta se guardó pero no se pudo imprimir el ticket: " + e.getMessage(), Alert.AlertType.WARNING);
+        }
+    }
+
+    
+    
 }

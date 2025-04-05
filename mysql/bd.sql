@@ -66,6 +66,7 @@ CREATE TABLE producto_imagen (
 CREATE TABLE lote (
     id INT AUTO_INCREMENT NOT NULL,
     id_producto INT NOT NULL,           -- Relación con producto
+    id_usuario INT NOT NULL,           -- Relación con usuario
     cantidad INT NOT NULL,              -- Cantidad disponible en este lote
     fecha_caducidad DATE NULL,      -- Fecha de caducidad del lote
     fecha_entrada DATETIME NOT NULL,    -- Fecha en que el lote fue ingresado al inventario
@@ -74,6 +75,7 @@ CREATE TABLE lote (
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT PK_lote PRIMARY KEY (id),
     CONSTRAINT FK_lote_producto FOREIGN KEY (id_producto) REFERENCES producto(id) ON DELETE CASCADE,
+    CONSTRAINT FK_usuario_rol_usuario FOREIGN KEY (id_usuario) REFERENCES usuario(id),
     CONSTRAINT FK_lote_state FOREIGN KEY (id_state) REFERENCES cState(id) ON DELETE CASCADE
 );
 
@@ -125,10 +127,12 @@ CREATE TABLE venta (
     total DECIMAL(10, 2) NOT NULL,
     fecha DATETIME NOT NULL,
     id_state INT NOT NULL, -- Relación con cState
+    id_usuario INT NOT NULL,           -- Relación con usuario
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT PK_venta PRIMARY KEY (id),
-    CONSTRAINT FK_venta_cState FOREIGN KEY (id_state) REFERENCES cState(id) ON DELETE CASCADE
+    CONSTRAINT FK_venta_cState FOREIGN KEY (id_state) REFERENCES cState(id) ON DELETE CASCADE,
+    CONSTRAINT FK_usuario_rol_usuario FOREIGN KEY (id_usuario) REFERENCES usuario(id)
 );
 
 -- 9. Detalle de ventas
@@ -349,3 +353,4 @@ DO
   CALL insertar_perdidas_caducadas();
 
 INSERT INTO `usuario` VALUES (1,'Administrador','administrador@mail.com','1234567890','$2a$10$XGDDF17aaBDqQPo7rdtdjO90Us67BlwVEfSUjEGNjY63WEPZKdyGW',1, '2025-01-14 04:25:03','2025-01-15 02:33:18');
+UPDATE usuario_rol SET id_rol = 1 WHERE id_usuario = 1;

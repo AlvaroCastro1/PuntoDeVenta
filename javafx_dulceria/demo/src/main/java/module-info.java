@@ -6,6 +6,9 @@ module dulceria {
     requires spring.security.crypto;  // Este es un ejemplo; asegúrate de que este módulo esté disponible
     requires org.apache.pdfbox;
 
+    requires escpos.coffee; // Nombre del módulo automático
+    requires java.desktop; // acceder a javax.print
+    
 
 
     opens dulceria.controller to javafx.fxml;  // Abierto para los controladores

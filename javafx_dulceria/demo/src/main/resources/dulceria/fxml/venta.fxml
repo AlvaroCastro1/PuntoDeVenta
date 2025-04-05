@@ -10,20 +10,22 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane styleClass="main-container" stylesheets="@../css/estilos.css" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dulceria.controller.VentaController">
+<AnchorPane styleClass="main-container" stylesheets="@../css/estilos.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dulceria.controller.VentaController">
     <children>
         <!-- Título de la interfaz -->
-        <Label styleClass="titulo-principal" text="Registro de Venta" AnchorPane.topAnchor="20.0" AnchorPane.leftAnchor="20.0" />
+        <Label styleClass="titulo-principal" text="Registro de Venta" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="20.0" />
 
         <!-- Contenedor principal -->
-        <HBox spacing="20" AnchorPane.topAnchor="60.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.bottomAnchor="20.0">
+        <HBox spacing="20" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="60.0">
             <!-- Formulario para los productos -->
-            <VBox styleClass="details-pane" spacing="10" HBox.hgrow="NEVER">
+            <VBox spacing="10" styleClass="details-pane" HBox.hgrow="NEVER">
                 <Label styleClass="form-label" text="Producto:" />
-                <ComboBox fx:id="comboProducto" />
+                <ComboBox fx:id="comboProducto" promptText="Escanee código o busque producto..." />
+                <!-- <TextField fx:id="txtCodigoBarras" cache="true" text="Còdigo de barras" visible="false" focusTraversable="true" managed="false" /> -->
+                <TextField fx:id="txtCodigoBarras" cache="true" promptText="Código de barras" />
                 <Label styleClass="form-label" text="Precio Unitario:" />
                 <TextField fx:id="txtPrecioUnitario" editable="false" />
-                <Button styleClass="boton-guardar" onAction="#agregarProducto" text="Agregar Producto" />
+                <Button onAction="#agregarProducto" styleClass="boton-guardar" text="Agregar Producto" />
             </VBox>
 
             <!-- Contenedor de tabla y resumen -->
@@ -40,10 +42,10 @@
                 </TableView>
 
                 <!-- Resumen de la venta -->
-                <VBox styleClass="details-pane" spacing="10" alignment="CENTER_RIGHT">
-                    <Label styleClass="form-label" text="Resumen de la Venta:" style="-fx-font-weight: bold;" />
-                    <Label styleClass="form-label" fx:id="lblTotal" text="Total: $0.00" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
-                    <Button styleClass="boton-guardar" onAction="#guardarVenta" text="Registrar Venta" />
+                <VBox alignment="CENTER_RIGHT" spacing="10" styleClass="details-pane">
+                    <Label style="-fx-font-weight: bold;" styleClass="form-label" text="Resumen de la Venta:" />
+                    <Label fx:id="lblTotal" style="-fx-font-size: 16px; -fx-font-weight: bold;" styleClass="form-label" text="Total: $0.00" />
+                    <Button onAction="#guardarVenta" styleClass="boton-guardar" text="Registrar Venta" />
                 </VBox>
             </VBox>
         </HBox>
