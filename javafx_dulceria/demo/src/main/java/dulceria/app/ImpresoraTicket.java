@@ -62,7 +62,7 @@ public class ImpresoraTicket {
         escpos.writeLF(center, "Niños Heroes 5");
         escpos.writeLF(center, "San Pedro de la Laguna");
         escpos.writeLF(center, "55609 Zumpango de Ocampo, Méx.");
-        escpos.writeLF(center, "Tel: 555-1234-567");
+        escpos.writeLF(center, "Tel: 55-5031-7834");
         escpos.writeLF("----------------------------------------------");
 
         escpos.writeLF(center, "Fecha: " +
