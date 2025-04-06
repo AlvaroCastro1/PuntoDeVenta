@@ -107,7 +107,7 @@ public class App extends Application {
             fadeOut.setFromValue(1);
             fadeOut.setToValue(0);
             fadeOut.setOnFinished(event -> {
-                primaryStage.setTitle("Vista Principal");
+                primaryStage.setTitle("Dulcería Teddy");
                 primaryStage.setScene(mainScene);
                 fadeIn(mainScene);
             });
