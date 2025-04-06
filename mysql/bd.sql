@@ -85,10 +85,12 @@ CREATE TABLE entrada (
     fecha DATETIME NOT NULL,
     total DECIMAL(10, 2) NOT NULL,
     id_state INT NOT NULL, -- Relación con cState
+    id_usuario INT NOT NULL,           -- Relación con usuario
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT PK_entrada PRIMARY KEY (id),
-    CONSTRAINT FK_entrada_cState FOREIGN KEY (id_state) REFERENCES cState(id) ON DELETE CASCADE
+    CONSTRAINT FK_entrada_cState FOREIGN KEY (id_state) REFERENCES cState(id) ON DELETE CASCADE,
+    CONSTRAINT FK_entrada_usuario FOREIGN KEY (id_usuario) REFERENCES usuario(id) ON DELETE CASCADE
 );
 
 -- 6. Detalle de entradas
@@ -161,6 +163,7 @@ CREATE TABLE detalle_venta (
 CREATE TABLE promocion (
     id INT AUTO_INCREMENT NOT NULL,
     id_producto INT NOT NULL, -- Producto al que aplica la promoción
+    id_usuario INT NOT NULL, -- Usuario que creó la promoción
     nombre NVARCHAR(100) NOT NULL,
     tipo NVARCHAR(50) NOT NULL, -- Tipo de promoción: porcentaje o monto fijo
     valor_descuento DECIMAL(10, 2) NULL, -- Porcentaje o monto fijo
@@ -170,7 +173,9 @@ CREATE TABLE promocion (
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT PK_promocion PRIMARY KEY (id),
-    CONSTRAINT FK_promocion_producto FOREIGN KEY (id_producto) REFERENCES producto(id) ON DELETE CASCADE
+    CONSTRAINT FK_promocion_producto FOREIGN KEY (id_producto) REFERENCES producto(id) ON DELETE CASCADE,
+    CONSTRAINT FK_promocion_usuario FOREIGN KEY (id_usuario) REFERENCES usuario(id) ON DELETE CASCADE,
+
 );
 
 -- 12. roles
