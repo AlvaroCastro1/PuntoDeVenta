@@ -75,7 +75,7 @@ CREATE TABLE lote (
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT PK_lote PRIMARY KEY (id),
     CONSTRAINT FK_lote_producto FOREIGN KEY (id_producto) REFERENCES producto(id) ON DELETE CASCADE,
-    CONSTRAINT FK_usuario_rol_usuario FOREIGN KEY (id_usuario) REFERENCES usuario(id),
+    CONSTRAINT FK_lote_usuario FOREIGN KEY (id_usuario) REFERENCES usuario(id),
     CONSTRAINT FK_lote_state FOREIGN KEY (id_state) REFERENCES cState(id) ON DELETE CASCADE
 );
 
@@ -134,7 +134,7 @@ CREATE TABLE venta (
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT PK_venta PRIMARY KEY (id),
     CONSTRAINT FK_venta_cState FOREIGN KEY (id_state) REFERENCES cState(id) ON DELETE CASCADE,
-    CONSTRAINT FK_usuario_rol_usuario FOREIGN KEY (id_usuario) REFERENCES usuario(id)
+    CONSTRAINT FK_venta_usuario FOREIGN KEY (id_usuario) REFERENCES usuario(id)
 );
 
 -- 9. Detalle de ventas
@@ -174,7 +174,7 @@ CREATE TABLE promocion (
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT PK_promocion PRIMARY KEY (id),
     CONSTRAINT FK_promocion_producto FOREIGN KEY (id_producto) REFERENCES producto(id) ON DELETE CASCADE,
-    CONSTRAINT FK_promocion_usuario FOREIGN KEY (id_usuario) REFERENCES usuario(id) ON DELETE CASCADE,
+    CONSTRAINT FK_promocion_usuario FOREIGN KEY (id_usuario) REFERENCES usuario(id) ON DELETE CASCADE
 
 );
 
