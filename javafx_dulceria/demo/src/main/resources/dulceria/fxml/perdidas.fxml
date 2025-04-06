@@ -11,7 +11,7 @@
     <!-- Título -->
     <Label styleClass="titulo-principal" text="Registro de Pérdidas" />
 
-    <TextField fx:id="txtBusqueda" promptText="Filtrar promociones" />
+    <TextField fx:id="txtBusqueda" promptText="Filtrar perdidas" />
     <!-- Tabla -->
     <TableView fx:id="tablePerdidas" VBox.vgrow="ALWAYS">
         <columns>

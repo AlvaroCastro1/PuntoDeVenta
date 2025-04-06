@@ -13,9 +13,9 @@ import javafx.scene.control.Button;
 public class SidebarController {
 
     @FXML private Button btnInicio;
-    @FXML private Button btnConfiguracion;
+    // @FXML private Button btnConfiguracion;
     @FXML private Button btnPromociones;
-    @FXML private Button btnEstados;
+    // @FXML private Button btnEstados;
     @FXML private Button btnProductos;
     @FXML private Button btnLotes;
     @FXML private Button btnEntradas;
@@ -23,12 +23,12 @@ public class SidebarController {
     @FXML private Button btnPerdidas;
     @FXML private Button btnNuevaVenta;
     @FXML private Button btnVentas;
-    @FXML private Button btnRoles;
-    @FXML private Button btnPermisos;
+    // @FXML private Button btnRoles;
+    // @FXML private Button btnPermisos;
     @FXML private Button btnUsuarios;
     @FXML private Button btnCrearUsuario;
     @FXML private Button btnRolUsuario;
-    @FXML private Button btnRolPermiso;
+    // @FXML private Button btnRolPermiso;
     @FXML private Button btnModoOscuro;
 
     private App app;
@@ -65,16 +65,16 @@ public class SidebarController {
     private void habilitarAdministrador() {
         habilitarBotonesCompletos();
         btnRolUsuario.setDisable(true);
-        btnRolPermiso.setDisable(true);
-        btnRoles.setDisable(true);
-        btnPermisos.setDisable(true);
+        // btnRolPermiso.setDisable(true);
+        // btnRoles.setDisable(true);
+        // btnPermisos.setDisable(true);
     }
 
     private void habilitarVendedor() {
         btnInicio.setDisable(false);
-        btnConfiguracion.setDisable(true);
+        // btnConfiguracion.setDisable(true);
         btnPromociones.setDisable(false);
-        btnEstados.setDisable(true);
+        // btnEstados.setDisable(true);
         btnProductos.setDisable(false);
         btnLotes.setDisable(false);
         btnEntradas.setDisable(false);
@@ -82,20 +82,20 @@ public class SidebarController {
         btnPerdidas.setDisable(true);
         btnNuevaVenta.setDisable(false);
         btnVentas.setDisable(true);
-        btnRoles.setDisable(true);
-        btnPermisos.setDisable(true);
+        // btnRoles.setDisable(true);
+        // btnPermisos.setDisable(true);
         btnUsuarios.setDisable(true);
         btnCrearUsuario.setDisable(true);
         btnRolUsuario.setDisable(true);
-        btnRolPermiso.setDisable(true);
+        // btnRolPermiso.setDisable(true);
         btnModoOscuro.setDisable(false);
     }
 
     private void habilitarBotonesCompletos() {
         btnInicio.setDisable(false);
-        btnConfiguracion.setDisable(false);
+        // btnConfiguracion.setDisable(false);
         btnPromociones.setDisable(false);
-        btnEstados.setDisable(false);
+        // btnEstados.setDisable(false);
         btnProductos.setDisable(false);
         btnLotes.setDisable(false);
         btnEntradas.setDisable(false);
@@ -103,21 +103,21 @@ public class SidebarController {
         btnPerdidas.setDisable(false);
         btnNuevaVenta.setDisable(false);
         btnVentas.setDisable(false);
-        btnRoles.setDisable(false);
-        btnPermisos.setDisable(false);
+        // btnRoles.setDisable(false);
+        // btnPermisos.setDisable(false);
         btnUsuarios.setDisable(false);
         btnCrearUsuario.setDisable(false);
         btnRolUsuario.setDisable(false);
-        btnRolPermiso.setDisable(false);
+        // btnRolPermiso.setDisable(false);
         btnModoOscuro.setDisable(false);
     }
 
     private void deshabilitarTodo() {
         // Deshabilitar todos los botones al inicio
         btnInicio.setDisable(true);
-        btnConfiguracion.setDisable(true);
+        // btnConfiguracion.setDisable(true);
         btnPromociones.setDisable(true);
-        btnEstados.setDisable(true);
+        // btnEstados.setDisable(true);
         btnProductos.setDisable(true);
         btnLotes.setDisable(true);
         btnEntradas.setDisable(true);
@@ -125,12 +125,12 @@ public class SidebarController {
         btnPerdidas.setDisable(true);
         btnNuevaVenta.setDisable(true);
         btnVentas.setDisable(true);
-        btnRoles.setDisable(true);
-        btnPermisos.setDisable(true);
+        // btnRoles.setDisable(true);
+        // btnPermisos.setDisable(true);
         btnUsuarios.setDisable(true);
         btnCrearUsuario.setDisable(true);
         btnRolUsuario.setDisable(true);
-        btnRolPermiso.setDisable(true);
+        // btnRolPermiso.setDisable(true);
         btnModoOscuro.setDisable(true);
     }
 
