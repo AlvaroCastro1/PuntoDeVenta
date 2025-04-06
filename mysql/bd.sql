@@ -357,5 +357,5 @@ STARTS '2025-01-20 00:00:00'  -- Fecha y hora de inicio
 DO
   CALL insertar_perdidas_caducadas();
 
-INSERT INTO `usuario` VALUES (1,'Administrador','administrador@mail.com','1234567890','$2a$10$XGDDF17aaBDqQPo7rdtdjO90Us67BlwVEfSUjEGNjY63WEPZKdyGW',1, '2025-01-14 04:25:03','2025-01-15 02:33:18');
-UPDATE usuario_rol SET id_rol = 1 WHERE id_usuario = 1;
+INSERT INTO `usuario` VALUES (1,'Administrador','admin','5550317834','$2a$10$XGDDF17aaBDqQPo7rdtdjO90Us67BlwVEfSUjEGNjY63WEPZKdyGW',1, '2025-01-14 04:25:03','2025-01-15 02:33:18');
+UPDATE usuario_rol SET id_rol = 7 WHERE id_usuario = 1;
