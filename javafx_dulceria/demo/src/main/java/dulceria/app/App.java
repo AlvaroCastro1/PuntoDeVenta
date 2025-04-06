@@ -8,6 +8,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.Parent;
@@ -33,6 +34,7 @@ public class App extends Application {
     public void start(Stage primaryStage) throws Exception {
         // Inicializar root
         root = new BorderPane();
+        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/dulceria/images/logo.png")));
 
         // Cargar el archivo FXML para la pantalla de login
         FXMLLoader loginLoader = new FXMLLoader(getClass().getResource("/dulceria/fxml/login.fxml"));

@@ -79,7 +79,7 @@ public class ImpresoraTicket {
 
     private static void imprimirLogo(EscPos escpos) {
         try {
-            File imagenFile = new File(ImpresoraTicket.class.getResource("/dulceria/images/dulce.jpg").toURI());
+            File imagenFile = new File(ImpresoraTicket.class.getResource("/dulceria/images/logo_2x2.jpg").toURI());
             BufferedImage imagen = ImageIO.read(imagenFile);
 
             Bitonal algorithm = new BitonalThreshold();
