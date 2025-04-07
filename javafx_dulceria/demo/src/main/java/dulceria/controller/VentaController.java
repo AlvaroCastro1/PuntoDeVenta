@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import dulceria.DatabaseConnection;
 import dulceria.app.App;
@@ -69,6 +70,8 @@ public class VentaController {
 
     private Usuario usuario;
 
+    private ContextMenu menuSugerencias;
+
     @FXML
     public void initialize() {
         usuario = App.getUsuarioAutenticado();
@@ -122,19 +125,60 @@ public class VentaController {
     private TextField txtCodigoBarras;
 
     private void configurarLectorCodigoBarras() {
+        menuSugerencias = new ContextMenu();
+
+        txtCodigoBarras.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.isEmpty()) {
+                menuSugerencias.hide();
+                return;
+            }
+
+            // Filtrar productos que coincidan con el texto ingresado
+            List<Producto> coincidencias = productos.stream()
+                .filter(p -> p.getCodigo().contains(newValue) || p.getNombre().toLowerCase().contains(newValue.toLowerCase()))
+                .collect(Collectors.toList());
+
+            if (coincidencias.isEmpty()) {
+                menuSugerencias.hide();
+            } else {
+                // Crear elementos del menú con las coincidencias
+                menuSugerencias.getItems().clear();
+                for (Producto producto : coincidencias) {
+                    MenuItem item = new MenuItem(producto.getCodigo() + " - " + producto.getNombre());
+                    item.setOnAction(event -> {
+                        txtCodigoBarras.setText(producto.getCodigo());
+                        buscarProductoPorCodigo(producto.getCodigo());
+                        txtCodigoBarras.clear();
+                        menuSugerencias.hide();
+                    });
+                    menuSugerencias.getItems().add(item);
+                }
+
+                // Mostrar el menú debajo del campo de texto
+                if (!menuSugerencias.isShowing()) {
+                    // Convertir las coordenadas locales del TextField a coordenadas de pantalla
+                    javafx.geometry.Bounds bounds = txtCodigoBarras.localToScreen(txtCodigoBarras.getBoundsInLocal());
+                    if (bounds != null) {
+                        menuSugerencias.show(txtCodigoBarras, bounds.getMinX(), bounds.getMaxY());
+                    }
+                }
+            }
+        });
+
         txtCodigoBarras.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER) {
                 String codigo = txtCodigoBarras.getText().trim();
                 if (!codigo.isEmpty()) {
                     buscarProductoPorCodigo(codigo);
                     txtCodigoBarras.clear();
+                    menuSugerencias.hide();
                 }
                 event.consume();
-                // Forzar foco nuevamente después de procesar
                 Platform.runLater(() -> txtCodigoBarras.requestFocus());
             }
         });
     }
+
     private void configurarFocoAutomatico() {
         txtCodigoBarras.focusedProperty().addListener((obs, oldVal, newVal) -> {
             if (!newVal && !comboProducto.isShowing()) { // Solo recuperar foco si el ComboBox no está abierto

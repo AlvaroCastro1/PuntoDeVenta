@@ -417,7 +417,7 @@ public class ProductoController {
             int productoId;
             try (PreparedStatement stmtProducto = conn.prepareStatement(sqlProducto, Statement.RETURN_GENERATED_KEYS)) {
                 stmtProducto.setString(1, producto.getNombre());
-                stmtProducto.setString(2, producto.getNombre());
+                stmtProducto.setString(2, producto.getCodigo());
                 stmtProducto.setString(3, producto.getDescripcion());
                 stmtProducto.setString(4, producto.getCategoria());
                 stmtProducto.setDouble(5, producto.getPrecio());
