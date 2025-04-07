@@ -9,6 +9,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.Pane?>
 
 <AnchorPane styleClass="main-container" stylesheets="@../css/estilos.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dulceria.controller.VentaController">
     <children>
@@ -21,11 +22,12 @@
             <VBox spacing="10" styleClass="details-pane" HBox.hgrow="NEVER">
                 <Label styleClass="form-label" text="Producto:" />
                 <ComboBox fx:id="comboProducto" promptText="Escanee código o busque producto..." />
-                <!-- <TextField fx:id="txtCodigoBarras" cache="true" text="Còdigo de barras" visible="false" focusTraversable="true" managed="false" /> -->
                 <TextField fx:id="txtCodigoBarras" cache="true" promptText="Código de barras" />
                 <Label styleClass="form-label" text="Precio Unitario:" />
                 <TextField fx:id="txtPrecioUnitario" editable="false" />
                 <Button onAction="#agregarProducto" styleClass="boton-guardar" text="Agregar Producto" />
+                <Pane VBox.vgrow="ALWAYS" /> <!-- Espaciador flexible -->
+                <Button text="Producto Sin agregar (Beta)" styleClass="boton-guardar" style="-fx-background-color: #FFA500;" />
             </VBox>
 
             <!-- Contenedor de tabla y resumen -->
