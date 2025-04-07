@@ -78,10 +78,12 @@ public class PromocionController {
             new SimpleStringProperty(cellData.getValue().getProducto().getNombre()));
         colPromocionTipo.setCellValueFactory(new PropertyValueFactory<>("tipo"));
         colPromocionDescuento.setCellValueFactory(new PropertyValueFactory<>("valorDescuento"));
-        colPromocionActivo.setCellValueFactory(new PropertyValueFactory<>("activo"));
         colPromocionActivo.setCellValueFactory(cellData -> {
             return new SimpleStringProperty(cellData.getValue().isActivo() ? "Activo" : "Inactivo");
         });
+
+        // Configurar la política de redimensionamiento de columnas
+        tblPromociones.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         cmbTipo.setItems(FXCollections.observableArrayList("Descuento", "2x1", "Combo"));
         tblPromociones.setItems(listaPromociones);
@@ -129,33 +131,30 @@ public class PromocionController {
         cargarPromociones();
 
         // Envolver la lista en un FilteredList
-    FilteredList<Promocion> filteredData = new FilteredList<>(listaPromociones, p -> true);
+        FilteredList<Promocion> filteredData = new FilteredList<>(listaPromociones, p -> true);
 
-    // Escuchar cambios en el campo de búsqueda
-    txtBusqueda.textProperty().addListener((observable, oldValue, newValue) -> {
-        filteredData.setPredicate(promocion -> {
-            if (newValue == null || newValue.isEmpty()) {
-                return true;
-            }
-            String lowerCaseFilter = newValue.toLowerCase();
-            return promocion.getNombre().toLowerCase().contains(lowerCaseFilter) ||
-                   promocion.getTipo().toLowerCase().contains(lowerCaseFilter) ||
-                   promocion.getTipo().toLowerCase().contains(lowerCaseFilter) ||
-                   String.valueOf(promocion.getCantidadNecesaria()).contains(lowerCaseFilter) ||
-                   String.valueOf(promocion.getPrecioFinal()).contains(lowerCaseFilter) ||
-                   String.valueOf(promocion.getValorDescuento()).contains(lowerCaseFilter);
+        // Escuchar cambios en el campo de búsqueda
+        txtBusqueda.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredData.setPredicate(promocion -> {
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+                String lowerCaseFilter = newValue.toLowerCase();
+                return promocion.getNombre().toLowerCase().contains(lowerCaseFilter) ||
+                       promocion.getTipo().toLowerCase().contains(lowerCaseFilter) ||
+                       String.valueOf(promocion.getCantidadNecesaria()).contains(lowerCaseFilter) ||
+                       String.valueOf(promocion.getPrecioFinal()).contains(lowerCaseFilter) ||
+                       String.valueOf(promocion.getValorDescuento()).contains(lowerCaseFilter);
+            });
         });
-    });
 
-    // Enlazar la lista filtrada con una SortedList
-    SortedList<Promocion> sortedData = new SortedList<>(filteredData);
-    sortedData.comparatorProperty().bind(tblPromociones.comparatorProperty());
+        // Enlazar la lista filtrada con una SortedList
+        SortedList<Promocion> sortedData = new SortedList<>(filteredData);
+        sortedData.comparatorProperty().bind(tblPromociones.comparatorProperty());
 
-    // Asignar los datos a la tabla
-    tblPromociones.setItems(sortedData);
-
+        // Asignar los datos a la tabla
+        tblPromociones.setItems(sortedData);
     }
-
 
     private void cargarPromociones() {
         listaPromociones.clear();

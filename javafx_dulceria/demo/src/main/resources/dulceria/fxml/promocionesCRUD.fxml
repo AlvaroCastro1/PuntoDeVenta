@@ -25,12 +25,12 @@
                 <TextField fx:id="txtBusqueda" promptText="Filtrar promociones" />
                 <TableView fx:id="tblPromociones" prefHeight="400.0" VBox.vgrow="ALWAYS">
                     <columns>
-                        <TableColumn fx:id="colPromocionID" prefWidth="50" styleClass="table-column" text="ID" />
-                        <TableColumn fx:id="colPromocionNombre" prefWidth="200" styleClass="table-column" text="Nombre" />
-                        <TableColumn fx:id="colProducto" prefWidth="200" styleClass="table-column" text="Producto" />
-                        <TableColumn fx:id="colPromocionTipo" prefWidth="150" styleClass="table-column" text="Tipo" />
-                        <TableColumn fx:id="colPromocionDescuento" prefWidth="85" styleClass="table-column" text="Descuento" />
-                        <TableColumn fx:id="colPromocionActivo" prefWidth="100" styleClass="table-column" text="Activo" />
+                        <TableColumn fx:id="colPromocionID" styleClass="table-column" text="ID" />
+                        <TableColumn fx:id="colPromocionNombre" styleClass="table-column" text="Nombre" />
+                        <TableColumn fx:id="colProducto" styleClass="table-column" text="Producto" />
+                        <TableColumn fx:id="colPromocionTipo" styleClass="table-column" text="Tipo" />
+                        <TableColumn fx:id="colPromocionDescuento" styleClass="table-column" text="Descuento" />
+                        <TableColumn fx:id="colPromocionActivo" styleClass="table-column" text="Activo" />
                     </columns>
                 </TableView>
             </VBox>

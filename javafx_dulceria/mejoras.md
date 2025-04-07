@@ -4,8 +4,6 @@ pendientes
 1. caja (hacer corte, dar cambio,)
 
 2. mejorar tablas (
-    dashboard: [fechas],
-    promociones: espacios, 
     productos: campos y espacio,
     lotes: campos y espacio,
     entradas [fechas], campos y espacio,
