@@ -25,9 +25,9 @@
                     <columns>
                         <TableColumn fx:id="colId" prefWidth="80.0" text="ID" />
                         <TableColumn fx:id="colNombre" prefWidth="100.0" text="Nombre" />
-                        <TableColumn fx:id="colDescripcion" prefWidth="150.0" text="Descripción" />
                         <TableColumn fx:id="colCategoria" prefWidth="100.0" text="Categoría" />
                         <TableColumn fx:id="colPrecio" prefWidth="75.0" text="Precio" />
+                        <TableColumn fx:id="colCosto" prefWidth="75.0" text="Costo" />
                     </columns>
                 </TableView>
             </VBox>

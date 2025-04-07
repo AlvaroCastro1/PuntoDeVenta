@@ -51,8 +51,7 @@ public class ProductoController {
     private TableColumn<Producto, String> colNombre, colDescripcion, colCategoria;
 
     @FXML
-    private TableColumn<Producto, Double> colPrecio;
-
+    private TableColumn<Producto, Double> colPrecio, colCosto; // Nueva columna
 
     @FXML
     private TextField txtNombre, txtCodigo, txtCategoria, txtPrecio, txtCosto, txtBusqueda;
@@ -82,91 +81,45 @@ public class ProductoController {
         usuario = App.getUsuarioAutenticado();
 
         // Envolver la lista en un FilteredList
-    FilteredList<Producto> filteredData = new FilteredList<>(productos, p -> true);
+        FilteredList<Producto> filteredData = new FilteredList<>(productos, p -> true);
 
-    // Escuchar cambios en el campo de búsqueda
-    txtBusqueda.textProperty().addListener((observable, oldValue, newValue) -> {
-        filteredData.setPredicate(producto -> {
-            if (newValue == null || newValue.isEmpty()) {
-                return true;
-            }
-            String lowerCaseFilter = newValue.toLowerCase();
-            return producto.getNombre().toLowerCase().contains(lowerCaseFilter) ||
-                   producto.getCategoria().toLowerCase().contains(lowerCaseFilter) ||
-                   String.valueOf(producto.getPrecio()).contains(lowerCaseFilter);
+        // Escuchar cambios en el campo de búsqueda
+        txtBusqueda.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredData.setPredicate(producto -> {
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+                String lowerCaseFilter = newValue.toLowerCase();
+                return producto.getNombre().toLowerCase().contains(lowerCaseFilter) ||
+                       producto.getCategoria().toLowerCase().contains(lowerCaseFilter) ||
+                       String.valueOf(producto.getPrecio()).contains(lowerCaseFilter);
+            });
         });
-    });
 
-    // Enlazar la lista filtrada con una SortedList
-    SortedList<Producto> sortedData = new SortedList<>(filteredData);
-    sortedData.comparatorProperty().bind(tableProductos.comparatorProperty());
+        // Enlazar la lista filtrada con una SortedList
+        SortedList<Producto> sortedData = new SortedList<>(filteredData);
+        sortedData.comparatorProperty().bind(tableProductos.comparatorProperty());
 
-    // Asignar los datos a la tabla
-    tableProductos.setItems(sortedData);
+        // Asignar los datos a la tabla
+        tableProductos.setItems(sortedData);
         
     }
 
     private void configureTable() {
-        // tabla productos
+        // Configurar las columnas de la tabla
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colNombre.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getNombre()));
-        colDescripcion.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getDescripcion()));
         colCategoria.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getCategoria()));
         colPrecio.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getPrecio()));
-        
-        //tabla imagenes
+        colCosto.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getCosto())); // Nueva columna
+
+        // Configurar la política de redimensionamiento automático
+        tableProductos.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        // Configurar el listener para seleccionar un producto
         tableProductos.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 loadProductoDetails(newSelection);
-            }
-        });
-
-        // Configurar la lista observable y vincularla a la tabla
-        tblImagenes.setItems(listaImagenes);
-
-        // Configurar columnas
-        colId_img.setCellValueFactory(cellData -> cellData.getValue().idProperty().asObject());
-        colDescripcion_img.setCellValueFactory(cellData -> cellData.getValue().descripcionProperty());
-
-        // Configurar la columna de Vista Previa con ImageView
-        colVistaPrevia.setCellValueFactory(param -> {
-            // Obtener el Byte[] de la fila actual
-            byte[] byteArray = param.getValue().getImagen();
-        
-            // Verificar si el byteArray no es nulo
-            if (byteArray != null) {
-                // Convertir Byte[] a Image
-                byte[] primitiveBytes = new byte[byteArray.length];
-                for (int i = 0; i < byteArray.length; i++) {
-                    primitiveBytes[i] = byteArray[i];
-                }
-                ByteArrayInputStream inputStream = new ByteArrayInputStream(primitiveBytes);
-                Image imagen = new Image(inputStream);
-        
-                // Crear el ImageView
-                ImageView imageView = new ImageView(imagen);
-        
-                // Ajustar el tamaño de la imagen
-                imageView.setFitWidth(30);  // Ajustar el ancho
-                imageView.setFitHeight(30); // Ajustar la altura
-                imageView.setPreserveRatio(true); // Mantener la relación de aspecto
-        
-                // Retornar el ImageView como una propiedad
-                return new SimpleObjectProperty<>(imageView);
-            } else {
-                // Si no hay imagen, retornar nulo
-                return new SimpleObjectProperty<>(null);
-            }
-        });        
-
-        // Configurar doble clic
-        tblImagenes.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2) {
-                ProductoImagen selected = tblImagenes.getSelectionModel().getSelectedItem();
-                if (selected != null) {
-                    Image img = convertToImage(selected.getImagen());
-                    mostrarImagen(img);
-                }
             }
         });
     }
@@ -462,6 +415,8 @@ public class ProductoController {
             // Confirmar la transacción
             conn.commit();
             mostrarAlerta("Información", "Producto guardado con éxito", Alert.AlertType.INFORMATION);
+            
+
             clearForm();
 
         } catch (SQLException e) {
@@ -562,10 +517,10 @@ public class ProductoController {
     }
 
     private void cargarProductos() {
-        tableProductos.getItems().clear();
+        ObservableList<Producto> nuevaLista = FXCollections.observableArrayList();
         String sql = "SELECT * FROM producto";
 
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
@@ -579,12 +534,14 @@ public class ProductoController {
                         rs.getDouble("precio"),
                         rs.getDouble("costo")
                 );
-                tableProductos.getItems().add(producto);
+                nuevaLista.add(producto);
             }
         } catch (SQLException e) {
-            System.out.println("aqui");
             mostrarAlerta("Error", "Ocurrió un error al cargar los productos: " + e.getMessage(), Alert.AlertType.ERROR);
         }
+
+        // Reemplazar la lista de la tabla con la nueva lista
+        tableProductos.setItems(nuevaLista);
     }
 
     private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
