@@ -186,9 +186,11 @@ public class VentaController {
         txtCodigoBarras.focusedProperty().addListener((obs, oldVal, newVal) -> {
             if (!newVal && !comboProducto.isShowing()) { // Solo recuperar foco si el ComboBox no está abierto
                 Platform.runLater(() -> {
-                    Node focusedNode = tablaVenta.getScene().getFocusOwner();
-                    if (focusedNode != null && !esComponenteVenta(focusedNode)) {
-                        txtCodigoBarras.requestFocus();
+                    if (tablaVenta.getScene() != null) { // Verificar que la escena no sea null
+                        Node focusedNode = tablaVenta.getScene().getFocusOwner();
+                        if (focusedNode != null && !esComponenteVenta(focusedNode)) {
+                            txtCodigoBarras.requestFocus();
+                        }
                     }
                 });
             }
