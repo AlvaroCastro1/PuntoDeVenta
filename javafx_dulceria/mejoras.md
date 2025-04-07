@@ -1,9 +1,16 @@
-usuarios y privilegios
-relacion lote con cstate
-historicos
-En promocion, sería útil incluir un campo que especifique si el descuento es un porcentaje o un monto fijo, para facilitar cálculos en la lógica del negocio.
+pendientes
+1. empaquetar
 
+1. caja (hacer corte, dar cambio,)
 
+2. mejorar tablas (
+    dashboard: [fechas],
+    promociones: espacios, 
+    productos: campos y espacio,
+    lotes: campos y espacio,
+    entradas [fechas], campos y espacio,
+    perdidas [fechas], campos y espacio,
+    ventas [fechas] y campos y espacio,
 
+3. reportes
 
-login

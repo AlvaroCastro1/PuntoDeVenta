@@ -7,94 +7,109 @@
 <?import javafx.scene.chart.PieChart?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.Priority?>
+<?import javafx.scene.control.ScrollPane?>
 
-<BorderPane styleClass="main-container" stylesheets="@../css/estilos.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dulceria.controller.DashboardController">
-    <top>
-        <VBox>
-            <!-- Información del Usuario Logueado -->
-            <HBox alignment="CENTER">
-                <Label fx:id="usuarioLogueadoLabel" styleClass="titulo-principal" />
-            </HBox>
-            <!-- Línea divisoria -->
-            <Separator style="-fx-pref-height: 1; -fx-background-color: black;">
-                <VBox.margin>
-                   <Insets bottom="10.0" top="10.0" />
-                </VBox.margin>
-            </Separator>
-        </VBox>
-    </top>
+<ScrollPane fitToWidth="true" fitToHeight="true" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dulceria.controller.DashboardController">
+    <BorderPane styleClass="main-container" stylesheets="@../css/estilos.css">
+        <top>
+            <VBox>
+                <!-- Información del Usuario Logueado -->
+                <HBox alignment="CENTER">
+                    <Label fx:id="usuarioLogueadoLabel" styleClass="titulo-principal" />
+                </HBox>
+                <!-- Línea divisoria -->
+                <Separator style="-fx-pref-height: 1; -fx-background-color: black;">
+                    <VBox.margin>
+                       <Insets bottom="10.0" top="10.0" />
+                    </VBox.margin>
+                </Separator>
 
-    <center>
-        <VBox spacing="20">
-            <!-- Gráfica de Ventas por Mes (BarChart) -->
-            <VBox spacing="10" HBox.hgrow="ALWAYS">
-                <Label styleClass="titulo-principal" text="Ventas por Mes" />
-                <BarChart fx:id="ventasPorMesChart">
-                    <xAxis>
-                        <CategoryAxis label="Mes" styleClass="category-axis" />
-                    </xAxis>
-                    <yAxis>
-                        <NumberAxis label="Ventas" styleClass="category-axis" />
-                    </yAxis>
-                </BarChart>
+                <!-- Filtro por rango de fechas -->
+                <HBox spacing="10" alignment="CENTER" styleClass="filtro-fechas">
+                    <Label text="Desde:" styleClass="form-label" />
+                    <DatePicker fx:id="fechaInicioPicker" styleClass="form-datepicker" />
+                    <Label text="Hasta:" styleClass="form-label"/>
+                    <DatePicker fx:id="fechaFinPicker" styleClass="form-datepicker" />
+                    <Button text="Filtrar" onAction="#filtrarPorFechas" />
+                </HBox>
             </VBox>
+        </top>
 
-            <!-- Gráfica de Producto Más Vendido (BarChart) -->
-            <VBox spacing="10" HBox.hgrow="ALWAYS">
-                <Label styleClass="titulo-principal" text="Producto Más Vendido" />
-                <BarChart fx:id="productoMasVendidoChart">
-                    <xAxis>
-                        <CategoryAxis label="Producto" />
-                    </xAxis>
-                    <yAxis>
-                        <NumberAxis label="Cantidad Vendida" />
-                    </yAxis>
-                </BarChart>
+        <center>
+            <!-- Añadimos un ScrollPane para el contenido central -->
+            <VBox spacing="20">
+                <!-- Gráfica de Ventas por Mes (BarChart) -->
+                <VBox spacing="10" HBox.hgrow="ALWAYS">
+                    <Label styleClass="titulo-principal" text="Ventas por Mes" />
+                    <BarChart fx:id="ventasPorMesChart">
+                        <xAxis>
+                            <CategoryAxis label="Mes" styleClass="category-axis" />
+                        </xAxis>
+                        <yAxis>
+                            <NumberAxis label="Ventas" styleClass="category-axis" />
+                        </yAxis>
+                    </BarChart>
+                </VBox>
+
+                <!-- Gráfica de Producto Más Vendido (BarChart) -->
+                <VBox spacing="10" HBox.hgrow="ALWAYS">
+                    <Label styleClass="titulo-principal" text="Producto Más Vendido" />
+                    <BarChart fx:id="productoMasVendidoChart">
+                        <xAxis>
+                            <CategoryAxis label="Producto" />
+                        </xAxis>
+                        <yAxis>
+                            <NumberAxis label="Cantidad Vendida" />
+                        </yAxis>
+                    </BarChart>
+                </VBox>
+
+                <!-- Gráfica de Ganancias vs Pérdidas (PieChart) -->
+                <VBox spacing="10" HBox.hgrow="ALWAYS">
+                    <Label styleClass="titulo-principal" text="Ganancias vs Pérdidas" />
+                    <PieChart fx:id="gananciasVsPerdidasChart" />
+                </VBox>
             </VBox>
+        </center>
 
-            <!-- Gráfica de Ganancias vs Pérdidas (PieChart) -->
-            <VBox spacing="10" HBox.hgrow="ALWAYS">
-                <Label styleClass="titulo-principal" text="Ganancias vs Pérdidas" />
-                <PieChart fx:id="gananciasVsPerdidasChart" />
+        <right>
+            <VBox spacing="20" VBox.vgrow="ALWAYS">
+                <!-- Producto con Más Existencias (BarChart) -->
+                <VBox spacing="10">
+                    <Label styleClass="titulo-principal" text="Producto con Más Existencias" />
+                    <BarChart fx:id="productoMasExistenciasChart">
+                        <xAxis>
+                            <CategoryAxis label="Producto" />
+                        </xAxis>
+                        <yAxis>
+                            <NumberAxis label="Cantidad" />
+                        </yAxis>
+                    </BarChart>
+                </VBox>
+
+                <!-- Producto con Pocas Existencias (BarChart) -->
+                <VBox spacing="10">
+                    <Label styleClass="titulo-principal" text="Producto con Pocas Existencias" />
+                    <BarChart fx:id="productoPocasExistenciasChart">
+                        <xAxis>
+                            <CategoryAxis label="Producto" />
+                        </xAxis>
+                        <yAxis>
+                            <NumberAxis label="Cantidad" />
+                        </yAxis>
+                    </BarChart>
+                </VBox>
             </VBox>
-        </VBox>
-    </center>
+        </right>
 
-    <right>
-        <VBox spacing="20" VBox.vgrow="ALWAYS">
-            <!-- Producto con Más Existencias (BarChart) -->
-            <VBox spacing="10">
-                <Label styleClass="titulo-principal" text="Producto con Más Existencias" />
-                <BarChart fx:id="productoMasExistenciasChart">
-                    <xAxis>
-                        <CategoryAxis label="Producto" />
-                    </xAxis>
-                    <yAxis>
-                        <NumberAxis label="Cantidad" />
-                    </yAxis>
-                </BarChart>
-            </VBox>
-
-            <!-- Producto con Pocas Existencias (BarChart) -->
-            <VBox spacing="10">
-                <Label styleClass="titulo-principal" text="Producto con Pocas Existencias" />
-                <BarChart fx:id="productoPocasExistenciasChart">
-                    <xAxis>
-                        <CategoryAxis label="Producto" />
-                    </xAxis>
-                    <yAxis>
-                        <NumberAxis label="Cantidad" />
-                    </yAxis>
-                </BarChart>
-            </VBox>
-        </VBox>
-    </right>
-
-    <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-    </padding>
-</BorderPane>
+        <padding>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+        </padding>
+    </BorderPane>
+</ScrollPane>

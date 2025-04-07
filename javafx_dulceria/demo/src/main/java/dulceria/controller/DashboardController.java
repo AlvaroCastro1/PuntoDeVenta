@@ -7,11 +7,14 @@ import javafx.fxml.FXML;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.Alert;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.Locale;
@@ -35,6 +38,12 @@ public class DashboardController {
 
     @FXML
     private Label usuarioLogueadoLabel;
+
+    @FXML
+    private DatePicker fechaInicioPicker;
+
+    @FXML
+    private DatePicker fechaFinPicker;
 
     Usuario user;
 
@@ -63,6 +72,39 @@ public class DashboardController {
                 int mesNumero = rs.getInt("mes");
                 double totalVentas = rs.getDouble("total_ventas");
                 
+                String nombreMes = Month.of(mesNumero).getDisplayName(TextStyle.FULL, new Locale("es", "ES"));
+                series.getData().add(new XYChart.Data<>(nombreMes, totalVentas));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // Manejo de errores
+        }
+
+        ventasPorMesChart.getData().add(series);
+    }
+
+    private void cargarDatosVentasPorMes(LocalDate fechaInicio, LocalDate fechaFin) {
+        ventasPorMesChart.getData().clear(); // Limpiar datos anteriores
+
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        series.setName("Ventas Mensuales");
+
+        String query = "SELECT MONTH(fecha) AS mes, SUM(total) AS total_ventas " +
+                       "FROM venta " +
+                       "WHERE fecha BETWEEN ? AND ? " +
+                       "GROUP BY mes " +
+                       "ORDER BY mes";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setDate(1, java.sql.Date.valueOf(fechaInicio));
+            stmt.setDate(2, java.sql.Date.valueOf(fechaFin));
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                int mesNumero = rs.getInt("mes");
+                double totalVentas = rs.getDouble("total_ventas");
+
                 String nombreMes = Month.of(mesNumero).getDisplayName(TextStyle.FULL, new Locale("es", "ES"));
                 series.getData().add(new XYChart.Data<>(nombreMes, totalVentas));
             }
@@ -111,6 +153,40 @@ public class DashboardController {
             e.printStackTrace(); // Manejo de errores
         }
     }
+
+    private void cargarDatosProductoMasVendido(LocalDate fechaInicio, LocalDate fechaFin) {
+        productoMasVendidoChart.getData().clear(); // Limpiar datos anteriores
+
+        String query = "SELECT p.nombre, SUM(l.cantidad) AS total_vendido " +
+                       "FROM lote l " +
+                       "JOIN producto p ON l.id_producto = p.id " +
+                       "WHERE l.fecha_caducidad >= CURDATE() " +
+                       "AND l.fecha_caducidad BETWEEN ? AND ? " +
+                       "GROUP BY p.id " +
+                       "ORDER BY total_vendido DESC " +
+                       "LIMIT 5";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setDate(1, java.sql.Date.valueOf(fechaInicio));
+            stmt.setDate(2, java.sql.Date.valueOf(fechaFin));
+
+            ResultSet rs = stmt.executeQuery();
+            XYChart.Series<String, Number> series = new XYChart.Series<>();
+            series.setName("Productos Más Vendidos");
+
+            while (rs.next()) {
+                String nombreProducto = rs.getString("nombre");
+                int totalVendido = rs.getInt("total_vendido");
+                series.getData().add(new XYChart.Data<>(nombreProducto, totalVendido));
+            }
+
+            productoMasVendidoChart.getData().add(series);
+        } catch (SQLException e) {
+            e.printStackTrace(); // Manejo de errores
+        }
+    }
     
     private void cargarDatosGananciasVsPerdidas() {
         // Consultas SQL para obtener las ganancias y las pérdidas totales en los últimos 3 meses
@@ -150,6 +226,38 @@ public class DashboardController {
             gananciasVsPerdidasChart.getData().add(new PieChart.Data("Ganancias", totalGanancias));
             gananciasVsPerdidasChart.getData().add(new PieChart.Data("Pérdidas", totalPerdidas));
     
+        } catch (SQLException e) {
+            e.printStackTrace(); // Manejo de errores
+        }
+    }
+
+    private void cargarDatosGananciasVsPerdidas(LocalDate fechaInicio, LocalDate fechaFin) {
+        gananciasVsPerdidasChart.getData().clear(); // Limpiar datos anteriores
+
+        String queryGanancias = "SELECT SUM(v.total) AS total_ganancias " +
+                                "FROM venta v " +
+                                "WHERE v.fecha BETWEEN ? AND ?";
+        String queryPerdidas = "SELECT SUM(p.total) AS total_perdidas " +
+                               "FROM perdida p " +
+                               "WHERE p.created_at BETWEEN ? AND ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmtGanancias = conn.prepareStatement(queryGanancias);
+             PreparedStatement stmtPerdidas = conn.prepareStatement(queryPerdidas)) {
+
+            stmtGanancias.setDate(1, java.sql.Date.valueOf(fechaInicio));
+            stmtGanancias.setDate(2, java.sql.Date.valueOf(fechaFin));
+            stmtPerdidas.setDate(1, java.sql.Date.valueOf(fechaInicio));
+            stmtPerdidas.setDate(2, java.sql.Date.valueOf(fechaFin));
+
+            ResultSet rsGanancias = stmtGanancias.executeQuery();
+            ResultSet rsPerdidas = stmtPerdidas.executeQuery();
+
+            double totalGanancias = rsGanancias.next() ? rsGanancias.getDouble("total_ganancias") : 0;
+            double totalPerdidas = rsPerdidas.next() ? rsPerdidas.getDouble("total_perdidas") : 0;
+
+            gananciasVsPerdidasChart.getData().add(new PieChart.Data("Ganancias", totalGanancias));
+            gananciasVsPerdidasChart.getData().add(new PieChart.Data("Pérdidas", totalPerdidas));
         } catch (SQLException e) {
             e.printStackTrace(); // Manejo de errores
         }
@@ -236,5 +344,36 @@ public class DashboardController {
     private void cargarUsuarioLogueado() {
         // Simulación de usuario logueado
         usuarioLogueadoLabel.setText("¡Bienvenido "+ user.getNombre()+"!");
+    }
+
+    @FXML
+    private void filtrarPorFechas() {
+        LocalDate fechaInicio = fechaInicioPicker.getValue();
+        LocalDate fechaFin = fechaFinPicker.getValue();
+
+        if (fechaInicio != null && fechaFin != null) {
+            // Validar que la fecha de inicio no sea posterior a la fecha de fin
+            if (fechaInicio.isAfter(fechaFin)) {
+                mostrarAlerta("Rango de Fechas Inválido", "La fecha de inicio no puede ser posterior a la fecha de fin.", Alert.AlertType.WARNING);
+                return;
+            }
+
+            // Llamar a los métodos de carga de datos con el rango de fechas
+            cargarDatosVentasPorMes(fechaInicio, fechaFin);
+            cargarDatosProductoMasVendido(fechaInicio, fechaFin);
+            cargarDatosGananciasVsPerdidas(fechaInicio, fechaFin);
+
+            mostrarAlerta("Filtrado Exitoso", "Los datos han sido filtrados desde " + fechaInicio + " hasta " + fechaFin + ".", Alert.AlertType.INFORMATION);
+        } else {
+            mostrarAlerta("Fechas No Seleccionadas", "Por favor selecciona ambas fechas para aplicar el filtro.", Alert.AlertType.WARNING);
+        }
+    }
+
+    private void mostrarAlerta(String titulo, String contenido, Alert.AlertType tipo) {
+        Alert alerta = new Alert(tipo);
+        alerta.setTitle(titulo);
+        alerta.setHeaderText(null);
+        alerta.setContentText(contenido);
+        alerta.showAndWait();
     }
 }
