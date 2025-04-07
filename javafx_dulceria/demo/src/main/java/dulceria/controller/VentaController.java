@@ -133,9 +133,13 @@ public class VentaController {
                 return;
             }
 
-            // Filtrar productos que coincidan con el texto ingresado
+            // Convertir el texto ingresado a minúsculas para una comparación insensible a mayúsculas
+            String textoIngresado = newValue.toLowerCase();
+
+            // Filtrar productos que coincidan con el texto ingresado (en código o nombre)
             List<Producto> coincidencias = productos.stream()
-                .filter(p -> p.getCodigo().contains(newValue) || p.getNombre().toLowerCase().contains(newValue.toLowerCase()))
+                .filter(p -> p.getCodigo().toLowerCase().contains(textoIngresado) || 
+                             p.getNombre().toLowerCase().contains(textoIngresado))
                 .collect(Collectors.toList());
 
             if (coincidencias.isEmpty()) {
@@ -156,7 +160,6 @@ public class VentaController {
 
                 // Mostrar el menú debajo del campo de texto
                 if (!menuSugerencias.isShowing()) {
-                    // Convertir las coordenadas locales del TextField a coordenadas de pantalla
                     javafx.geometry.Bounds bounds = txtCodigoBarras.localToScreen(txtCodigoBarras.getBoundsInLocal());
                     if (bounds != null) {
                         menuSugerencias.show(txtCodigoBarras, bounds.getMinX(), bounds.getMaxY());
