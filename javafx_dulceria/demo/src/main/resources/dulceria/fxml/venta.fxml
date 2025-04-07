@@ -26,8 +26,8 @@
                 <Label styleClass="form-label" text="Precio Unitario:" />
                 <TextField fx:id="txtPrecioUnitario" editable="false" />
                 <Button onAction="#agregarProducto" styleClass="boton-guardar" text="Agregar Producto" />
-                <!-- <Pane VBox.vgrow="ALWAYS" /> <!-- Espaciador flexible -->
-                <Button text="Producto Sin agregar (Beta)" styleClass="boton-guardar" style="-fx-background-color: #FFA500;" /> -->
+                <!-- <Pane VBox.vgrow="ALWAYS" /> -->
+                <!-- <Button text="Producto Sin agregar (Beta)" styleClass="boton-guardar" style="-fx-background-color: #FFA500;" /> --> 
             </VBox>
 
             <!-- Contenedor de tabla y resumen -->
