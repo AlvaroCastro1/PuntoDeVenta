@@ -85,6 +85,8 @@ public class PerdidaController {
 
         // Asignar los datos a la tabla
         tablePerdidas.setItems(sortedData);
+        tablePerdidas.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
     }
 
     private void cargarPerdidas() {

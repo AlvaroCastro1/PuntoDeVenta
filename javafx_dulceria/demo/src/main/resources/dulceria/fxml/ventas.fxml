@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -17,6 +18,13 @@
             <!-- Columna izquierda con la tabla de ventas -->
             <VBox spacing="10" HBox.hgrow="ALWAYS">
                 <Label styleClass="titulo-principal" text="Lista de Ventas" />
+                
+                <!-- Filtros de rango de fechas -->
+                <HBox spacing="10">
+                    <DatePicker fx:id="datePickerInicio" promptText="Fecha Inicio" styleClass="form-datepicker" />
+                    <DatePicker fx:id="datePickerFin" promptText="Fecha Fin" styleClass="form-datepicker" />
+                </HBox>
+                
                 <TextField fx:id="txtBusqueda" promptText="Filtrar Ventas" />
                 <TableView fx:id="tablaVentas" VBox.vgrow="ALWAYS">
                     <columns>
@@ -24,6 +32,7 @@
                         <TableColumn fx:id="colFechaVenta" text="Fecha" />
                         <TableColumn fx:id="colTotalVenta" text="Total" />
                         <TableColumn fx:id="colEstadoVenta" text="Estado" />
+                        <TableColumn fx:id="colUsuarioVenta" text="Usuario" />
                     </columns>
                 </TableView>
             </VBox>

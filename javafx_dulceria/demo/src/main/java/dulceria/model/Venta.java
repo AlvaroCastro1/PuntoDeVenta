@@ -7,6 +7,16 @@ public class Venta {
     private final StringProperty fecha;
     private final DoubleProperty total;
     private final StringProperty estado;
+    private String usuario;
+
+    // Constructor actualizado
+    public Venta(int id, String fecha, double total, String estado, String usuario) {
+        this.id = new SimpleIntegerProperty(id);
+        this.fecha = new SimpleStringProperty(fecha);
+        this.total = new SimpleDoubleProperty(total);
+        this.estado = new SimpleStringProperty(estado);
+        this.usuario = usuario;
+    }
 
     public Venta(int id, String fecha, double total, String estado) {
         this.id = new SimpleIntegerProperty(id);
@@ -61,5 +71,9 @@ public class Venta {
 
     public void setEstado(String estado) {
         this.estado.set(estado);
+    }
+
+    public String getUsuario() {
+        return usuario;
     }
 }

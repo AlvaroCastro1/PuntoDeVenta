@@ -19,6 +19,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.DatePicker;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -31,6 +32,7 @@ public class VentasController {
     @FXML private TableColumn<Venta, String> colFechaVenta;
     @FXML private TableColumn<Venta, Double> colTotalVenta;
     @FXML private TableColumn<Venta, String> colEstadoVenta;
+    @FXML private TableColumn<Venta, String> colUsuarioVenta; // Nueva columna para usuario
     @FXML private TableColumn<DetalleVenta, String> colEstadoProd;
     @FXML private TableView<DetalleVenta> tablaDetalles;
     @FXML private TableColumn<DetalleVenta, String> colProducto;
@@ -39,6 +41,8 @@ public class VentasController {
     @FXML private TableColumn<DetalleVenta, Double> colPrecioUnitario;
     @FXML private TableColumn<DetalleVenta, Double> colCostoUnitario;
     @FXML private TextField txtBusqueda;
+    @FXML private DatePicker datePickerInicio;
+    @FXML private DatePicker datePickerFin;
 
     private ContextMenu contextMenu;
     private final ObservableList<Venta> ventas = FXCollections.observableArrayList();
@@ -75,12 +79,17 @@ public class VentasController {
             });
         });
 
+        // Escuchar cambios en los DatePicker
+        datePickerInicio.valueProperty().addListener((obs, oldDate, newDate) -> aplicarFiltroFecha(filteredData));
+        datePickerFin.valueProperty().addListener((obs, oldDate, newDate) -> aplicarFiltroFecha(filteredData));
+
         // Enlazar la lista filtrada con una SortedList para mantener el ordenamiento
         SortedList<Venta> sortedData = new SortedList<>(filteredData);
         sortedData.comparatorProperty().bind(tablaVentas.comparatorProperty());
 
         // Asignar los datos filtrados a la tabla
         tablaVentas.setItems(sortedData);
+        tablaVentas.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 
     private void configurarTablas() {
@@ -88,6 +97,7 @@ public class VentasController {
         colFechaVenta.setCellValueFactory(new PropertyValueFactory<>("fecha"));
         colTotalVenta.setCellValueFactory(new PropertyValueFactory<>("total"));
         colEstadoVenta.setCellValueFactory(new PropertyValueFactory<>("estado"));
+        colUsuarioVenta.setCellValueFactory(new PropertyValueFactory<>("usuario")); // Configuración de la nueva columna
 
         colProducto.setCellValueFactory(cellData -> 
             new SimpleStringProperty(cellData.getValue().getProducto().getNombre()));
@@ -105,6 +115,8 @@ public class VentasController {
 
         tablaVentas.setItems(ventas);
         tablaDetalles.setItems(detalles);
+        tablaVentas.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tablaDetalles.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 
     private void configurarContextMenu() {
@@ -117,9 +129,10 @@ public class VentasController {
 
     private void cargarVentas() {
         ventas.clear();
-        String sql = "SELECT v.id, v.fecha, v.total, s.nombre_estado AS estado " +
+        String sql = "SELECT v.id, v.fecha, v.total, s.nombre_estado AS estado, u.nombre AS usuario " +
                      "FROM venta v " +
-                     "JOIN cState s ON v.id_state = s.id";
+                     "JOIN cState s ON v.id_state = s.id " +
+                     "JOIN usuario u ON v.id_usuario = u.id"; // Asegúrate de que la tabla y columna sean correctas
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql);
@@ -130,7 +143,8 @@ public class VentasController {
                         rs.getInt("id"),
                         rs.getString("fecha"),
                         rs.getDouble("total"),
-                        rs.getString("estado")
+                        rs.getString("estado"),
+                        rs.getString("usuario") // Añadir el usuario
                 ));
             }
         } catch (SQLException e) {
@@ -365,4 +379,19 @@ public class VentasController {
         alerta.show();
     }
 
+    private void aplicarFiltroFecha(FilteredList<Venta> filteredData) {
+        filteredData.setPredicate(venta -> {
+            if (datePickerInicio.getValue() == null && datePickerFin.getValue() == null) {
+                return true;
+            }
+            if (datePickerInicio.getValue() != null && datePickerFin.getValue() != null) {
+                return venta.getFecha().compareTo(datePickerInicio.getValue().toString()) >= 0 &&
+                       venta.getFecha().compareTo(datePickerFin.getValue().toString()) <= 0;
+            }
+            if (datePickerInicio.getValue() != null) {
+                return venta.getFecha().compareTo(datePickerInicio.getValue().toString()) >= 0;
+            }
+            return venta.getFecha().compareTo(datePickerFin.getValue().toString()) <= 0;
+        });
+    }
 }

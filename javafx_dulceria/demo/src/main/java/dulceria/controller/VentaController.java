@@ -116,7 +116,7 @@ public class VentaController {
             }
         });
         
-        
+        tablaVenta.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         configurarFocoAutomatico();
         actualizarTotal();
     }
