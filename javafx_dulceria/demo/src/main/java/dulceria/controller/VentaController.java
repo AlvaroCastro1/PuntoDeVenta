@@ -37,6 +37,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
@@ -448,113 +449,136 @@ public class VentaController {
             mostrarAlerta("Error", "No hay productos para vender", Alert.AlertType.ERROR);
             return;
         }
-        
+
+        double totalVenta = calcularTotalVenta();
+
+        // Solicitar el monto pagado
+        Optional<Double> montoPagadoOpt = solicitarMontoPagado(totalVenta);
+        if (!montoPagadoOpt.isPresent()) {
+            return; // Si no se ingresó un monto válido, cancelar la operación
+        }
+
+        double montoPagado = montoPagadoOpt.get();
+        double cambio = montoPagado - totalVenta;
+
         Connection connection = null;
         PreparedStatement stmtVenta = null;
         PreparedStatement stmtDetalle = null;
-        PreparedStatement stmtLote = null;
-        PreparedStatement stmtPromocion = null;
+        PreparedStatement stmtActualizarCaja = null;
+        PreparedStatement stmtMovimientoCaja = null;
         ResultSet generatedKeys = null;
-        ResultSet loteResult = null;
-        ResultSet promocionResult = null;
-    
+
         try {
             connection = DatabaseConnection.getConnection();
             connection.setAutoCommit(false); // Inicia la transacción
-    
+
+            // Obtener el ID de la caja abierta
+            String sqlCaja = "SELECT id, base_inicial, total_ingresos, total_egresos FROM caja WHERE estado = 'Abierta' LIMIT 1";
+            int idCaja;
+            double baseInicial, totalIngresos, totalEgresos;
+
+            try (PreparedStatement stmtCaja = connection.prepareStatement(sqlCaja);
+                 ResultSet rsCaja = stmtCaja.executeQuery()) {
+                if (!rsCaja.next()) {
+                    mostrarAlerta("Error", "No hay una caja abierta. No se puede guardar la venta.", Alert.AlertType.ERROR);
+                    return;
+                }
+                idCaja = rsCaja.getInt("id");
+                baseInicial = rsCaja.getDouble("base_inicial");
+                totalIngresos = rsCaja.getDouble("total_ingresos");
+                totalEgresos = rsCaja.getDouble("total_egresos");
+            }
+
             // 1. Insertar la venta
-            String sqlVenta = "INSERT INTO venta (total, fecha, id_state, id_usuario) VALUES (?, ?, ?, ?)";
+            String sqlVenta = "INSERT INTO venta (total, fecha, id_state, id_usuario, id_caja) VALUES (?, ?, ?, ?, ?)";
             stmtVenta = connection.prepareStatement(sqlVenta, Statement.RETURN_GENERATED_KEYS);
-            stmtVenta.setDouble(1, calcularTotalVenta());
+            stmtVenta.setDouble(1, totalVenta);
             stmtVenta.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
             stmtVenta.setInt(3, 6); // Estado pagado
             stmtVenta.setInt(4, usuario.getId());
+            stmtVenta.setInt(5, idCaja); // Asociar la venta con la caja abierta
             int rowsInserted = stmtVenta.executeUpdate();
             if (rowsInserted == 0) {
                 throw new SQLException("Error al guardar la venta. No se insertó ninguna fila.");
             }
-    
+
             // Obtener el ID generado para la venta
             generatedKeys = stmtVenta.getGeneratedKeys();
             if (!generatedKeys.next()) {
                 throw new SQLException("Error al obtener el ID de la venta.");
             }
             int idVenta = generatedKeys.getInt(1);
-    
+
             // 2. Insertar los detalles de la venta
             String sqlDetalle = "INSERT INTO detalle_venta (id_venta, id_producto, id_lote, id_state, costo_unitario, precio_unitario, cantidad, id_promocion, descuento_aplicado, subtotal) " +
                                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             stmtDetalle = connection.prepareStatement(sqlDetalle);
-    
-            String sqlLote = "SELECT id FROM lote WHERE id_producto = ? AND fecha_caducidad > NOW() ORDER BY fecha_caducidad ASC LIMIT 1";
-            stmtLote = connection.prepareStatement(sqlLote);
-    
-            String sqlPromocion = "SELECT valor_descuento FROM promocion WHERE id = ?";
-            stmtPromocion = connection.prepareStatement(sqlPromocion);
-    
+
             for (VentaProducto ventaProducto : listaVenta) {
-                // Buscar el lote con la fecha de caducidad más próxima
-                stmtLote.setInt(1, ventaProducto.getProducto().getId());
-                loteResult = stmtLote.executeQuery();
-                Integer idLote = null;
-                if (loteResult.next()) {
-                    idLote = loteResult.getInt("id");
-                }
-    
-                // Buscar el descuento aplicado desde la tabla promocion
-                Double descuentoAplicado = 0.0;
-                if (ventaProducto.getId_promocion() != 0) {
-                    stmtPromocion.setInt(1, ventaProducto.getId_promocion());
-                    promocionResult = stmtPromocion.executeQuery();
-                    if (promocionResult.next()) {
-                        descuentoAplicado = promocionResult.getDouble("valor_descuento");
-                    }
-                }
-    
-                // Insertar el detalle de la venta
                 stmtDetalle.setInt(1, idVenta);
                 stmtDetalle.setInt(2, ventaProducto.getProducto().getId());
-                stmtDetalle.setObject(3, idLote); // Puede ser null si no hay lotes disponibles
+                stmtDetalle.setObject(3, null); // Lote puede ser null
                 stmtDetalle.setInt(4, 6); // Estado pagado
                 stmtDetalle.setDouble(5, ventaProducto.getProducto().getCosto());
                 stmtDetalle.setDouble(6, ventaProducto.getProducto().getPrecio());
                 stmtDetalle.setInt(7, ventaProducto.getCantidad());
-                stmtDetalle.setObject(8, ventaProducto.getId_promocion() == 0 ? null : ventaProducto.getId_promocion()); // Puede ser null
-                stmtDetalle.setDouble(9, descuentoAplicado);
+                stmtDetalle.setObject(8, null); // Promoción puede ser null
+                stmtDetalle.setDouble(9, 0.0); // Descuento aplicado
                 stmtDetalle.setDouble(10, ventaProducto.getTotal());
-    
+
                 stmtDetalle.addBatch();
-    
-                // Actualizar el stock del lote (si hay un lote asignado)
-                if (idLote != null) {
-                    String sqlActualizarLote = "UPDATE lote SET cantidad = cantidad - ? WHERE id = ?";
-                    try (PreparedStatement stmtActualizarLote = connection.prepareStatement(sqlActualizarLote)) {
-                        stmtActualizarLote.setInt(1, ventaProducto.getCantidad());
-                        stmtActualizarLote.setInt(2, idLote);
-                        stmtActualizarLote.executeUpdate();
-                    }
-                }
             }
-    
-            // Ejecutar los detalles de la venta en batch
-            int[] rowsDetalles = stmtDetalle.executeBatch();
-            System.out.println("Detalles guardados: " + rowsDetalles.length);
-    
+
+            stmtDetalle.executeBatch();
+
+            // 3. Actualizar los totales en la tabla caja
+            double nuevoTotalIngresos = totalIngresos + montoPagado;
+            double nuevoTotalVentas = totalVenta;
+            double nuevoTotalEgresos = totalEgresos + (cambio > 0 ? cambio : 0); // Incrementar total_egresos si hay cambio
+            double nuevoTotalFinal = baseInicial + nuevoTotalIngresos - nuevoTotalEgresos;
+
+            String sqlActualizarCaja = "UPDATE caja SET total_ingresos = ?, total_ventas = total_ventas + ?, total_egresos = ?, total_final = ? WHERE id = ?";
+            stmtActualizarCaja = connection.prepareStatement(sqlActualizarCaja);
+            stmtActualizarCaja.setDouble(1, nuevoTotalIngresos);
+            stmtActualizarCaja.setDouble(2, nuevoTotalVentas);
+            stmtActualizarCaja.setDouble(3, nuevoTotalEgresos);
+            stmtActualizarCaja.setDouble(4, nuevoTotalFinal);
+            stmtActualizarCaja.setInt(5, idCaja);
+            stmtActualizarCaja.executeUpdate();
+
+            // 4. Insertar un movimiento en la tabla movimientos_caja (Ingreso)
+            String sqlMovimientoCaja = "INSERT INTO movimientos_caja (id_caja, tipo, descripcion, monto, id_usuario, created_at) VALUES (?, ?, ?, ?, ?, NOW())";
+            stmtMovimientoCaja = connection.prepareStatement(sqlMovimientoCaja);
+            stmtMovimientoCaja.setInt(1, idCaja);
+            stmtMovimientoCaja.setString(2, "Ingreso");
+            stmtMovimientoCaja.setString(3, "Venta realizada");
+            stmtMovimientoCaja.setDouble(4, totalVenta);
+            stmtMovimientoCaja.setInt(5, usuario.getId());
+            stmtMovimientoCaja.executeUpdate();
+
+            // 5. Insertar un movimiento en la tabla movimientos_caja (Egreso) si hay cambio
+            if (cambio > 0) {
+                stmtMovimientoCaja.setInt(1, idCaja);
+                stmtMovimientoCaja.setString(2, "Egreso");
+                stmtMovimientoCaja.setString(3, "Cambio devuelto");
+                stmtMovimientoCaja.setDouble(4, cambio);
+                stmtMovimientoCaja.setInt(5, usuario.getId());
+                stmtMovimientoCaja.executeUpdate();
+            }
+
             // Confirmar la transacción
             connection.commit();
-            mostrarAlerta("Éxito", "La venta se guardó correctamente con todos sus detalles.", Alert.AlertType.INFORMATION);
-    
+            mostrarAlerta("Éxito", String.format("La venta se guardó correctamente. Cambio: $%.2f", cambio), Alert.AlertType.INFORMATION);
+
             // Generar e imprimir el ticket
-            String contenidoTicket = generarContenidoTicket();
+            String contenidoTicket = generarContenidoTicket(montoPagado, cambio);
             imprimirTicket(contenidoTicket);
-            
-            mostrarAlerta("Éxito", "La venta se guardó correctamente y se imprimió el ticket.", Alert.AlertType.INFORMATION);
+
             // Limpiar la lista de la venta actual
             listaVenta.clear();
             actualizarTotal();
-    
+
         } catch (SQLException e) {
-            // Si algo falla, hacer rollback
             if (connection != null) {
                 try {
                     connection.rollback();
@@ -565,14 +589,11 @@ public class VentaController {
             e.printStackTrace();
             mostrarAlerta("Error", "No se pudo guardar la venta: " + e.getMessage(), Alert.AlertType.ERROR);
         } finally {
-            // Cerrar recursos
             if (generatedKeys != null) try { generatedKeys.close(); } catch (SQLException ignored) {}
-            if (loteResult != null) try { loteResult.close(); } catch (SQLException ignored) {}
-            if (promocionResult != null) try { promocionResult.close(); } catch (SQLException ignored) {}
             if (stmtVenta != null) try { stmtVenta.close(); } catch (SQLException ignored) {}
             if (stmtDetalle != null) try { stmtDetalle.close(); } catch (SQLException ignored) {}
-            if (stmtLote != null) try { stmtLote.close(); } catch (SQLException ignored) {}
-            if (stmtPromocion != null) try { stmtPromocion.close(); } catch (SQLException ignored) {}
+            if (stmtActualizarCaja != null) try { stmtActualizarCaja.close(); } catch (SQLException ignored) {}
+            if (stmtMovimientoCaja != null) try { stmtMovimientoCaja.close(); } catch (SQLException ignored) {}
             if (connection != null) try { connection.close(); } catch (SQLException ignored) {}
         }
     }
@@ -708,6 +729,35 @@ public class VentaController {
         return ticket.toString();
     }
 
+    private String generarContenidoTicket(double montoPagado, double cambio) {
+        StringBuilder ticket = new StringBuilder();
+        
+        // Detalles de los productos
+        ticket.append(String.format("%-20s %5s %10s %10s\n", "Producto", "Cant.", "P. Unit.", "Subtotal"));
+        for (VentaProducto item : listaVenta) {
+            String nombre = item.getNombre().length() > 20 ? item.getNombre().substring(0, 17) + "..." : item.getNombre();
+            ticket.append(String.format("%-20s %5d %10.2f %10.2f\n", 
+                nombre,
+                item.getCantidad(),
+                item.getPrecioUnitario(),
+                item.getTotal()));
+            
+            if(item.isPromocion()) {
+                ticket.append("  (Promoción aplicada)\n");
+            }
+        }
+        
+        // Totales
+        ticket.append("\n================================================\n");
+        ticket.append(String.format("TOTAL: $%.2f\n", calcularTotalVenta()));
+        ticket.append(String.format("Monto pagado: $%.2f\n", montoPagado));
+        ticket.append(String.format("Cambio: $%.2f\n", cambio));
+        ticket.append("================================================\n");
+        ticket.append("¡Gracias por su compra!\n");
+        
+        return ticket.toString();
+    }
+
     private void imprimirTicket(String contenido) {
         try {
             // Usar la clase ImpresoraTicket que ya tienes
@@ -717,6 +767,32 @@ public class VentaController {
         }
     }
 
-    
-    
+    private Optional<Double> solicitarMontoPagado(double totalVenta) {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Monto Pagado");
+        dialog.setHeaderText("Ingrese el monto pagado por el cliente");
+        dialog.setContentText(String.format("Total a pagar: $%.2f\nMonto pagado:", totalVenta));
+
+        // Validar que el monto ingresado sea un número válido
+        dialog.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*(\\.\\d{0,2})?")) {
+                dialog.getEditor().setText(oldValue);
+            }
+        });
+
+        Optional<String> result = dialog.showAndWait();
+        if (result.isPresent()) {
+            try {
+                double montoPagado = Double.parseDouble(result.get());
+                if (montoPagado < totalVenta) {
+                    mostrarAlerta("Error", "El monto pagado no es suficiente para cubrir el total de la venta.", Alert.AlertType.ERROR);
+                    return Optional.empty();
+                }
+                return Optional.of(montoPagado);
+            } catch (NumberFormatException e) {
+                mostrarAlerta("Error", "Ingrese un monto válido.", Alert.AlertType.ERROR);
+            }
+        }
+        return Optional.empty();
+    }
 }

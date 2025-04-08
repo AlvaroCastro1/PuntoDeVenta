@@ -1,5 +1,6 @@
 package dulceria.app;
 
+import dulceria.DatabaseConnection;
 import dulceria.controller.LoginController;
 import dulceria.controller.SidebarController;
 import dulceria.model.Usuario;
@@ -20,6 +21,9 @@ import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.scene.layout.Region;
 import javafx.util.Duration;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 public class App extends Application {
 
@@ -29,10 +33,11 @@ public class App extends Application {
     private boolean modoOscuro = true; // Variable para guardar el estado del tema
 
     private static Usuario usuarioAutenticado;
+    private static Stage primaryStage; // Campo estático para almacenar el Stage principal
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
-        // Inicializar root
+    public void start(Stage stage) throws Exception {
+        primaryStage = stage; // Inicializar el Stage principal
         root = new BorderPane();
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/dulceria/images/logo.png")));
 
@@ -62,28 +67,44 @@ public class App extends Application {
     // Método para cambiar a la vista principal con Sidebar
     public void showMainView(Stage primaryStage) {
         try {
+            if (!verificarBaseCaja()) {
+                System.out.println("no hay");
+                // Si no hay base de caja, mostrar la vista para configurarla
+                FXMLLoader configurarCajaLoader = new FXMLLoader(getClass().getResource("/dulceria/fxml/configurar_caja.fxml"));
+                Parent configurarCajaView = configurarCajaLoader.load();
+                Scene configurarCajaScene = new Scene(configurarCajaView, 400, 300);
+                aplicarTema(configurarCajaScene);
+                primaryStage.setScene(configurarCajaScene);
+                primaryStage.setTitle("Configurar Base de Caja");
+                primaryStage.show();
+                return;
+            }
+
+            System.out.println("si hay");
+
+            // Si ya hay base de caja, continuar con la vista principal
             // Mostrar el indicador de carga
             showLoadingIndicator();
-    
+
             // Cargar el Sidebar
             FXMLLoader sidebarLoader = new FXMLLoader(getClass().getResource("/dulceria/fxml/sidebar.fxml"));
             Parent sidebar = sidebarLoader.load();
-    
+
             SidebarController sidebarController = sidebarLoader.getController();
             sidebarController.setApp(this);
-    
+
             root.setLeft(sidebar); // Añadir el Sidebar a la izquierda
-    
+
             // Cargar el archivo FXML específico (por ejemplo, dashboard.fxml)
             FXMLLoader dashboardLoader = new FXMLLoader(getClass().getResource("/dulceria/fxml/dashboard.fxml"));
             Parent dashboardView = dashboardLoader.load();
-    
+
             // Establecer el archivo FXML cargado en el centro del BorderPane
             root.setCenter(dashboardView);
-    
+
             // Configurar la animación del Sidebar
             slideAnimation = new TranslateTransition(Duration.millis(300), sidebar);
-    
+
             // Configurar eventos para mostrar/ocultar el Sidebar
             root.setOnMouseMoved(event -> {
                 if (event.getX() < 10 && !isSidebarVisible) {
@@ -92,16 +113,16 @@ public class App extends Application {
                     hideSidebar(sidebar);
                 }
             });
-    
+
             // Crear la escena principal
             Scene mainScene = new Scene(root, 800, 600);
-    
+
             // Aplicar el tema según el valor de modoOscuro
             aplicarTema(mainScene);
-    
+
             // Añadir la hoja de estilos principal
             mainScene.getStylesheets().add(getClass().getResource("/dulceria/css/estilos.css").toExternalForm());
-    
+
             // Agregar una transición de desvanecimiento antes de cambiar la escena
             FadeTransition fadeOut = new FadeTransition(Duration.millis(500), root);
             fadeOut.setFromValue(1);
@@ -111,9 +132,9 @@ public class App extends Application {
                 primaryStage.setScene(mainScene);
                 fadeIn(mainScene);
             });
-    
+
             fadeOut.play();
-    
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -245,5 +266,30 @@ public class App extends Application {
 
     public void setModoOscuro(boolean modoOscuro) {
         this.modoOscuro = modoOscuro;
+    }
+
+    private boolean verificarBaseCaja() {
+        String query = "SELECT COUNT(*) FROM caja WHERE estado = 'Abierta'";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
+
+            if (resultSet.next()) {
+                int count = resultSet.getInt(1);
+                System.out.println("Número de cajas abiertas: " + count); // Depuración
+                return count > 0; // Si hay una caja abierta, retorna true
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseConnection.closeConnection(); // Asegurarse de cerrar la conexión
+        }
+        System.out.println("No hay cajas abiertas."); // Depuración
+        return false; // Retorna false si ocurre un error o no hay cajas abiertas
+    }
+
+    // Método estático para obtener el Stage principal
+    public static Stage getPrimaryStage() {
+        return primaryStage;
     }
 }

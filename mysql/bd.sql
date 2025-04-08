@@ -359,3 +359,36 @@ DO
 
 INSERT INTO `usuario` VALUES (1,'Administrador','admin','5550317834','$2a$10$XGDDF17aaBDqQPo7rdtdjO90Us67BlwVEfSUjEGNjY63WEPZKdyGW',1, '2025-01-14 04:25:03','2025-01-15 02:33:18');
 UPDATE usuario_rol SET id_rol = 7 WHERE id_usuario = 1;
+
+CREATE TABLE caja (
+    id INT AUTO_INCREMENT NOT NULL,
+    fecha DATE NOT NULL, -- Fecha de la caja
+    base_inicial DECIMAL(10, 2) NOT NULL, -- Monto inicial de la caja
+    total_ingresos DECIMAL(10, 2) DEFAULT 0.00, -- Total de ingresos del día
+    total_egresos DECIMAL(10, 2) DEFAULT 0.00, -- Total de egresos del día
+    total_ventas DECIMAL(10, 2) DEFAULT 0.00, -- Total de ventas del día
+    total_final DECIMAL(10, 2) DEFAULT 0.00, -- Total esperado al final del día
+    estado NVARCHAR(50) NOT NULL DEFAULT 'Abierta', -- Estado de la caja (Abierta, Cerrada)
+    id_usuario INT NOT NULL, -- Usuario que abrió la caja
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT PK_caja PRIMARY KEY (id),
+    CONSTRAINT FK_caja_usuario FOREIGN KEY (id_usuario) REFERENCES usuario(id) ON DELETE CASCADE
+);
+
+CREATE TABLE movimientos_caja (
+    id INT AUTO_INCREMENT NOT NULL,
+    id_caja INT NOT NULL, -- Relación con la tabla caja
+    tipo NVARCHAR(50) NOT NULL, -- Tipo de movimiento (Ingreso, Egreso)
+    descripcion NVARCHAR(255) NULL, -- Descripción del movimiento
+    monto DECIMAL(10, 2) NOT NULL, -- Monto del movimiento
+    id_usuario INT NOT NULL, -- Usuario que realizó el movimiento
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT PK_movimientos_caja PRIMARY KEY (id),
+    CONSTRAINT FK_movimientos_caja_caja FOREIGN KEY (id_caja) REFERENCES caja(id) ON DELETE CASCADE,
+    CONSTRAINT FK_movimientos_caja_usuario FOREIGN KEY (id_usuario) REFERENCES usuario(id) ON DELETE CASCADE
+);
+
+ALTER TABLE venta
+ADD COLUMN id_caja INT NOT NULL,
+ADD CONSTRAINT FK_venta_caja FOREIGN KEY (id_caja) REFERENCES caja(id) ON DELETE CASCADE;

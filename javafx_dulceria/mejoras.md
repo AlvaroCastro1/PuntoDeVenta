@@ -5,7 +5,6 @@ pendientes
 
 2. mejorar tablas (
     perdidas [fechas], campos y espacio,
-    ventas [fechas] y campos y espacio,
 
 3. reportes
 
