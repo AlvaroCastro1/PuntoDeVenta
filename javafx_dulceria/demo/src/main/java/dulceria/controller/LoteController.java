@@ -31,7 +31,13 @@ public class LoteController {
     @FXML
     private TableView<Lote> tableLote;
     @FXML
-    private TableColumn<Lote, Integer> colId, colIdProducto, colCantidad, colIdState;
+    private TableColumn<Lote, Integer> colId, colCantidad;
+    @FXML
+    private TableColumn<Lote, String> colProducto;
+    @FXML
+    private TableColumn<Lote, String> colEstado;
+    @FXML
+    private TableColumn<Lote, Integer> colIdState;
     @FXML
     private TableColumn<Lote, String> colFechaCaducidad;
     @FXML
@@ -51,21 +57,33 @@ public class LoteController {
 
     public void initialize() {
         usuario = App.getUsuarioAutenticado();
+
+        // Configurar las columnas de la tabla
         colId.setCellValueFactory(cellData -> cellData.getValue().idProperty().asObject());
-        colIdProducto.setCellValueFactory(cellData -> cellData.getValue().idProductoProperty().asObject());
         colCantidad.setCellValueFactory(cellData -> cellData.getValue().cantidadProperty().asObject());
         colFechaCaducidad.setCellValueFactory(cellData -> {
             java.util.Date fecha = cellData.getValue().getFechaCaducidad();
             return new SimpleStringProperty(fecha != null ? fecha.toString() : "Sin fecha");
         });
 
+        colProducto.setCellValueFactory(cellData -> {
+            Producto producto = cellData.getValue().getProducto();
+            return new SimpleStringProperty(producto != null ? producto.getNombre() : "Sin producto");
+        });
 
+        colEstado.setCellValueFactory(cellData -> {
+            Estado estado = cellData.getValue().getEstadoLote();
+            return new SimpleStringProperty(estado != null ? estado.getNombre() : "Sin estado");
+        });
 
-        colIdState.setCellValueFactory(cellData -> cellData.getValue().idStateProperty().asObject());
+        // Ajustar automáticamente el ancho de las columnas para ocupar todo el espacio disponible
+        tableLote.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
+        // Cargar datos en los ComboBox y la tabla
         loadComboBoxData();
         loadData();
 
+        // Configurar eventos de los botones
         btnAdd.setOnAction(event -> addLote());
         btnUpdate.setOnAction(event -> updateLote());
         btnDelete.setOnAction(event -> deleteLote());
@@ -168,24 +186,60 @@ public class LoteController {
     }
     private void loadData() {
         try (Connection conn = dbConnection.getConnection()) {
-            String sql = "SELECT * FROM lote";
+            // Consulta SQL para obtener los datos del lote, producto y estado
+            String sql = "SELECT l.id, l.id_producto, l.cantidad, l.fecha_caducidad, l.fecha_entrada, l.id_state, " +
+                         "p.nombre AS producto_nombre, p.codigo AS producto_codigo, p.descripcion AS producto_descripcion, " +
+                         "p.categoria AS producto_categoria, p.precio AS producto_precio, p.costo AS producto_costo, " +
+                         "s.nombre_estado AS estado_nombre " +
+                         "FROM lote l " +
+                         "JOIN producto p ON l.id_producto = p.id " +
+                         "JOIN cstate s ON l.id_state = s.id";
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
 
+            // Limpiar la lista de lotes antes de cargar nuevos datos
             loteList.clear();
+
             while (rs.next()) {
-                loteList.add(new Lote(
-                        rs.getInt("id"),
-                        rs.getInt("id_producto"),
-                        rs.getInt("cantidad"),
-                        rs.getDate("fecha_caducidad"),
-                        rs.getDate("fecha_entrada"),
-                        rs.getInt("id_state")
-                ));
+                // Construir el objeto Producto
+                Producto producto = new Producto(
+                    rs.getInt("id_producto"),
+                    rs.getString("producto_nombre"),
+                    rs.getString("producto_codigo"),
+                    rs.getString("producto_descripcion"),
+                    rs.getString("producto_categoria"),
+                    rs.getDouble("producto_precio"),
+                    rs.getDouble("producto_costo")
+                );
+
+                // Construir el objeto Estado
+                Estado estado = new Estado(
+                    rs.getInt("id_state"),
+                    rs.getString("estado_nombre")
+                );
+
+                // Construir el objeto Lote
+                Lote lote = new Lote(
+                    rs.getInt("id"),
+                    rs.getInt("id_producto"),
+                    rs.getInt("cantidad"),
+                    rs.getDate("fecha_caducidad"),
+                    rs.getDate("fecha_entrada"),
+                    rs.getInt("id_state")
+                );
+
+                // Asignar el Producto y Estado al Lote
+                lote.setProducto(producto);
+                lote.setEstadoLote(estado);
+
+                // Agregar el lote a la lista
+                loteList.add(lote);
             }
+
+            // Asignar la lista de lotes a la tabla
             tableLote.setItems(loteList);
         } catch (SQLException e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error", "Error al cargar datos "+ e.getMessage());
+            mostrarAlerta(Alert.AlertType.ERROR, "Error", "Error al cargar datos: " + e.getMessage());
         }
     }
 

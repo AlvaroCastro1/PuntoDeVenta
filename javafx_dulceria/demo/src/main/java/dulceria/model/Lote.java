@@ -8,17 +8,45 @@ public class Lote {
     private IntegerProperty idProducto;
     private IntegerProperty cantidad;
     private ObjectProperty<Date> fechaCaducidad;
+    private ObjectProperty<Date> fechaEntrada;
+    private IntegerProperty idState;
+    private Producto producto;
+    private Estado estadoLote;
+
+    /**
+     * @return the producto
+     */
+    public Producto getProducto() {
+        return producto;
+    }
+
+    /**
+     * @param producto the producto to set
+     */
+    public void setProducto(Producto producto) {
+        this.producto = producto;
+    }
+
+    /**
+     * @return the estadoLote
+     */
+    public Estado getEstadoLote() {
+        return estadoLote;
+    }
+
+    /**
+     * @param estadoLote the estadoLote to set
+     */
+    public void setEstadoLote(Estado estadoLote) {
+        this.estadoLote = estadoLote;
+    }
 
     @Override
     public String toString() {
     return "Lote [id=" + id.get() + ", idProducto=" + idProducto.get() + ", cantidad=" + cantidad.get() + 
            ", fechaCaducidad=" + fechaCaducidad.get() + ", fechaEntrada=" + fechaEntrada.get() + 
-           ", idState=" + idState.get() + "]";
+           ", idState=" + idState.get() + ", producto=" + producto.getNombre() + ", estadoLote=" + estadoLote.getNombre() + "]";
     }
-
-
-    private ObjectProperty<Date> fechaEntrada;
-    private IntegerProperty idState;
 
     // Constructor
     public Lote(){}

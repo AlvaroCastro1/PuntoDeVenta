@@ -21,13 +21,13 @@
             <Label styleClass="titulo-principal" text="Crear Nuevo Lote" />
 
             <!-- Tabla -->
-            <TableView fx:id="tableLote" prefHeight="200.0" styleClass="table-view">
+            <TableView fx:id="tableLote" prefHeight="200.0" styleClass="table-view" >
                 <columns>
                     <TableColumn fx:id="colId" text="ID" />
-                    <TableColumn fx:id="colIdProducto" text="ID Producto" />
+                    <TableColumn fx:id="colProducto" text="Producto" />
                     <TableColumn fx:id="colCantidad" text="Cantidad" />
                     <TableColumn fx:id="colFechaCaducidad" text="Fecha Caducidad" />
-                    <TableColumn fx:id="colIdState" text="ID Estado" />
+                    <TableColumn fx:id="colEstado" text="Estado" />
                 </columns>
             </TableView>
 
