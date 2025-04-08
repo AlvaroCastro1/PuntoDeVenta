@@ -2,9 +2,11 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -12,7 +14,16 @@
 <BorderPane styleClass="main-container" stylesheets="@../css/estilos.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1" fx:controller="dulceria.controller.EntradaDetalleController">
     <!-- Título superior -->
     <top>
-        <Label alignment="CENTER" styleClass="titulo-principal" text="Entrada" BorderPane.alignment="CENTER" />
+        <VBox spacing="10" alignment="CENTER">
+            <Label alignment="CENTER" styleClass="titulo-principal" text="Entrada" BorderPane.alignment="CENTER" />
+            <HBox alignment="CENTER" spacing="10">
+                <Label text="Desde:" styleClass="form-label" />
+                <DatePicker fx:id="datePickerDesde" styleClass="form-datepicker" />
+                <Label text="Hasta:" styleClass="form-label" />
+                <DatePicker fx:id="datePickerHasta" styleClass="form-datepicker" />
+                <Button text="Filtrar" onAction="#filtrarPorFecha" styleClass="boton-guardar" />
+            </HBox>
+        </VBox>
     </top>
 
     <!-- Cuerpo con las tablas -->
@@ -26,6 +37,7 @@
                         <TableColumn fx:id="colFecha" text="Fecha" />
                         <TableColumn fx:id="colTotal" text="Total" />
                         <TableColumn fx:id="colEstado" text="Estado" />
+                        <TableColumn fx:id="colUsuario" text="Usuario" />
                     </columns>
                 </TableView>
             </VBox>

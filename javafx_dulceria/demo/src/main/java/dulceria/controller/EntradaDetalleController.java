@@ -11,11 +11,13 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.Optional;
 
 public class EntradaDetalleController {
@@ -27,11 +29,13 @@ public class EntradaDetalleController {
     private TableColumn<Entrada, String> colFecha;
 
     @FXML
+    private TableColumn<Entrada, String> colUsuario;
+
+    @FXML
     private TableColumn<Entrada, Double> colTotal;
 
     @FXML
     private TableColumn<Entrada, String> colEstado;
-
 
     @FXML
     private TableView<DetalleEntrada> tablaDetalles;
@@ -60,42 +64,56 @@ public class EntradaDetalleController {
     @FXML
     private Button btnCambiar;
 
+    @FXML
+    private DatePicker datePickerDesde;
+
+    @FXML
+    private DatePicker datePickerHasta;
+
     private ObservableList<Entrada> listaEntradas = FXCollections.observableArrayList();
     private ObservableList<DetalleEntrada> listaDetalles = FXCollections.observableArrayList();
+    private FilteredList<Entrada> filteredEntradas;
 
     @FXML
     public void initialize() {
         // Configurar las columnas de la tabla de entradas
-
         colFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
+        colUsuario.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getUsuarioNombre()));
         colTotal.setCellValueFactory(new PropertyValueFactory<>("total"));
-        colEstado.setCellValueFactory(cellData -> new SimpleObjectProperty<String>(cellData.getValue().getEstado().getNombre()));
+        colEstado.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getEstado().getNombre()));
 
-        // Configurar las columnas de la tabla de detalles
-        colProducto.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getProducto().getNombre()));
-        colCantidad.setCellValueFactory(cellData -> cellData.getValue().cantidadProperty().asObject());
-        colCosto.setCellValueFactory(cellData -> 
-        new SimpleDoubleProperty(cellData.getValue().getProducto().getCosto()).asObject());
-
-        colSubtotal.setCellValueFactory(cellData -> new SimpleDoubleProperty(
-            cellData.getValue().cantidadProperty().get() * cellData.getValue().getProducto().getCosto()
-        ).asObject());
+        // Configurar la lista filtrada
+        filteredEntradas = new FilteredList<>(listaEntradas, p -> true);
+        tablaEntradas.setItems(filteredEntradas);
 
         // Cargar las entradas desde la base de datos
         cargarEntradas();
 
         // Configurar el evento de selección de la tabla de entradas
         tablaEntradas.getSelectionModel().selectedItemProperty().addListener(
-        (observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                cargarDetalles(newValue); // Llamar al método que carga los detalles
-                actualizarTotal();
+            (observable, oldValue, newValue) -> {
+                if (newValue != null) {
+                    cargarDetalles(newValue); // Llamar al método que carga los detalles
+                    actualizarTotal();
+                }
             }
-        }
-    );
+        );
 
         // Establecer eventos de los botones
         setupBotones();
+
+        // Ajustar columnas de tablaEntradas
+        ajustarColumnas(tablaEntradas);
+
+        // Ajustar columnas de tablaDetalles
+        ajustarColumnas(tablaDetalles);
+    }
+
+    private void ajustarColumnas(TableView<?> tableView) {
+        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tableView.getColumns().forEach(column -> {
+            column.setPrefWidth(100); // Ajusta el ancho inicial si es necesario
+        });
     }
 
     private void cargarEntradas() {
@@ -105,36 +123,35 @@ public class EntradaDetalleController {
             "e.total, " +
             "c.id AS estado_id, " +
             "c.nombre_estado AS estado_nombre, " +
+            "u.nombre AS usuario_nombre, " + // Obtener el nombre del usuario
             "e.created_at, " +
             "e.updated_at " +
         "FROM entrada e " +
-        "JOIN cState c ON e.id_state = c.id";
+        "JOIN cState c ON e.id_state = c.id " +
+        "JOIN usuario u ON e.id_usuario = u.id"; // Unir con la tabla usuario
 
-    
-    
         ObservableList<Entrada> listaEntradas = FXCollections.observableArrayList();
-    
+
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement stmtEntradas = connection.prepareStatement(queryEntradas);
              ResultSet rsEntradas = stmtEntradas.executeQuery()) {
-    
+
             while (rsEntradas.next()) {
-    
                 // Crear instancia de Entrada
-                // int id, LocalDateTime fecha, Estado estado, double total) {
                 Entrada entrada = new Entrada(
                     rsEntradas.getInt("id"),
                     rsEntradas.getTimestamp("fecha").toLocalDateTime(),
                     new Estado(rsEntradas.getInt("estado_id"), rsEntradas.getString("estado_nombre")),
-                    rsEntradas.getDouble("total")
+                    rsEntradas.getDouble("total"),
+                    rsEntradas.getString("usuario_nombre") // Agregar el nombre del usuario
                 );
 
                 listaEntradas.add(entrada);
             }
-    
+
             // Asignar la lista al TableView
             tablaEntradas.setItems(listaEntradas);
-    
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -216,12 +233,12 @@ public class EntradaDetalleController {
     
         // Recorrer la lista de detalles de la entrada seleccionada
         for (DetalleEntrada detalle : tablaDetalles.getItems()) {
-            // Obtener el precio del producto y la cantidad
-            double precioProducto = detalle.getProducto().getPrecio();
+            // Obtener el costo del producto y la cantidad
+            double costoProducto = detalle.getProducto().getCosto();
             int cantidad = detalle.getCantidad();
     
             // Sumar el subtotal de cada detalle (precio * cantidad)
-            total += precioProducto * cantidad;
+            total += costoProducto * cantidad;
         }
     
         // Mostrar el total en el label
@@ -340,7 +357,58 @@ public class EntradaDetalleController {
         }
     }
     
+    @FXML
+    private void filtrarPorFecha() {
+        LocalDate fechaDesde = datePickerDesde.getValue();
+        LocalDate fechaHasta = datePickerHasta.getValue();
 
+        if (fechaDesde == null || fechaHasta == null) {
+            mostrarAlerta("Error", "Por favor selecciona ambas fechas.", Alert.AlertType.ERROR);
+            return;
+        }
+
+        String queryFiltrar = "SELECT " +
+            "e.id, " +
+            "e.fecha, " +
+            "e.total, " +
+            "c.id AS estado_id, " +
+            "c.nombre_estado AS estado_nombre, " +
+            "u.nombre AS usuario_nombre, " +
+            "e.created_at, " +
+            "e.updated_at " +
+        "FROM entrada e " +
+        "JOIN cState c ON e.id_state = c.id " +
+        "JOIN usuario u ON e.id_usuario = u.id " +
+        "WHERE e.updated_at BETWEEN ? AND ?";
+
+        ObservableList<Entrada> listaFiltrada = FXCollections.observableArrayList();
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement stmtFiltrar = connection.prepareStatement(queryFiltrar)) {
+
+            stmtFiltrar.setTimestamp(1, Timestamp.valueOf(fechaDesde.atStartOfDay()));
+            stmtFiltrar.setTimestamp(2, Timestamp.valueOf(fechaHasta.atTime(23, 59, 59)));
+
+            try (ResultSet rsFiltrar = stmtFiltrar.executeQuery()) {
+                while (rsFiltrar.next()) {
+                    Entrada entrada = new Entrada(
+                        rsFiltrar.getInt("id"),
+                        rsFiltrar.getTimestamp("fecha").toLocalDateTime(),
+                        new Estado(rsFiltrar.getInt("estado_id"), rsFiltrar.getString("estado_nombre")),
+                        rsFiltrar.getDouble("total"),
+                        rsFiltrar.getString("usuario_nombre")
+                    );
+                    listaFiltrada.add(entrada);
+                }
+            }
+
+            tablaEntradas.setItems(listaFiltrada);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            mostrarAlerta("Error", "Ocurrió un error al filtrar las entradas.", Alert.AlertType.ERROR);
+        }
+    }
 
     private void limpiar(){
         totalLabel.setText("0.00"); // Restablecer el total
@@ -354,4 +422,5 @@ public class EntradaDetalleController {
         alert.setContentText(mensaje);
         alert.showAndWait();
     }
+
 }

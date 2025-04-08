@@ -19,8 +19,18 @@ public class Entrada {
 
     private ObjectProperty<LocalDateTime> updatedAt = new SimpleObjectProperty<>();
 
+    private String usuarioNombre;
+
     // Constructor vacío para JPA
     public Entrada(){}
+
+    public Entrada(int id, LocalDateTime fecha, Estado estado, double total, String usuarioNombre) {
+        this.id.set(id);
+        this.fecha.set(fecha);
+        this.estado = estado;
+        this.total.set(total);
+        this.usuarioNombre = usuarioNombre;
+    }
 
     public Entrada(int id, LocalDateTime fecha, Estado estado, double total) {
         this.id.set(id);
@@ -105,5 +115,13 @@ public class Entrada {
 
     public ObjectProperty<LocalDateTime> updatedAtProperty() {
         return updatedAt;
+    }
+
+    public String getUsuarioNombre() {
+        return usuarioNombre;
+    }
+
+    public void setUsuarioNombre(String usuarioNombre) {
+        this.usuarioNombre = usuarioNombre;
     }
 }

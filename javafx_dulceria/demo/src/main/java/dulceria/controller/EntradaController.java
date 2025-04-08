@@ -93,6 +93,8 @@ public class EntradaController {
         // Asignar la lista de detalles a la tabla
         Entradas.setItems(detallesEntrada);
 
+        // Configurar la política de ajuste automático
+        Entradas.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 
     private void configurarMenuTabla(){
