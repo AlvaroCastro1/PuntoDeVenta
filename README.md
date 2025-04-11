@@ -6,10 +6,13 @@ para poder crear un exe debmos hacer lo siguiente
 ```bash
 jpackage `
   --type exe `
-  --name "DulceriaTeddy" `
+  --name "Dulceria Teddy" `
   --input target `
   --main-jar "Dulceria Teddy-jar-with-dependencies.jar" `
   --main-class dulceria.app.App `
+  --java-options "--module-path C:\javafx-sdk-21.0.6\lib --add-modules javafx.controls,javafx.fxml" `
   --icon icon.ico `
-  --java-options "--module-path C:\javafx-sdk-21.0.6\lib --add-modules javafx.controls,javafx.fxml" 
+  --win-menu `
+  --win-shortcut `
+  --win-dir-chooser
 ```
