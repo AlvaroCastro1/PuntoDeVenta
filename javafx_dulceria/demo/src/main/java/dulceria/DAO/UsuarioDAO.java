@@ -7,21 +7,71 @@ import dulceria.model.Usuario;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
+import javafx.scene.control.Alert;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
 
 public class UsuarioDAO {
     private Connection connection;
-
     private static final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     public UsuarioDAO() {
-        connection = DatabaseConnection.getConnection();
+        try {
+            connection = DatabaseConnection.getConnection();
+            if (connection == null) {
+                mostrarError("Error de conexión", "No se pudo establecer la conexión con la base de datos");
+                throw new SQLException("No se pudo establecer la conexión");
+            }
+        } catch (SQLException e) {
+            mostrarError("Error", "Error al inicializar UsuarioDAO: " + e.getMessage());
+        }
     }
 
+    private void mostrarError(String titulo, String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
+    }
+
+    private void mostrarInformacion(String titulo, String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
+    }
+
+    private boolean validarUsuario(Usuario usuario, boolean esActualizacion) {
+        if (usuario == null) {
+            mostrarError("Error de validación", "El usuario no puede ser null");
+            return false;
+        }
+        if (usuario.getNombre() == null || usuario.getNombre().trim().isEmpty()) {
+            mostrarError("Error de validación", "El nombre es requerido");
+            return false;
+        }
+        if (usuario.getEmail() == null || !usuario.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+            mostrarError("Error de validación", "Email inválido");
+            return false;
+        }
+        if (usuario.getTelefono() == null || !usuario.getTelefono().matches("^[0-9]{10}$")) {
+            mostrarError("Error de validación", "El teléfono debe tener 10 dígitos");
+            return false;
+        }
+        // Solo validar contraseña si no es una actualización o si se está cambiando la contraseña
+        if (!esActualizacion && (usuario.getContrasena() == null || usuario.getContrasena().length() < 6)) {
+            mostrarError("Error de validación", "La contraseña debe tener al menos 6 caracteres");
+            return false;
+        }
+        return true;
+    }
 
     public boolean guardarUsuario(Usuario usuario) {
+        if (!validarUsuario(usuario, false)) {
+            return false;
+        }
+
         String query = "INSERT INTO usuario (nombre, correo, telefono, contrasena, estado) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, usuario.getNombre());
@@ -30,27 +80,41 @@ public class UsuarioDAO {
             String contrasenaEncriptada = encoder.encode(usuario.getContrasena());
             stmt.setString(4, contrasenaEncriptada);
             stmt.setBoolean(5, usuario.isEstado());
-
             
-            return stmt.executeUpdate() > 0;
+            boolean resultado = stmt.executeUpdate() > 0;
+            if (resultado) {
+                mostrarInformacion("Éxito", "Usuario guardado correctamente");
+            }
+            return resultado;
         } catch (SQLException e) {
-            e.printStackTrace();
+            mostrarError("Error", "Error al guardar usuario: " + e.getMessage());
             return false;
         }
     }
 
     public boolean actualizarUsuario(Usuario usuario) {
+        System.out.println(usuario);
+        if (!validarUsuario(usuario, true)) {
+            return false;
+        }
+
         String query = "UPDATE usuario SET nombre = ?, correo = ?, telefono = ?, estado = ? WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, usuario.getNombre());
             stmt.setString(2, usuario.getEmail());
             stmt.setString(3, usuario.getTelefono());
             stmt.setBoolean(4, usuario.isEstado());
-            
             stmt.setInt(5, usuario.getId());
-            return stmt.executeUpdate() > 0;
+            
+            boolean resultado = stmt.executeUpdate() > 0;
+            if (resultado) {
+                mostrarInformacion("Éxito", "Usuario actualizado correctamente");
+            } else {
+                mostrarError("Error", "No se encontró el usuario para actualizar");
+            }
+            return resultado;
         } catch (SQLException e) {
-            e.printStackTrace();
+            mostrarError("Error", "Error al actualizar usuario: " + e.getMessage());
             return false;
         }
     }    
@@ -61,7 +125,8 @@ public class UsuarioDAO {
             stmt.setInt(1, id);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
+            mostrarError("Error", "Error al eliminar usuario: " + e.getMessage());
             return false;
         }
     }
@@ -82,12 +147,11 @@ public class UsuarioDAO {
                 ));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            mostrarError("Error", "Error al obtener todos los usuarios: " + e.getMessage());
         }
 
         return usuarios;
     }
-    
     
     public boolean cambiarContrasena(int usuarioId, String nuevaContrasena) {
         String query = "UPDATE usuario SET contrasena = ? WHERE id = ?";
@@ -97,12 +161,17 @@ public class UsuarioDAO {
             stmt.setInt(2, usuarioId);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            mostrarError("Error", "Error al cambiar contraseña: " + e.getMessage());
             return false;
         }
     }
 
     public Usuario validarCredenciales(String email, String contrasenaIngresada) {
+        if (email == null || email.trim().isEmpty() || contrasenaIngresada == null || contrasenaIngresada.trim().isEmpty()) {
+            mostrarError("Error de validación", "Email y contraseña son requeridos");
+            return null;
+        }
+
         String query = "SELECT id, nombre, correo, telefono, estado, contrasena FROM usuario WHERE correo = ?";
         
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
@@ -112,9 +181,7 @@ public class UsuarioDAO {
             if (rs.next()) {
                 String contrasenaEncriptada = rs.getString("contrasena");
                 
-                // Verificar la contraseña ingresada
                 if (encoder.matches(contrasenaIngresada, contrasenaEncriptada)) {
-                    // Crear el objeto Usuario
                     Usuario usuario = new Usuario();
                     usuario.setId(rs.getInt("id"));
                     usuario.setNombre(rs.getString("nombre"));
@@ -122,20 +189,21 @@ public class UsuarioDAO {
                     usuario.setTelefono(rs.getString("telefono"));
                     usuario.setEstado(rs.getBoolean("estado"));
                     
-                    // Obtener los roles del usuario
                     obtenerRoles(usuario);
-    
-                    // Obtener los permisos asociados a los roles del usuario
                     obtenerPermisos(usuario);
                     
                     return usuario;
+                } else {
+                    mostrarError("Error de autenticación", "Contraseña incorrecta");
                 }
+            } else {
+                mostrarError("Error de autenticación", "Usuario no encontrado");
             }
         } catch (SQLException e) {
-            System.out.println(e);
+            mostrarError("Error", "Error al validar credenciales: " + e.getMessage());
         }
         
-        return null; // Devuelve null si las credenciales no son válidas
+        return null;
     }
     
     private void obtenerRoles(Usuario usuario) {
@@ -160,7 +228,7 @@ public class UsuarioDAO {
             }
             usuario.setRoles(roles); // Establecer los roles en el objeto Usuario
         } catch (SQLException e) {
-            System.out.println(e);
+            mostrarError("Error", "Error al obtener roles: " + e.getMessage());
         }
     }
     
@@ -191,7 +259,7 @@ public class UsuarioDAO {
             }
             usuario.setPermisos(permisos); // Establecer los permisos en el objeto Usuario
         } catch (SQLException e) {
-            System.out.println(e);
+            mostrarError("Error", "Error al obtener permisos: " + e.getMessage());
         }
     }
     
@@ -205,7 +273,7 @@ public class UsuarioDAO {
                 return rs.getInt(1) > 0;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            mostrarError("Error", "Error al verificar existencia de email: " + e.getMessage());
         }
         return false;
     }
@@ -220,7 +288,7 @@ public class UsuarioDAO {
                 return rs.getInt(1) > 0;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            mostrarError("Error", "Error al verificar existencia de teléfono: " + e.getMessage());
         }
         return false;
     }
