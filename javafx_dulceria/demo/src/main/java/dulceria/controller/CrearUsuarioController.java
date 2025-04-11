@@ -88,32 +88,106 @@ public class CrearUsuarioController {
     }
 
     private boolean validarCampos(String nombre, String email, String telefono, String contrasena, String confirmarContrasena) {
+        // Validación de campos vacíos
         if (nombre.isEmpty() || email.isEmpty() || telefono.isEmpty() || contrasena.isEmpty() || confirmarContrasena.isEmpty()) {
             mostrarAlerta("Campos vacíos", "Por favor, llena todos los campos.", AlertType.WARNING);
             return false;
         }
 
-        if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
-            mostrarAlerta("Correo inválido", "Por favor, ingresa un correo electrónico válido.", AlertType.WARNING);
+        // Validación de formato de nombre
+        if (!validarNombre(nombre)) {
             return false;
         }
 
-        if (!telefono.matches("^\\d{10}$")) {
-            mostrarAlerta("Teléfono inválido", "Por favor, ingresa un teléfono válido de 10 dígitos.", AlertType.WARNING);
+        // Validación de correo
+        if (!validarEmail(email)) {
             return false;
         }
 
-        if (!contrasena.equals(confirmarContrasena)) {
-            mostrarAlerta("Contraseñas no coinciden", "La contraseña y su confirmación no coinciden.", AlertType.WARNING);
+        // Validación de teléfono
+        if (!validarTelefono(telefono)) {
             return false;
         }
 
-        if (contrasena.length() < 6) {
-            mostrarAlerta("Contraseña débil", "La contraseña debe tener al menos 6 caracteres.", AlertType.WARNING);
+        // Validación de contraseña
+        if (!validarContrasena(contrasena, confirmarContrasena)) {
+            return false;
+        }
+
+        // Validación de duplicados
+        if (!validarDuplicados(email, telefono)) {
             return false;
         }
 
         return true;
+    }
+
+    private boolean validarNombre(String nombre) {
+        if (nombre.length() < 3) {
+            mostrarAlerta("Nombre inválido", "El nombre debe tener al menos 3 caracteres.", AlertType.WARNING);
+            return false;
+        }
+        if (!nombre.matches("^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$")) {
+            mostrarAlerta("Nombre inválido", "El nombre solo debe contener letras y espacios.", AlertType.WARNING);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean validarEmail(String email) {
+        if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+            mostrarAlerta("Correo inválido", "Por favor, ingresa un correo electrónico válido.", AlertType.WARNING);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean validarTelefono(String telefono) {
+        if (!telefono.matches("^\\d{10}$")) {
+            mostrarAlerta("Teléfono inválido", "Por favor, ingresa un teléfono válido de 10 dígitos.", AlertType.WARNING);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean validarContrasena(String contrasena, String confirmarContrasena) {
+        if (contrasena.length() < 6) {
+            mostrarAlerta("Contraseña débil", "La contraseña debe tener al menos 6 caracteres.", AlertType.WARNING);
+            return false;
+        }
+        
+        if (!contrasena.matches(".*\\d.*")) {
+            mostrarAlerta("Contraseña débil", "La contraseña debe contener al menos un número.", AlertType.WARNING);
+            return false;
+        }
+        
+        if (!contrasena.equals(confirmarContrasena)) {
+            mostrarAlerta("Contraseñas no coinciden", "La contraseña y su confirmación no coinciden.", AlertType.WARNING);
+            return false;
+        }
+        
+        return true;
+    }
+
+    private boolean validarDuplicados(String email, String telefono) {
+        try {
+            // Verificar si existe el email
+            if (usuarioDAO.existeEmail(email)) {
+                mostrarAlerta("Email duplicado", "Ya existe un usuario registrado con este correo electrónico.", AlertType.WARNING);
+                return false;
+            }
+
+            // Verificar si existe el teléfono
+            if (usuarioDAO.existeTelefono(telefono)) {
+                mostrarAlerta("Teléfono duplicado", "Ya existe un usuario registrado con este número de teléfono.", AlertType.WARNING);
+                return false;
+            }
+
+            return true;
+        } catch (Exception e) {
+            mostrarAlerta("Error de validación", "Error al verificar duplicados: " + e.getMessage(), AlertType.ERROR);
+            return false;
+        }
     }
 
     private void limpiarCampos() {
