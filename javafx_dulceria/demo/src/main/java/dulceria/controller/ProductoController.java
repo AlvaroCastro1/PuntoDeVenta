@@ -115,6 +115,7 @@ public class ProductoController {
 
         // Configurar la política de redimensionamiento automático
         tableProductos.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tblImagenes.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         // Configurar el listener para seleccionar un producto
         tableProductos.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
