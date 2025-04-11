@@ -6,8 +6,10 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
-    <Label style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Configurar Base de Caja" />
+<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" stylesheets="@../css/estilos.css"  fx:controller="dulceria.controller.ConfigurarCajaController">
+    <Label styleClass="titulo-principal" text="Configurar Base de Caja" />
+    <Label styleClass="form-label" text="Ingrese el dinero de la base de la caja." />
+    <Label styleClass="form-label" text="Ejemplo: 1500.50 (sin espacios o caracteres especiales)." />
     <TextField fx:id="baseInicialField" promptText="Ingrese la base inicial" />
     <Button onAction="#guardarBaseCaja" text="Guardar" />
    <padding>
