@@ -86,7 +86,7 @@ public class LoginController {
             App.setUsuarioAutenticado(usuarioValidado);
             app.showMainView(primaryStage);
         } else {
-            lblMensajeError.setText("Usuario o contraseña incorrectos.");
+            lblMensajeError.setText("Intentelo nuevamente.");
         }
     }
 
