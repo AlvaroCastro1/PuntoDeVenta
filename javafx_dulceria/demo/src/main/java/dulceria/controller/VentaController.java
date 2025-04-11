@@ -207,7 +207,6 @@ public class VentaController {
     
     // Método para buscar producto por código
     private void buscarProductoPorCodigo(String codigo) {
-        System.out.println(productos);
         Optional<Producto> producto = productos.stream()
             .filter(p -> codigo.equals(p.getCodigo()))
             .findFirst();
@@ -296,7 +295,6 @@ public class VentaController {
             }
         }
 
-        System.out.println(cantidad_producto);
 
         if (productoSeleccionado == null) {
             mostrarAlerta("Error", "Seleccione un producto antes de agregar.", Alert.AlertType.ERROR);
@@ -315,9 +313,6 @@ public class VentaController {
             .filter(vp -> vp.getProducto().getId() == productoSeleccionado.getId() && !vp.isPromocion())
             .mapToInt(VentaProducto::getCantidad)
             .sum();
-        
-        System.out.println(productoSeleccionado.getNombre() + " - " + cantidadEnDetalle);
-    
         // Validar si se puede añadir al detalle sin exceder las existencias
         if (cantidad_producto >= existenciasDisponibles) {
             mostrarAlerta("Error", "No se pueden añadir más unidades de este producto. Existencias disponibles: " + existenciasDisponibles, Alert.AlertType.ERROR);

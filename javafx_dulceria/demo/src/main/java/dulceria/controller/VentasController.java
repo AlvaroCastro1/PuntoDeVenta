@@ -295,12 +295,6 @@ public class VentasController {
                 stmtCancelar.setInt(3, detalleSeleccionado.getProducto().getId());
                 stmtCancelar.setInt(4, detalleSeleccionado.getLote());
                 stmtCancelar.executeUpdate();
-                System.out.println(
-                    +detalleSeleccionado.getId()+ "\n"+
-                    + ventaSeleccionada.getId()+ "\n"+
-                    + detalleSeleccionado.getProducto().getId()+ "\n"+
-                    + detalleSeleccionado.getLote()
-                    );
             }
     
             // Devolver la cantidad al lote correspondiente

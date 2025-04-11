@@ -344,8 +344,8 @@ public class UsuarioController {
                     mostrarAlerta("Error", "No se pudo eliminar el rol.", Alert.AlertType.ERROR);
                 }
             } else {
-                // Si el usuario cancela, no hacer nada
-                System.out.println("Eliminación de rol cancelada.");
+                // Si el usuario cancela, mostrar mensaje informativo
+                mostrarAlerta("Información", "Operación cancelada por el usuario.", Alert.AlertType.INFORMATION);
             }
         } else {
             mostrarAlerta("Error", "Por favor, selecciona un usuario y un rol para eliminar.", Alert.AlertType.ERROR);

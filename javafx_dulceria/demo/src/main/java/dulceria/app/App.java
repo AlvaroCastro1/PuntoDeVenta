@@ -68,7 +68,6 @@ public class App extends Application {
     public void showMainView(Stage primaryStage) {
         try {
             if (!verificarBaseCaja()) {
-                System.out.println("no hay");
                 // Si no hay base de caja, mostrar la vista para configurarla
                 FXMLLoader configurarCajaLoader = new FXMLLoader(getClass().getResource("/dulceria/fxml/configurar_caja.fxml"));
                 Parent configurarCajaView = configurarCajaLoader.load();
@@ -80,7 +79,6 @@ public class App extends Application {
                 return;
             }
 
-            System.out.println("si hay");
 
             // Si ya hay base de caja, continuar con la vista principal
             // Mostrar el indicador de carga
