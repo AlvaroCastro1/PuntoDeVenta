@@ -37,3 +37,5 @@ Thumbs.db
 
 # impresora
 *.raw
+
+/javafx_dulceria/demo/src/main/resources/config.properties
