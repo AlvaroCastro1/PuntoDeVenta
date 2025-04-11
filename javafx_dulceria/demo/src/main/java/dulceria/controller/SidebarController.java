@@ -29,6 +29,7 @@ public class SidebarController {
     @FXML private Button btnCrearUsuario;
     @FXML private Button btnRolUsuario;
     // @FXML private Button btnRolPermiso;
+    @FXML private Button btnCorteCaja;
     @FXML private Button btnModoOscuro;
 
     private App app;
@@ -252,6 +253,13 @@ public class SidebarController {
         System.out.println("Navegando a Pantalla Promocion");
         // Lógica de navegación
         app.changeView("/dulceria/fxml/promocionesCRUD.fxml");
+    }
+
+    @FXML
+    private void navigateToCorteCaja(ActionEvent event) {
+        System.out.println("Navegando a Pantalla Corte de Caja");
+        // Lógica de navegación
+        app.changeView("/dulceria/fxml/CorteCaja.fxml");
     }
 
     @FXML

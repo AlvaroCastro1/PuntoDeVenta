@@ -23,7 +23,7 @@
         <Button text="Crear Usuario" fx:id="btnCrearUsuario" onAction="#navigateToCrearUsuario" styleClass="sidebar-button" maxWidth="200"/>
         <Button text="Rol usuario" fx:id="btnRolUsuario" onAction="#navigateToRolUsuario" styleClass="sidebar-button" maxWidth="200"/>
         <!-- <Button text="Rol Permiso" fx:id="btnRolPermiso" onAction="#navigateToRolPermiso" styleClass="sidebar-button" maxWidth="200"/> -->
+        <Button text="Corte de Caja" fx:id="btnCorteCaja" onAction="#navigateToCorteCaja" styleClass="sidebar-button" maxWidth="200"/>
         <Button text="Modo Claro/Oscuro" fx:id="btnModoOscuro" onAction="#toggleModoOscuro" styleClass="sidebar-button" maxWidth="200"/>
-        <Button text="" styleClass="sidebar-button" maxWidth="200"/>
     </VBox>
 </ScrollPane>

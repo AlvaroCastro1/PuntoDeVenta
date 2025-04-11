@@ -638,3 +638,68 @@ Button:hover {
     -fx-pie-color: #e74c3c; /* Rojo para Pérdidas */
 }
 
+
+/* Etiquetas */
+.form-label-bold {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #555;
+}
+
+.dark-mode .form-label-bold {
+    -fx-text-fill: #cfd8dc;
+}
+
+.amount-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #333;
+}
+
+.dark-mode .amount-label {
+    -fx-text-fill: #eceff1;
+}
+
+/* Total final destacado */
+.total-final-label {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #3f51b5;
+}
+
+.dark-mode .total-final-label {
+    -fx-text-fill: #7986cb;
+}
+
+.total-final-amount {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #3f51b5;
+}
+
+.dark-mode .total-final-amount {
+    -fx-text-fill: #7986cb;
+}
+
+/* Botón principal */
+.boton-principal {
+    -fx-background-color: #3f51b5;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 10px 25px;
+    -fx-background-radius: 4px;
+    -fx-cursor: hand;
+}
+
+.boton-principal:hover {
+    -fx-background-color: #303f9f;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 1);
+}
+
+.dark-mode .boton-principal {
+    -fx-background-color: #3949ab;
+}
+
+.dark-mode .boton-principal:hover {
+    -fx-background-color: #303f9f;
+}
