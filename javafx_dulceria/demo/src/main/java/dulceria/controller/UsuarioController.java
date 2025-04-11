@@ -107,6 +107,7 @@ public class UsuarioController {
 
         // Asignar los datos filtrados a la tabla
         tblUsuarios.setItems(sortedData);
+        tblUsuarios.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 
     private void configurarTabla() {

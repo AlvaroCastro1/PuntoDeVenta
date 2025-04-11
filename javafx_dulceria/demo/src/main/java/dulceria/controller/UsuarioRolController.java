@@ -34,6 +34,7 @@ public class UsuarioRolController {
         cargarUsuarios();
         cargarRoles();
         cargarRelaciones();
+        tablaUsuarioRol.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 
     private void configurarTabla() {

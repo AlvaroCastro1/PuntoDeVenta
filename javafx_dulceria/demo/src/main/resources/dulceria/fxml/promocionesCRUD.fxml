@@ -17,10 +17,10 @@
 <?import javafx.scene.layout.VBox?>
 
 <BorderPane styleClass="main-container" stylesheets="@../css/estilos.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dulceria.controller.PromocionController">
-<center>
+    <center>
         <HBox spacing="20" styleClass="main-container">
             <!-- Sección Tabla -->
-            <VBox spacing="10" styleClass="tabla-seccion">
+            <VBox spacing="10" styleClass="tabla-seccion" HBox.hgrow="ALWAYS">
                 <Label styleClass="titulo-principal" text="Lista de Promociones" />
                 <TextField fx:id="txtBusqueda" promptText="Filtrar promociones" />
                 <TableView fx:id="tblPromociones" prefHeight="400.0" VBox.vgrow="ALWAYS">
@@ -36,8 +36,8 @@
             </VBox>
 
             <!-- Sección Formulario -->
-            <VBox minWidth="400" spacing="20" styleClass="details-pane">
-                <GridPane hgap="10" styleClass="form-grid" vgap="15">
+            <VBox minWidth="400" spacing="20" styleClass="details-pane" HBox.hgrow="NEVER">
+                <GridPane hgap="10" styleClass="form-grid" vgap="15" VBox.vgrow="ALWAYS">
                     <columnConstraints>
                         <ColumnConstraints halignment="RIGHT" hgrow="NEVER" />
                         <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" />
@@ -85,7 +85,7 @@
             </VBox>
         </HBox>
     </center>
-   <padding>
-      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-   </padding>
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
 </BorderPane>
