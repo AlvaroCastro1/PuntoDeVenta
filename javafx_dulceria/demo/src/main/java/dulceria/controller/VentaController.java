@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -15,7 +14,6 @@ import java.util.stream.Collectors;
 
 import dulceria.DatabaseConnection;
 import dulceria.app.App;
-import dulceria.app.ImpresoraTicket;
 import dulceria.model.Producto;
 import dulceria.model.Promocion;
 import dulceria.model.Usuario;
