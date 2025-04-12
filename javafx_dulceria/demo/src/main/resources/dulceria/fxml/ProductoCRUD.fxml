@@ -29,6 +29,7 @@
                         <TableColumn fx:id="colCategoria" prefWidth="100.0" text="Categoría" />
                         <TableColumn fx:id="colPrecio" prefWidth="75.0" text="Precio" />
                         <TableColumn fx:id="colCosto" prefWidth="75.0" text="Costo" />
+                        <TableColumn fx:id="colCodigo" prefWidth="100.0" text="Código de Barras" />
                     </columns>
                 </TableView>
             </VBox>

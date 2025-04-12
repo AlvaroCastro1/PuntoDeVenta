@@ -48,7 +48,7 @@ public class ProductoController {
     private TableColumn<Producto, Integer> colId;
 
     @FXML
-    private TableColumn<Producto, String> colNombre, colDescripcion, colCategoria;
+    private TableColumn<Producto, String> colNombre, colDescripcion, colCategoria, colCodigo;
 
     @FXML
     private TableColumn<Producto, Double> colPrecio, colCosto; // Nueva columna
@@ -92,7 +92,8 @@ public class ProductoController {
                 String lowerCaseFilter = newValue.toLowerCase();
                 return producto.getNombre().toLowerCase().contains(lowerCaseFilter) ||
                        producto.getCategoria().toLowerCase().contains(lowerCaseFilter) ||
-                       String.valueOf(producto.getPrecio()).contains(lowerCaseFilter);
+                       String.valueOf(producto.getPrecio()).contains(lowerCaseFilter) ||
+                       producto.getCodigo().toLowerCase().contains(lowerCaseFilter); // Filtrar por código
             });
         });
 
@@ -112,6 +113,7 @@ public class ProductoController {
         colCategoria.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getCategoria()));
         colPrecio.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getPrecio()));
         colCosto.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getCosto())); // Nueva columna
+        colCodigo.setCellValueFactory(new PropertyValueFactory<>("codigo"));
 
         // Configurar la política de redimensionamiento automático
         tableProductos.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
