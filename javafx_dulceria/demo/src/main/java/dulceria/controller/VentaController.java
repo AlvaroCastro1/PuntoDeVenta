@@ -22,6 +22,7 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -39,6 +40,8 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
+import javafx.util.Duration;
+import javafx.animation.PauseTransition;
 
 public class VentaController {
 
@@ -126,45 +129,16 @@ public class VentaController {
     private void configurarLectorCodigoBarras() {
         menuSugerencias = new ContextMenu();
 
+        // Usar PauseTransition para reducir la frecuencia de búsqueda
+        PauseTransition pause = new PauseTransition(Duration.millis(300));
         txtCodigoBarras.textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.isEmpty()) {
                 menuSugerencias.hide();
                 return;
             }
 
-            // Convertir el texto ingresado a minúsculas para una comparación insensible a mayúsculas
-            String textoIngresado = newValue.toLowerCase();
-
-            // Filtrar productos que coincidan con el texto ingresado (en código o nombre)
-            List<Producto> coincidencias = productos.stream()
-                .filter(p -> p.getCodigo().toLowerCase().contains(textoIngresado) || 
-                             p.getNombre().toLowerCase().contains(textoIngresado))
-                .collect(Collectors.toList());
-
-            if (coincidencias.isEmpty()) {
-                menuSugerencias.hide();
-            } else {
-                // Crear elementos del menú con las coincidencias
-                menuSugerencias.getItems().clear();
-                for (Producto producto : coincidencias) {
-                    MenuItem item = new MenuItem(producto.getCodigo() + " - " + producto.getNombre());
-                    item.setOnAction(event -> {
-                        txtCodigoBarras.setText(producto.getCodigo());
-                        buscarProductoPorCodigo(producto.getCodigo());
-                        txtCodigoBarras.clear();
-                        menuSugerencias.hide();
-                    });
-                    menuSugerencias.getItems().add(item);
-                }
-
-                // Mostrar el menú debajo del campo de texto
-                if (!menuSugerencias.isShowing()) {
-                    javafx.geometry.Bounds bounds = txtCodigoBarras.localToScreen(txtCodigoBarras.getBoundsInLocal());
-                    if (bounds != null) {
-                        menuSugerencias.show(txtCodigoBarras, bounds.getMinX(), bounds.getMaxY());
-                    }
-                }
-            }
+            pause.setOnFinished(event -> buscarCoincidencias(newValue.toLowerCase()));
+            pause.playFromStart();
         });
 
         txtCodigoBarras.setOnKeyPressed(event -> {
@@ -179,6 +153,55 @@ public class VentaController {
                 Platform.runLater(() -> txtCodigoBarras.requestFocus());
             }
         });
+    }
+
+    private void buscarCoincidencias(String textoIngresado) {
+        Task<List<Producto>> task = new Task<>() {
+            @Override
+            protected List<Producto> call() {
+                // Filtrar productos que coincidan con el texto ingresado
+                return productos.stream()
+                    .filter(p -> p.getCodigo().toLowerCase().contains(textoIngresado) ||
+                                 p.getNombre().toLowerCase().contains(textoIngresado))
+                    .collect(Collectors.toList());
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            List<Producto> coincidencias = task.getValue();
+            if (coincidencias.isEmpty()) {
+                menuSugerencias.hide();
+            } else {
+                menuSugerencias.getItems().clear();
+                for (Producto producto : coincidencias) {
+                    MenuItem item = new MenuItem(producto.getCodigo() + " - " + producto.getNombre());
+                    item.setOnAction(e -> {
+                        txtCodigoBarras.setText(producto.getCodigo());
+                        buscarProductoPorCodigo(producto.getCodigo());
+                        txtCodigoBarras.clear();
+                        menuSugerencias.hide();
+                    });
+                    menuSugerencias.getItems().add(item);
+                }
+
+                // Mostrar el menú debajo del campo de texto
+                if (!menuSugerencias.isShowing()) {
+                    javafx.geometry.Bounds bounds = txtCodigoBarras.localToScreen(txtCodigoBarras.getBoundsInLocal());
+                    if (bounds != null) {
+                        double x = bounds.getMinX(); // Coordenada X del campo de texto
+                        double y = bounds.getMaxY(); // Coordenada Y justo debajo del campo de texto
+                        menuSugerencias.show(txtCodigoBarras, x, y);
+                    }
+                }
+            }
+        });
+
+        task.setOnFailed(event -> {
+            menuSugerencias.hide();
+            event.getSource().getException().printStackTrace();
+        });
+
+        new Thread(task).start();
     }
 
     private void configurarFocoAutomatico() {
