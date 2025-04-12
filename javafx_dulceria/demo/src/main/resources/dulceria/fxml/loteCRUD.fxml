@@ -32,6 +32,7 @@
                 <columns>
                     <TableColumn fx:id="colId" text="ID" />
                     <TableColumn fx:id="colProducto" text="Producto" />
+                    <TableColumn fx:id="colCodigo" text="Código" />
                     <TableColumn fx:id="colCantidad" text="Cantidad" />
                     <TableColumn fx:id="colFechaCaducidad" text="Fecha Caducidad" />
                     <TableColumn fx:id="colEstado" text="Estado" />

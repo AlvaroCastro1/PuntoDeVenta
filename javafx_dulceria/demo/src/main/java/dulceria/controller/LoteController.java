@@ -43,6 +43,8 @@ public class LoteController {
     @FXML
     private TableColumn<Lote, String> colFechaCaducidad;
     @FXML
+    private TableColumn<Lote, String> colCodigo; // Columna para el código del producto
+    @FXML
     private Button btnAdd, btnUpdate, btnDelete, btnClear;
     @FXML
     private TextField txtSearch; // Campo de búsqueda
@@ -74,6 +76,11 @@ public class LoteController {
         colProducto.setCellValueFactory(cellData -> {
             Producto producto = cellData.getValue().getProducto();
             return new SimpleStringProperty(producto != null ? producto.getNombre() : "Sin producto");
+        });
+
+        colCodigo.setCellValueFactory(cellData -> {
+            Producto producto = cellData.getValue().getProducto();
+            return new SimpleStringProperty(producto != null ? producto.getCodigo() : "Sin código");
         });
 
         colEstado.setCellValueFactory(cellData -> {
@@ -439,6 +446,8 @@ public class LoteController {
                     return true; // Coincide con el ID
                 } else if (lote.getProducto() != null && lote.getProducto().getNombre().toLowerCase().contains(lowerCaseFilter)) {
                     return true; // Coincide con el nombre del producto
+                } else if (lote.getProducto() != null && lote.getProducto().getCodigo().toLowerCase().contains(lowerCaseFilter)) {
+                    return true; // Coincide con el código del producto
                 } else if (String.valueOf(lote.getCantidad()).contains(lowerCaseFilter)) {
                     return true; // Coincide con la cantidad
                 } else if (lote.getFechaCaducidad() != null && lote.getFechaCaducidad().toString().toLowerCase().contains(lowerCaseFilter)) {
