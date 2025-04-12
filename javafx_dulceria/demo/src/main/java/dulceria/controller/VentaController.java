@@ -27,6 +27,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
@@ -42,6 +43,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Duration;
 import javafx.animation.PauseTransition;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 
 public class VentaController {
 
@@ -126,6 +129,7 @@ public class VentaController {
     @FXML
     private TextField txtCodigoBarras;
 
+    @FXML
     private void configurarLectorCodigoBarras() {
         menuSugerencias = new ContextMenu();
 
@@ -153,6 +157,17 @@ public class VentaController {
                 Platform.runLater(() -> txtCodigoBarras.requestFocus());
             }
         });
+
+        // Crear un Timeline para validar constantemente si el campo está vacío
+        Timeline validarCampoVacio = new Timeline(
+            new KeyFrame(Duration.millis(100), event -> {
+                if (txtCodigoBarras.getText().trim().isEmpty()) {
+                    menuSugerencias.hide();
+                }
+            })
+        );
+        validarCampoVacio.setCycleCount(Timeline.INDEFINITE); // Repetir indefinidamente
+        validarCampoVacio.play(); // Iniciar el Timeline
     }
 
     private void buscarCoincidencias(String textoIngresado) {
@@ -401,8 +416,9 @@ public class VentaController {
                 }
             }
         }
-    
         actualizarTotal();
+
+        menuSugerencias.hide();
     }
 
     private List<Promocion> obtenerPromocionesActivasParaProducto(Producto producto) {
