@@ -11,6 +11,7 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
@@ -18,7 +19,7 @@
     <center>
         <HBox spacing="20" styleClass="main-container">
             <!-- Sección Tabla -->
-            <VBox spacing="10" styleClass="tabla-seccion">
+            <VBox spacing="10" styleClass="tabla-seccion" HBox.hgrow="ALWAYS">
                 <Label style="-fx-font-size: 16; -fx-font-weight: bold;" styleClass="titulo-principal" text="Lista de Productos" />
                 <TextField fx:id="txtBusqueda" promptText="Filtrar productos"/>
                 <TableView fx:id="tableProductos" prefHeight="400.0" VBox.vgrow="ALWAYS">
@@ -33,10 +34,22 @@
             </VBox>
 
             <!-- Sección Formulario -->
-            <VBox spacing="20" styleClass="details-pane">
+            <VBox spacing="20" styleClass="details-pane" HBox.hgrow="ALWAYS">
                 <Label style="-fx-font-size: 16; -fx-font-weight: bold;" styleClass="titulo-principal" text="Detalles del Producto" />
 
                 <GridPane hgap="10" vgap="10">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="NEVER"/>
+                        <ColumnConstraints hgrow="ALWAYS"/>
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                    </rowConstraints>
                     <!-- Campos del formulario -->
                     <Label styleClass="form-label" text="Nombre:" />
                     <TextField fx:id="txtNombre" GridPane.columnIndex="1" />
@@ -55,19 +68,6 @@
 
                     <Label styleClass="form-label" text="Código de Barras:" GridPane.rowIndex="5" />
                     <TextField fx:id="txtCodigo" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-               <columnConstraints>
-                  <ColumnConstraints />
-                  <ColumnConstraints />
-               </columnConstraints>
-               <rowConstraints>
-                  <RowConstraints />
-                  <RowConstraints />
-                  <RowConstraints />
-                  <RowConstraints />
-                  <RowConstraints />
-                  <RowConstraints />
-               </rowConstraints>
-
                 </GridPane>
 
                 <!-- Tabla de imágenes -->
@@ -94,7 +94,7 @@
             </VBox>
         </HBox>
     </center>
-   <padding>
-      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-   </padding>
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
 </BorderPane>
