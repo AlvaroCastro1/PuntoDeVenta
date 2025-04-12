@@ -678,7 +678,8 @@ public class VentaController {
         ContextMenu contextMenu = new ContextMenu();
         MenuItem eliminarItem = new MenuItem("Eliminar");
         MenuItem reducirCantidadItem = new MenuItem("Reducir cantidad");
-    
+        MenuItem modificarTotalItem = new MenuItem("Modificar total"); // Nueva opción
+
         // Configurar la acción del menú "Eliminar"
         eliminarItem.setOnAction(event -> {
             VentaProducto productoSeleccionado = tablaVenta.getSelectionModel().getSelectedItem();
@@ -688,23 +689,23 @@ public class VentaController {
                 actualizarTotal();
             }
         });
-    
+
         // Configurar la acción del menú "Reducir cantidad"
         reducirCantidadItem.setOnAction(event -> {
             VentaProducto productoSeleccionado = tablaVenta.getSelectionModel().getSelectedItem();
             if (productoSeleccionado != null) {
                 int cantidadActual = productoSeleccionado.getCantidad();
-                
+
                 if (cantidadActual > 1) {
                     // Reducir la cantidad del producto
                     productoSeleccionado.setCantidad(cantidadActual - 1);
-    
+
                     // Si el producto es una promoción, desactivar el estado de promoción
                     if (productoSeleccionado.isPromocion()) {
                         productoSeleccionado.setPromocion(false);
                         productoSeleccionado.setNombre(productoSeleccionado.getProducto().getNombre());
                     }
-    
+
                     tablaVenta.refresh(); // Refrescar la tabla para mostrar los cambios
                 } else {
                     // Si la cantidad es 1, eliminar el producto de la tabla
@@ -713,9 +714,52 @@ public class VentaController {
                 actualizarTotal();
             }
         });
-    
-        contextMenu.getItems().addAll(reducirCantidadItem, eliminarItem);
-    
+
+        // Configurar la acción del menú "Modificar total"
+        modificarTotalItem.setOnAction(event -> {
+            VentaProducto productoSeleccionado = tablaVenta.getSelectionModel().getSelectedItem();
+            if (productoSeleccionado != null) {
+                TextInputDialog dialog = new TextInputDialog(String.format("%.2f", productoSeleccionado.getTotal()));
+                dialog.setTitle("Modificar Subtotal");
+                dialog.setHeaderText("Modificar el subtotal del producto");
+                dialog.setContentText("Ingrese el nuevo subtotal:");
+
+                // Validar que el valor ingresado sea un número válido
+                dialog.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
+                    if (!newValue.matches("\\d*(\\.\\d{0,2})?")) {
+                        dialog.getEditor().setText(oldValue);
+                    }
+                });
+
+                Optional<String> result = dialog.showAndWait();
+                if (result.isPresent()) {
+                    try {
+                        double nuevoSubtotal = Double.parseDouble(result.get());
+                        if (nuevoSubtotal <= 0) {
+                            mostrarAlerta("Error", "El subtotal debe ser mayor a 0.", Alert.AlertType.ERROR);
+                            return;
+                        }
+
+                        // Actualizar el subtotal directamente
+                        productoSeleccionado.setTotal(nuevoSubtotal);
+
+                        // Actualizar la lista de productos añadidos
+                        int index = listaVenta.indexOf(productoSeleccionado);
+                        if (index != -1) {
+                            listaVenta.set(index, productoSeleccionado); // Actualizar el producto en la lista
+                        }
+
+                        tablaVenta.refresh(); // Refrescar la tabla para mostrar los cambios
+                        actualizarTotal(); // Actualizar el total general
+                    } catch (NumberFormatException e) {
+                        mostrarAlerta("Error", "Ingrese un subtotal válido.", Alert.AlertType.ERROR);
+                    }
+                }
+            }
+        });
+
+        contextMenu.getItems().addAll(reducirCantidadItem, modificarTotalItem, eliminarItem);
+
         // Asignar el menú contextual a las filas de la tabla
         tablaVenta.setRowFactory(tv -> {
             TableRow<VentaProducto> row = new TableRow<>();
