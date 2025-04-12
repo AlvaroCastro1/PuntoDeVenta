@@ -496,6 +496,7 @@ public class VentaController {
         Connection connection = null;
         PreparedStatement stmtVenta = null;
         PreparedStatement stmtDetalle = null;
+        PreparedStatement stmtActualizarLote = null;
         PreparedStatement stmtActualizarCaja = null;
         PreparedStatement stmtMovimientoCaja = null;
         ResultSet generatedKeys = null;
@@ -546,7 +547,12 @@ public class VentaController {
                                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             stmtDetalle = connection.prepareStatement(sqlDetalle);
 
+            // 3. Actualizar las cantidades en los lotes
+            String sqlActualizarLote = "UPDATE lote SET cantidad = cantidad - ? WHERE id_producto = ? AND cantidad >= ? LIMIT 1";
+            stmtActualizarLote = connection.prepareStatement(sqlActualizarLote);
+
             for (VentaProducto ventaProducto : listaVenta) {
+                // Insertar detalle de la venta
                 stmtDetalle.setInt(1, idVenta);
                 stmtDetalle.setInt(2, ventaProducto.getProducto().getId());
                 stmtDetalle.setObject(3, null); // Lote puede ser null
@@ -557,13 +563,21 @@ public class VentaController {
                 stmtDetalle.setObject(8, null); // Promoción puede ser null
                 stmtDetalle.setDouble(9, 0.0); // Descuento aplicado
                 stmtDetalle.setDouble(10, ventaProducto.getTotal());
-
                 stmtDetalle.addBatch();
+
+                // Actualizar cantidad en el lote
+                stmtActualizarLote.setInt(1, ventaProducto.getCantidad());
+                stmtActualizarLote.setInt(2, ventaProducto.getProducto().getId());
+                stmtActualizarLote.setInt(3, ventaProducto.getCantidad());
+                int rowsUpdated = stmtActualizarLote.executeUpdate();
+                if (rowsUpdated == 0) {
+                    throw new SQLException("No hay suficiente stock para el producto: " + ventaProducto.getProducto().getNombre());
+                }
             }
 
             stmtDetalle.executeBatch();
 
-            // 3. Actualizar los totales en la tabla caja
+            // 4. Actualizar los totales en la tabla caja
             double nuevoTotalIngresos = totalIngresos + montoPagado;
             double nuevoTotalVentas = totalVenta;
             double nuevoTotalEgresos = totalEgresos + (cambio > 0 ? cambio : 0); // Incrementar total_egresos si hay cambio
@@ -578,7 +592,7 @@ public class VentaController {
             stmtActualizarCaja.setInt(5, idCaja);
             stmtActualizarCaja.executeUpdate();
 
-            // 4. Insertar un movimiento en la tabla movimientos_caja (Ingreso)
+            // 5. Insertar un movimiento en la tabla movimientos_caja (Ingreso)
             String sqlMovimientoCaja = "INSERT INTO movimientos_caja (id_caja, tipo, descripcion, monto, id_usuario, created_at) VALUES (?, ?, ?, ?, ?, NOW())";
             stmtMovimientoCaja = connection.prepareStatement(sqlMovimientoCaja);
             stmtMovimientoCaja.setInt(1, idCaja);
@@ -588,7 +602,7 @@ public class VentaController {
             stmtMovimientoCaja.setInt(5, usuario.getId());
             stmtMovimientoCaja.executeUpdate();
 
-            // 5. Insertar un movimiento en la tabla movimientos_caja (Egreso) si hay cambio
+            // 6. Insertar un movimiento en la tabla movimientos_caja (Egreso) si hay cambio
             if (cambio > 0) {
                 stmtMovimientoCaja.setInt(1, idCaja);
                 stmtMovimientoCaja.setString(2, "Egreso");
@@ -624,6 +638,7 @@ public class VentaController {
             if (generatedKeys != null) try { generatedKeys.close(); } catch (SQLException ignored) {}
             if (stmtVenta != null) try { stmtVenta.close(); } catch (SQLException ignored) {}
             if (stmtDetalle != null) try { stmtDetalle.close(); } catch (SQLException ignored) {}
+            if (stmtActualizarLote != null) try { stmtActualizarLote.close(); } catch (SQLException ignored) {}
             if (stmtActualizarCaja != null) try { stmtActualizarCaja.close(); } catch (SQLException ignored) {}
             if (stmtMovimientoCaja != null) try { stmtMovimientoCaja.close(); } catch (SQLException ignored) {}
             if (connection != null) try { connection.close(); } catch (SQLException ignored) {}
