@@ -20,6 +20,13 @@
         <VBox alignment="TOP_CENTER" spacing="15" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
             <Label styleClass="titulo-principal" text="Crear Nuevo Lote" />
 
+            <!-- Buscador -->
+            <HBox alignment="CENTER" spacing="10" styleClass="search-container">
+                <children>
+                    <TextField fx:id="txtSearch" promptText="Buscar lote..." styleClass="input-field" HBox.hgrow="ALWAYS" />
+                </children>
+            </HBox>
+
             <!-- Tabla -->
             <TableView fx:id="tableLote" prefHeight="200.0" styleClass="table-view" >
                 <columns>

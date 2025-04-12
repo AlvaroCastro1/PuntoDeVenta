@@ -5,6 +5,8 @@ import javafx.scene.control.*;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.Optional;
@@ -42,12 +44,15 @@ public class LoteController {
     private TableColumn<Lote, String> colFechaCaducidad;
     @FXML
     private Button btnAdd, btnUpdate, btnDelete, btnClear;
+    @FXML
+    private TextField txtSearch; // Campo de búsqueda
 
     private Usuario usuario;
 
     private ObservableList<Lote> loteList = FXCollections.observableArrayList();
     private ObservableList<Producto> productoList = FXCollections.observableArrayList();  // Lista de productos
     private ObservableList<Estado> stateList = FXCollections.observableArrayList();
+    private FilteredList<Lote> filteredLoteList; // Lista filtrada para la tabla
 
     private DatabaseConnection dbConnection;
 
@@ -93,6 +98,9 @@ public class LoteController {
         tableLote.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             loadSelectedLoteData(newValue); // Cargar los datos del lote seleccionado
         });
+
+        // Configurar el buscador
+        configureSearch();
     }
 
     private void loadSelectedLoteData(Lote lote) {
@@ -410,5 +418,42 @@ public class LoteController {
         alerta.setHeaderText(null);
         alerta.setContentText(mensaje);
         alerta.showAndWait();
+    }
+
+    private void configureSearch() {
+        // Crear una lista filtrada basada en la lista original
+        filteredLoteList = new FilteredList<>(loteList, b -> true);
+
+        // Agregar un listener al campo de búsqueda
+        txtSearch.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredLoteList.setPredicate(lote -> {
+                // Si el texto de búsqueda está vacío, mostrar todos los lotes
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+
+                String lowerCaseFilter = newValue.toLowerCase();
+
+                // Filtrar por cualquier columna
+                if (String.valueOf(lote.getId()).contains(lowerCaseFilter)) {
+                    return true; // Coincide con el ID
+                } else if (lote.getProducto() != null && lote.getProducto().getNombre().toLowerCase().contains(lowerCaseFilter)) {
+                    return true; // Coincide con el nombre del producto
+                } else if (String.valueOf(lote.getCantidad()).contains(lowerCaseFilter)) {
+                    return true; // Coincide con la cantidad
+                } else if (lote.getFechaCaducidad() != null && lote.getFechaCaducidad().toString().toLowerCase().contains(lowerCaseFilter)) {
+                    return true; // Coincide con la fecha de caducidad
+                } else if (lote.getEstadoLote() != null && lote.getEstadoLote().getNombre().toLowerCase().contains(lowerCaseFilter)) {
+                    return true; // Coincide con el estado
+                }
+
+                return false; // No coincide con ningún criterio
+            });
+        });
+
+        // Envolver la lista filtrada en una lista ordenada y vincularla a la tabla
+        SortedList<Lote> sortedLoteList = new SortedList<>(filteredLoteList);
+        sortedLoteList.comparatorProperty().bind(tableLote.comparatorProperty());
+        tableLote.setItems(sortedLoteList);
     }
 }
