@@ -50,6 +50,7 @@
                         <RowConstraints />
                         <RowConstraints />
                         <RowConstraints />
+                        <RowConstraints /> <!-- Nueva fila para el campo de existencias -->
                     </rowConstraints>
                     <!-- Campos del formulario -->
                     <Label styleClass="form-label" text="Nombre:" />
@@ -69,6 +70,10 @@
 
                     <Label styleClass="form-label" text="Código de Barras:" GridPane.rowIndex="5" />
                     <TextField fx:id="txtCodigo" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+
+                    <!-- Nuevo campo para cantidad de existencias -->
+                    <Label styleClass="form-label" text="Existencias:" GridPane.rowIndex="6" />
+                    <TextField fx:id="txtExistencias" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                 </GridPane>
 
                 <!-- Tabla de imágenes -->

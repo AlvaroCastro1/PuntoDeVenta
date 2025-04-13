@@ -54,7 +54,7 @@ public class ProductoController {
     private TableColumn<Producto, Double> colPrecio, colCosto; // Nueva columna
 
     @FXML
-    private TextField txtNombre, txtCodigo, txtCategoria, txtPrecio, txtCosto, txtBusqueda;
+    private TextField txtNombre, txtCodigo, txtCategoria, txtPrecio, txtCosto, txtBusqueda, txtExistencias;
 
     @FXML
     private TextArea txtDescripcion;
@@ -212,7 +212,24 @@ public class ProductoController {
         txtCategoria.setText(producto.getCategoria());
         txtPrecio.setText(String.valueOf(producto.getPrecio()));
         txtCosto.setText(String.valueOf(producto.getCosto()));
-        
+
+        // Consultar la cantidad del lote
+        String sql = "SELECT cantidad FROM lote WHERE id_producto = ?";
+        try (Connection conn = dbConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, producto.getId());
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    int cantidad = rs.getInt("cantidad");
+                    txtExistencias.setText(String.valueOf(cantidad)); // Mostrar la cantidad en el campo
+                } else {
+                    txtExistencias.setText("0"); // Si no hay lote, mostrar 0
+                }
+            }
+        } catch (SQLException e) {
+            mostrarAlerta("Error", "Error al cargar la cantidad del lote: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
+
         // Cargar imágenes asociadas al producto
         listaImagenes.clear();  // Limpiar la lista antes de cargar los nuevos datos
         listaImagenes = loadImagenes(producto.getId());  // Cargar las imágenes del producto seleccionado
@@ -295,6 +312,8 @@ public class ProductoController {
                 );
 
                 actualizarProductoConImagenes(productoSeleccionado, listaImagenes);
+
+                actualizarCantidadLote(productoSeleccionado, txtExistencias.getText());
             } else { //GUARDAR PRODUCTO NUEVO
                 Producto nuevoProducto = new Producto(
                     txtNombre.getText(),
@@ -566,5 +585,31 @@ public class ProductoController {
 
         // Crear y devolver la imagen
         return new Image(inputStream);
+    }
+
+    public void actualizarCantidadLote(Producto producto, int nuevaCantidad) {
+        String sql = "UPDATE lote SET cantidad = ? WHERE id_producto = ?";
+        try (Connection conn = dbConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, nuevaCantidad);
+            stmt.setInt(2, producto.getId());
+            int filasActualizadas = stmt.executeUpdate();
+            if (filasActualizadas > 0) {
+                mostrarAlerta("Éxito", "Cantidad del lote actualizada correctamente.", Alert.AlertType.INFORMATION);
+            } else {
+                mostrarAlerta("Advertencia", "No se encontró un lote con el ID especificado.", Alert.AlertType.WARNING);
+            }
+        } catch (SQLException e) {
+            mostrarAlerta("Error", "Error al actualizar la cantidad del lote: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    public void actualizarCantidadLote(Producto producto, String nuevaCantidad) {
+        try {
+            int nuevaCantidadInt = Integer.parseInt(nuevaCantidad); // Convertir el texto a entero
+            actualizarCantidadLote(producto, nuevaCantidadInt);
+        } catch (NumberFormatException e) {
+            mostrarAlerta("Error", "La cantidad de existencias debe ser un número entero.", Alert.AlertType.ERROR);
+        }
     }
 }
