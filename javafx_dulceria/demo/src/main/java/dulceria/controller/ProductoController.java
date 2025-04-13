@@ -65,6 +65,9 @@ public class ProductoController {
     @FXML
     private HBox galleryContainer;
 
+    @FXML
+    private Label lblSinImagenes; // Vincula el Label desde el FXML
+
     private ObservableList<Producto> productos;
 
     private final DatabaseConnection dbConnection = new DatabaseConnection();
@@ -193,7 +196,8 @@ public class ProductoController {
                 }
 
                 if (!hasImages) {
-                    mostrarAlerta("Información", "No se encontraron imágenes para este producto.", Alert.AlertType.INFORMATION);
+                    // mostrarAlerta("Información", "No se encontraron imágenes para este producto.", Alert.AlertType.INFORMATION);
+
                 }
 
             }
@@ -235,6 +239,12 @@ public class ProductoController {
         listaImagenes = loadImagenes(producto.getId());  // Cargar las imágenes del producto seleccionado
         tblImagenes.setItems(listaImagenes);  // Cargar las imágenes en la tabla
 
+        // Mostrar el mensaje si no hay imágenes
+        if (listaImagenes.isEmpty()) {
+            lblSinImagenes.setVisible(true);
+        } else {
+            lblSinImagenes.setVisible(false);
+        }
     }
 
     @FXML
@@ -326,6 +336,8 @@ public class ProductoController {
                 guardarProductoConImagenes(nuevoProducto, listaImagenes);
             }
         }
+        clearForm();
+        initialize();
     }
 
     @FXML
@@ -517,6 +529,7 @@ public class ProductoController {
         listaImagenes.clear();  // Elimina todos los elementos de la lista
         productoSeleccionado = null;
         cargarProductos();
+        txtExistencias.clear(); // Limpiar el campo de existencias
 
     }
 
@@ -595,7 +608,7 @@ public class ProductoController {
             stmt.setInt(2, producto.getId());
             int filasActualizadas = stmt.executeUpdate();
             if (filasActualizadas > 0) {
-                mostrarAlerta("Éxito", "Cantidad del lote actualizada correctamente.", Alert.AlertType.INFORMATION);
+                // mostrarAlerta("Éxito", "Cantidad del lote actualizada correctamente.", Alert.AlertType.INFORMATION);
             } else {
                 mostrarAlerta("Advertencia", "No se encontró un lote con el ID especificado.", Alert.AlertType.WARNING);
             }

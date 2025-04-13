@@ -76,6 +76,7 @@
                     <TextField fx:id="txtExistencias" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                 </GridPane>
 
+                <Label fx:id="lblSinImagenes" styleClass="form-label" text="No se encontraron imágenes para este producto." visible="false" />
                 <!-- Tabla de imágenes -->
                 <TableView fx:id="tblImagenes" VBox.vgrow="ALWAYS">
                     <columns>
