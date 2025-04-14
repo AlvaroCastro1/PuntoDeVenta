@@ -71,9 +71,6 @@
                     <Label styleClass="form-label" text="Código de Barras:" GridPane.rowIndex="5" />
                     <TextField fx:id="txtCodigo" GridPane.columnIndex="1" GridPane.rowIndex="5" />
 
-                    <!-- Nuevo campo para cantidad de existencias -->
-                    <Label styleClass="form-label" text="Existencias:" GridPane.rowIndex="6" />
-                    <TextField fx:id="txtExistencias" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                 </GridPane>
 
                 <Label fx:id="lblSinImagenes" styleClass="form-label" text="No se encontraron imágenes para este producto." visible="false" />
