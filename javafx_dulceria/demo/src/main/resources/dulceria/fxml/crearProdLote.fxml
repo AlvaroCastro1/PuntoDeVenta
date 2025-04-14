@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane styleClass="root-container" stylesheets="@../css/estilos.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dulceria.controller.CrearProductoYLoteController">
+    <top>
+        <VBox spacing="10" VBox.vgrow="NEVER">
+            <HBox spacing="10">
+                <Label styleClass="form-label" text="Buscar Producto:" />
+                <TextField fx:id="searchField" promptText="Ingrese nombre o código" HBox.hgrow="ALWAYS" />
+            </HBox>
+            <ListView fx:id="searchResultsListView" onMouseClicked="#onSelectProduct" prefHeight="80" visible="false" />
+        </VBox>
+    </top>
+    <center>
+        <VBox fillWidth="true" spacing="10" VBox.vgrow="ALWAYS">
+            <!-- Título de Información del Producto -->
+            <Label styleClass="titulo-principal" text="Información del Producto" />
+            <VBox spacing="15" styleClass="details-pane" VBox.vgrow="ALWAYS">
+                <HBox spacing="10">
+                    <Label styleClass="form-label" text="Nombre:" />
+                    <TextField fx:id="nombreField" HBox.hgrow="ALWAYS" />
+                </HBox>
+                <HBox spacing="10">
+                    <Label styleClass="form-label" text="Código:" />
+                    <TextField fx:id="codigoField" HBox.hgrow="ALWAYS" />
+                </HBox>
+                <HBox spacing="10">
+                    <Label styleClass="form-label" text="Categoría:" />
+                    <TextField fx:id="categoriaField" HBox.hgrow="ALWAYS" />
+                </HBox>
+                <HBox spacing="10">
+                    <Label styleClass="form-label" text="Precio:" />
+                    <TextField fx:id="precioField" HBox.hgrow="ALWAYS" />
+                </HBox>
+                <HBox spacing="10">
+                    <Label styleClass="form-label" text="Costo:" />
+                    <TextField fx:id="costoField" promptText="0 si no aplica" HBox.hgrow="ALWAYS" />
+                </HBox>
+            </VBox>
+
+
+            <!-- Título de Información del Lote -->
+            <Label styleClass="titulo-principal" text="Información del Lote" />
+            <VBox spacing="10" styleClass="details-pane" VBox.vgrow="ALWAYS">
+                <HBox spacing="10">
+                    <Label styleClass="form-label" text="Cantidad:" />
+                    <TextField fx:id="cantidadField" HBox.hgrow="ALWAYS" />
+                </HBox>
+                <HBox spacing="10">
+                    <Label styleClass="form-label" text="Fecha de Caducidad:" />
+                    <DatePicker fx:id="fechaCaducidadPicker" HBox.hgrow="ALWAYS" />
+                </HBox>
+                <CheckBox fx:id="sinFechaCaducidadCheck" styleClass="form-label" text="Sin fecha de caducidad" />
+            </VBox>
+        </VBox>
+    </center>
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" spacing="10" HBox.hgrow="ALWAYS">
+            <Button onAction="#onGuardar" styleClass="boton-guardar" text="Guardar" />
+            <Button onAction="#onCancelar" styleClass="boton-cancelar" text="Cancelar" />
+         <padding>
+            <Insets bottom="20.0" left="20.0" top="20.0" />
+         </padding>
+        </HBox>
+    </bottom>
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+</BorderPane>
