@@ -392,3 +392,22 @@ CREATE TABLE movimientos_caja (
 ALTER TABLE venta
 ADD COLUMN id_caja INT NOT NULL,
 ADD CONSTRAINT FK_venta_caja FOREIGN KEY (id_caja) REFERENCES caja(id) ON DELETE CASCADE;
+
+
+DELIMITER $$
+
+CREATE EVENT actualizar_lotes_caducados
+ON SCHEDULE EVERY 1 DAY
+STARTS CURRENT_TIMESTAMP
+DO
+BEGIN
+    UPDATE lote
+    SET id_state = 8 -- Estado "Caducado"
+    WHERE fecha_caducidad < CURDATE()
+      AND fecha_caducidad IS NOT NULL
+      AND id_state != 8; -- Solo actualizar si no está ya en estado "Caducado"
+END$$
+
+DELIMITER ;
+
+SET GLOBAL event_scheduler = ON;
