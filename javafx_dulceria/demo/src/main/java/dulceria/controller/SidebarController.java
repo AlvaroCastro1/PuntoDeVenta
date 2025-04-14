@@ -17,9 +17,10 @@ public class SidebarController {
     @FXML private Button btnPromociones;
     // @FXML private Button btnEstados;
     @FXML private Button btnProductos;
-    @FXML private Button btnLotes;
-    @FXML private Button btnEntradas;
-    @FXML private Button btnNuevaEntrada;
+    // @FXML private Button btnLotes;
+    // @FXML private Button btnEntradas;
+    // @FXML private Button btnNuevaEntrada;
+    @FXML private Button NuevaExistencia;
     @FXML private Button btnPerdidas;
     @FXML private Button btnNuevaVenta;
     @FXML private Button btnVentas;
@@ -77,9 +78,9 @@ public class SidebarController {
         btnPromociones.setDisable(false);
         // btnEstados.setDisable(true);
         btnProductos.setDisable(false);
-        btnLotes.setDisable(false);
-        btnEntradas.setDisable(false);
-        btnNuevaEntrada.setDisable(false);
+        // btnLotes.setDisable(false);
+        // btnEntradas.setDisable(false);
+        // btnNuevaEntrada.setDisable(false);
         btnPerdidas.setDisable(true);
         btnNuevaVenta.setDisable(false);
         btnVentas.setDisable(true);
@@ -98,9 +99,9 @@ public class SidebarController {
         btnPromociones.setDisable(false);
         // btnEstados.setDisable(false);
         btnProductos.setDisable(false);
-        btnLotes.setDisable(false);
-        btnEntradas.setDisable(false);
-        btnNuevaEntrada.setDisable(false);
+        // btnLotes.setDisable(false);
+        // btnEntradas.setDisable(false);
+        // btnNuevaEntrada.setDisable(false);
         btnPerdidas.setDisable(false);
         btnNuevaVenta.setDisable(false);
         btnVentas.setDisable(false);
@@ -120,9 +121,9 @@ public class SidebarController {
         btnPromociones.setDisable(true);
         // btnEstados.setDisable(true);
         btnProductos.setDisable(true);
-        btnLotes.setDisable(true);
-        btnEntradas.setDisable(true);
-        btnNuevaEntrada.setDisable(true);
+        // btnLotes.setDisable(true);
+        // btnEntradas.setDisable(true);
+        // btnNuevaEntrada.setDisable(true);
         btnPerdidas.setDisable(true);
         btnNuevaVenta.setDisable(true);
         btnVentas.setDisable(true);
@@ -260,6 +261,13 @@ public class SidebarController {
         System.out.println("Navegando a Pantalla Corte de Caja");
         // Lógica de navegación
         app.changeView("/dulceria/fxml/CorteCaja.fxml");
+    }
+
+    @FXML
+    private void navigateToCrearProductoYLote(ActionEvent event) {
+        System.out.println("Navegando a Pantalla Nuevo lote de producto");
+        // Lógica de navegación
+        app.changeView("/dulceria/fxml/crearProdLote.fxml");
     }
 
     @FXML

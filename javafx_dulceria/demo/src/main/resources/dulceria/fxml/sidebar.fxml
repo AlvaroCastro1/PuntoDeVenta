@@ -11,9 +11,10 @@
         <Button text="Promociones" fx:id="btnPromociones" onAction="#navigateToPromocion" styleClass="sidebar-button" maxWidth="200"/>
         <!-- <Button text="Estados" fx:id="btnEstados" onAction="#navigateToEstados" styleClass="sidebar-button" maxWidth="200"/> -->
         <Button text="Productos" fx:id="btnProductos" onAction="#navigateToProductos" styleClass="sidebar-button" maxWidth="200"/>
-        <Button text="Lotes" fx:id="btnLotes" onAction="#navigateToLotes" styleClass="sidebar-button" maxWidth="200"/>
-        <Button text="Entradas" fx:id="btnEntradas" onAction="#navigateToEntradas" styleClass="sidebar-button" maxWidth="200"/>
-        <Button text="Nueva Entrada" fx:id="btnNuevaEntrada" onAction="#navigateToEntrada" styleClass="sidebar-button" maxWidth="200"/>
+        <!-- <Button text="Lotes" fx:id="btnLotes" onAction="#navigateToLotes" styleClass="sidebar-button" maxWidth="200"/> -->
+        <!-- <Button text="Entradas" fx:id="btnEntradas" onAction="#navigateToEntradas" styleClass="sidebar-button" maxWidth="200"/> -->
+        <!-- <Button text="Nueva Entrada" fx:id="btnNuevaEntrada" onAction="#navigateToEntrada" styleClass="sidebar-button" maxWidth="200"/> -->
+        <Button text="Nueva Existencia" fx:id="NuevaExistencia" onAction="#navigateToCrearProductoYLote" styleClass="sidebar-button" maxWidth="200"/>
         <Button text="Perdidas" fx:id="btnPerdidas" onAction="#navigateToPerdidas" styleClass="sidebar-button" maxWidth="200"/>
         <Button text="Nueva Venta" fx:id="btnNuevaVenta" onAction="#navigateToVenta" styleClass="sidebar-button" maxWidth="200"/>
         <Button text="Ventas" fx:id="btnVentas" onAction="#navigateToVentas" styleClass="sidebar-button" maxWidth="200"/>
