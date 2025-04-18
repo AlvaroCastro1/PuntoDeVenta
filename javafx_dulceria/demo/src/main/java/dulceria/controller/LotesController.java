@@ -187,7 +187,7 @@ public class LotesController {
     private void cargarLotesPorProducto(int idProducto) {
         String query = "SELECT l.id, l.id_producto, l.cantidad, l.fecha_caducidad, l.fecha_entrada, l.id_state, s.nombre_estado " +
                        "FROM lote l " +
-                       "JOIN cstate s ON l.id_state = s.id " +
+                       "JOIN cState s ON l.id_state = s.id " +
                        "WHERE l.id_producto = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();

@@ -506,9 +506,9 @@ public class VentaController {
             connection.setAutoCommit(false); // Inicia la transacción
 
             // Obtener el ID de la caja abierta
-            String sqlCaja = "SELECT id, base_inicial, total_ingresos, total_egresos FROM caja WHERE estado = 'Abierta' LIMIT 1";
+            String sqlCaja = "SELECT id, total_ingresos, total_egresos, total_ventas, total_final, base_inicial FROM caja WHERE estado = 'Abierta' LIMIT 1";
             int idCaja;
-            double baseInicial, totalIngresos, totalEgresos;
+            double totalIngresos, totalEgresos, totalVentas, totalFinal, baseInicial;
 
             try (PreparedStatement stmtCaja = connection.prepareStatement(sqlCaja);
                  ResultSet rsCaja = stmtCaja.executeQuery()) {
@@ -517,9 +517,11 @@ public class VentaController {
                     return;
                 }
                 idCaja = rsCaja.getInt("id");
-                baseInicial = rsCaja.getDouble("base_inicial");
                 totalIngresos = rsCaja.getDouble("total_ingresos");
                 totalEgresos = rsCaja.getDouble("total_egresos");
+                totalVentas = rsCaja.getDouble("total_ventas");
+                totalFinal = rsCaja.getDouble("total_final");
+                baseInicial = rsCaja.getDouble("base_inicial");
             }
 
             // 1. Insertar la venta
@@ -529,11 +531,8 @@ public class VentaController {
             stmtVenta.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
             stmtVenta.setInt(3, 6); // Estado pagado
             stmtVenta.setInt(4, usuario.getId());
-            stmtVenta.setInt(5, idCaja); // Asociar la venta con la caja abierta
-            int rowsInserted = stmtVenta.executeUpdate();
-            if (rowsInserted == 0) {
-                throw new SQLException("Error al guardar la venta. No se insertó ninguna fila.");
-            }
+            stmtVenta.setInt(5, idCaja);
+            stmtVenta.executeUpdate();
 
             // Obtener el ID generado para la venta
             generatedKeys = stmtVenta.getGeneratedKeys();
@@ -542,73 +541,85 @@ public class VentaController {
             }
             int idVenta = generatedKeys.getInt(1);
 
-            // 2. Insertar los detalles de la venta
+            // 2. Insertar los detalles de la venta y actualizar lotes
             String sqlDetalle = "INSERT INTO detalle_venta (id_venta, id_producto, id_lote, id_state, costo_unitario, precio_unitario, cantidad, id_promocion, descuento_aplicado, subtotal) " +
                                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             stmtDetalle = connection.prepareStatement(sqlDetalle);
 
-            // 3. Actualizar las cantidades en los lotes
-            String sqlActualizarLote = "UPDATE lote SET cantidad = cantidad - ? WHERE id_producto = ? AND cantidad >= ? LIMIT 1";
+            String sqlObtenerLotes = "SELECT id, cantidad FROM lote WHERE id_producto = ? AND cantidad > 0 ORDER BY fecha_caducidad ASC";
+            String sqlActualizarLote = "UPDATE lote SET cantidad = cantidad - ? WHERE id = ?";
             stmtActualizarLote = connection.prepareStatement(sqlActualizarLote);
 
             for (VentaProducto ventaProducto : listaVenta) {
-                // Insertar detalle de la venta
-                stmtDetalle.setInt(1, idVenta);
-                stmtDetalle.setInt(2, ventaProducto.getProducto().getId());
-                stmtDetalle.setObject(3, null); // Lote puede ser null
-                stmtDetalle.setInt(4, 6); // Estado pagado
-                stmtDetalle.setDouble(5, ventaProducto.getProducto().getCosto());
-                stmtDetalle.setDouble(6, ventaProducto.getProducto().getPrecio());
-                stmtDetalle.setInt(7, ventaProducto.getCantidad());
-                stmtDetalle.setObject(8, null); // Promoción puede ser null
-                stmtDetalle.setDouble(9, 0.0); // Descuento aplicado
-                stmtDetalle.setDouble(10, ventaProducto.getTotal());
-                stmtDetalle.addBatch();
+                int cantidadRestante = ventaProducto.getCantidad();
 
-                // Actualizar cantidad en el lote
-                stmtActualizarLote.setInt(1, ventaProducto.getCantidad());
-                stmtActualizarLote.setInt(2, ventaProducto.getProducto().getId());
-                stmtActualizarLote.setInt(3, ventaProducto.getCantidad());
-                int rowsUpdated = stmtActualizarLote.executeUpdate();
-                if (rowsUpdated == 0) {
+                try (PreparedStatement stmtObtenerLotes = connection.prepareStatement(sqlObtenerLotes)) {
+                    stmtObtenerLotes.setInt(1, ventaProducto.getProducto().getId());
+                    try (ResultSet rsLotes = stmtObtenerLotes.executeQuery()) {
+                        while (rsLotes.next() && cantidadRestante > 0) {
+                            int idLote = rsLotes.getInt("id");
+                            int cantidadLote = rsLotes.getInt("cantidad");
+
+                            int cantidadADescontar = Math.min(cantidadRestante, cantidadLote);
+                            cantidadRestante -= cantidadADescontar;
+
+                            // Actualizar el lote
+                            stmtActualizarLote.setInt(1, cantidadADescontar);
+                            stmtActualizarLote.setInt(2, idLote);
+                            stmtActualizarLote.executeUpdate();
+
+                            // Insertar detalle de la venta con el lote utilizado
+                            stmtDetalle.setInt(1, idVenta);
+                            stmtDetalle.setInt(2, ventaProducto.getProducto().getId());
+                            stmtDetalle.setInt(3, idLote);
+                            stmtDetalle.setInt(4, 6); // Estado pagado
+                            stmtDetalle.setDouble(5, ventaProducto.getProducto().getCosto());
+                            stmtDetalle.setDouble(6, ventaProducto.getProducto().getPrecio());
+                            stmtDetalle.setInt(7, cantidadADescontar);
+                            stmtDetalle.setObject(8, null); // Promoción puede ser null
+                            stmtDetalle.setDouble(9, 0.0); // Descuento aplicado
+                            stmtDetalle.setDouble(10, cantidadADescontar * ventaProducto.getProducto().getPrecio());
+                            stmtDetalle.addBatch();
+                        }
+                    }
+                }
+
+                if (cantidadRestante > 0) {
                     throw new SQLException("No hay suficiente stock para el producto: " + ventaProducto.getProducto().getNombre());
                 }
             }
 
             stmtDetalle.executeBatch();
 
-            // 4. Actualizar los totales en la tabla caja
-            double nuevoTotalIngresos = totalIngresos + montoPagado;
-            double nuevoTotalVentas = totalVenta;
-            double nuevoTotalEgresos = totalEgresos + (cambio > 0 ? cambio : 0); // Incrementar total_egresos si hay cambio
-            double nuevoTotalFinal = baseInicial + nuevoTotalIngresos - nuevoTotalEgresos;
-
-            String sqlActualizarCaja = "UPDATE caja SET total_ingresos = ?, total_ventas = total_ventas + ?, total_egresos = ?, total_final = ? WHERE id = ?";
+            // 3. Actualizar los totales en la tabla caja
+            String sqlActualizarCaja = "UPDATE caja SET total_ingresos = ?, total_egresos = ?, total_ventas = ?, total_final = ? WHERE id = ?";
             stmtActualizarCaja = connection.prepareStatement(sqlActualizarCaja);
-            stmtActualizarCaja.setDouble(1, nuevoTotalIngresos);
-            stmtActualizarCaja.setDouble(2, nuevoTotalVentas);
-            stmtActualizarCaja.setDouble(3, nuevoTotalEgresos);
-            stmtActualizarCaja.setDouble(4, nuevoTotalFinal);
+            stmtActualizarCaja.setDouble(1, totalIngresos + montoPagado); // Actualizar total_ingresos con el monto pagado
+            stmtActualizarCaja.setDouble(2, totalEgresos + cambio); // Actualizar total_egresos con el cambio
+            stmtActualizarCaja.setDouble(3, totalVentas + totalVenta); // Actualizar total_ventas con la venta actual
+            stmtActualizarCaja.setDouble(4, baseInicial + totalVentas + totalVenta); // Actualizar total_final como base + ventas
             stmtActualizarCaja.setInt(5, idCaja);
             stmtActualizarCaja.executeUpdate();
 
-            // 5. Insertar un movimiento en la tabla movimientos_caja (Ingreso)
-            String sqlMovimientoCaja = "INSERT INTO movimientos_caja (id_caja, tipo, descripcion, monto, id_usuario, created_at) VALUES (?, ?, ?, ?, ?, NOW())";
+            // 4. Insertar un movimiento en la tabla movimientos_caja (Ingreso)
+            String sqlMovimientoCaja = "INSERT INTO movimientos_caja (id_caja, tipo, monto, descripcion, id_usuario, created_at) VALUES (?, ?, ?, ?, ?, ?)";
             stmtMovimientoCaja = connection.prepareStatement(sqlMovimientoCaja);
             stmtMovimientoCaja.setInt(1, idCaja);
             stmtMovimientoCaja.setString(2, "Ingreso");
-            stmtMovimientoCaja.setString(3, "Venta realizada");
-            stmtMovimientoCaja.setDouble(4, totalVenta);
+            stmtMovimientoCaja.setDouble(3, montoPagado);
+            stmtMovimientoCaja.setString(4, "Venta realizada");
             stmtMovimientoCaja.setInt(5, usuario.getId());
+            stmtMovimientoCaja.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
             stmtMovimientoCaja.executeUpdate();
 
-            // 6. Insertar un movimiento en la tabla movimientos_caja (Egreso) si hay cambio
+            // 5. Insertar un movimiento en la tabla movimientos_caja (Egreso) si hay cambio
             if (cambio > 0) {
                 stmtMovimientoCaja.setInt(1, idCaja);
                 stmtMovimientoCaja.setString(2, "Egreso");
-                stmtMovimientoCaja.setString(3, "Cambio devuelto");
-                stmtMovimientoCaja.setDouble(4, cambio);
+                stmtMovimientoCaja.setDouble(3, cambio);
+                stmtMovimientoCaja.setString(4, "Cambio entregado");
                 stmtMovimientoCaja.setInt(5, usuario.getId());
+                stmtMovimientoCaja.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
                 stmtMovimientoCaja.executeUpdate();
             }
 
