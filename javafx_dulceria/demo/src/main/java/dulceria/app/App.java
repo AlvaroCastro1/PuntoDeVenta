@@ -30,7 +30,7 @@ public class App extends Application {
     private boolean isSidebarVisible = false; // Estado inicial del Sidebar
     private TranslateTransition slideAnimation; // Animación de barrido
     private BorderPane root; // Declaración de root como campo de clase
-    private boolean modoOscuro = true; // Variable para guardar el estado del tema
+    private boolean modoOscuro = false; // Variable para guardar el estado del tema
 
     private static Usuario usuarioAutenticado;
     private static Stage primaryStage; // Campo estático para almacenar el Stage principal
