@@ -69,6 +69,9 @@ public class VentaController {
     private TableColumn<VentaProducto, Double> colTotal;
     @FXML
     private Label lblTotal;
+    @FXML
+    private Button btnGuardarVenta;
+    private boolean imprimirTicket = false; // Variable para controlar la impresión del ticket
 
     private final ObservableList<VentaProducto> listaVenta = FXCollections.observableArrayList();
     private final ObservableList<Producto> productos = FXCollections.observableArrayList();
@@ -122,6 +125,22 @@ public class VentaController {
         });
         
         tablaVenta.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        
+        tablaVenta.sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (newScene != null) {
+                newScene.setOnKeyPressed(event -> {
+                    if (event.getCode() == KeyCode.CONTROL) {
+                        imprimirTicket = !imprimirTicket; // Alternar el estado de imprimirTicket
+                        if (!imprimirTicket) {
+                            btnGuardarVenta.setStyle("-fx-background-color: #ffcc00;"); // Cambiar el color del botón
+                        } else {
+                            btnGuardarVenta.setStyle(""); // Restaurar el color original del botón
+                        }
+                    }
+                });
+            }
+        });
+        
         configurarFocoAutomatico();
         actualizarTotal();
     }
@@ -628,8 +647,21 @@ public class VentaController {
             mostrarAlerta("Éxito", String.format("La venta se guardó correctamente. Cambio: $%.2f", cambio), Alert.AlertType.INFORMATION);
 
             // Generar e imprimir el ticket
-            String contenidoTicket = generarContenidoTicket(montoPagado, cambio);
-            imprimirTicket(contenidoTicket);
+            if (imprimirTicket) {
+                String contenidoTicket = generarContenidoTicket(montoPagado, cambio);
+                imprimirTicket(contenidoTicket);
+            } else {
+                Alert resumenVenta = new Alert(Alert.AlertType.INFORMATION);
+                resumenVenta.setTitle("Resumen de Venta");
+                resumenVenta.setHeaderText("Venta Guardada Exitosamente (Sin Ticket)");
+                resumenVenta.setContentText(String.format(
+                    "Cantidad de Productos: %d\nTotal de la Venta: $%.2f\nCambio: $%.2f",
+                    listaVenta.size(),
+                    totalVenta,
+                    cambio
+                ));
+                resumenVenta.showAndWait();
+            }
 
             // Limpiar la lista de la venta actual
             listaVenta.clear();

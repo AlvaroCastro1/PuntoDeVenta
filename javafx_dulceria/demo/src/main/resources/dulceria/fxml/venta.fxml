@@ -47,7 +47,7 @@
                 <VBox alignment="CENTER_RIGHT" spacing="10" styleClass="details-pane">
                     <Label style="-fx-font-weight: bold;" styleClass="form-label" text="Resumen de la Venta:" />
                     <Label fx:id="lblTotal" style="-fx-font-size: 16px; -fx-font-weight: bold;" styleClass="form-label" text="Total: $0.00" />
-                    <Button onAction="#guardarVenta" styleClass="boton-guardar" text="Registrar Venta" />
+                    <Button fx:id="btnGuardarVenta" onAction="#guardarVenta" styleClass="boton-guardar" text="Registrar Venta" />
                 </VBox>
             </VBox>
         </HBox>
