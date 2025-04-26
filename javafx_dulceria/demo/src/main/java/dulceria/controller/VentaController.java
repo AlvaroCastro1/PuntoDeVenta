@@ -71,7 +71,7 @@ public class VentaController {
     private Label lblTotal;
     @FXML
     private Button btnGuardarVenta;
-    private boolean imprimirTicket = false; // Variable para controlar la impresión del ticket
+    private boolean imprimirTicket = true; // Variable para controlar la impresión del ticket
 
     private final ObservableList<VentaProducto> listaVenta = FXCollections.observableArrayList();
     private final ObservableList<Producto> productos = FXCollections.observableArrayList();
@@ -647,6 +647,7 @@ public class VentaController {
 
             // Generar e imprimir el ticket
             if (imprimirTicket) {
+                System.out.println("si imprimir ticket");
                 String contenidoTicket = generarContenidoTicket(montoPagado, cambio);
                 imprimirTicket(contenidoTicket);
             } else {
