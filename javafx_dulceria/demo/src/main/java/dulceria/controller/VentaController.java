@@ -357,11 +357,11 @@ public class VentaController {
         }
     
         // Validar existencia del producto en la base de datos
-        int existenciasDisponibles = obtenerExistenciasProducto(productoSeleccionado.getId());
-        if (existenciasDisponibles <= 0) {
-            mostrarAlerta("Error", "El producto seleccionado no tiene existencias disponibles.", Alert.AlertType.ERROR);
-            return;
-        }
+        // int existenciasDisponibles = obtenerExistenciasProducto(productoSeleccionado.getId());
+        // if (existenciasDisponibles <= 0) {
+        //     mostrarAlerta("Error", "El producto seleccionado no tiene existencias disponibles.", Alert.AlertType.ERROR);
+        //     return;
+        // }
     
         // Calcular la cantidad total ya añadida al detalle de la venta, considerando productos y promociones
         int cantidadEnDetalle = listaVenta.stream()
@@ -369,10 +369,10 @@ public class VentaController {
             .mapToInt(VentaProducto::getCantidad)
             .sum();
         // Validar si se puede añadir al detalle sin exceder las existencias
-        if (cantidad_producto >= existenciasDisponibles) {
-            mostrarAlerta("Error", "No se pueden añadir más unidades de este producto. Existencias disponibles: " + existenciasDisponibles, Alert.AlertType.ERROR);
-            return;
-        }
+        // if (cantidad_producto >= existenciasDisponibles) {
+        //     mostrarAlerta("Error", "No se pueden añadir más unidades de este producto. Existencias disponibles: " + existenciasDisponibles, Alert.AlertType.ERROR);
+        //     return;
+        // }
     
         // Verificar si ya existe en la lista y actualizar su cantidad
         Optional<VentaProducto> productoExistente = listaVenta.stream()
@@ -383,10 +383,10 @@ public class VentaController {
             VentaProducto ventaProducto = productoExistente.get();
             int nuevaCantidad = ventaProducto.getCantidad() + 1;
     
-            if (nuevaCantidad > existenciasDisponibles) {
-                mostrarAlerta("Error", "No puedes agregar más de las existencias disponibles: " + existenciasDisponibles, Alert.AlertType.ERROR);
-                return;
-            }
+            // if (nuevaCantidad > existenciasDisponibles) {
+            //     mostrarAlerta("Error", "No puedes agregar más de las existencias disponibles: " + existenciasDisponibles, Alert.AlertType.ERROR);
+            //     return;
+            // }
     
             ventaProducto.setCantidad(nuevaCantidad);
             ventaProducto.setTotal(nuevaCantidad * ventaProducto.getPrecioUnitario());
@@ -603,9 +603,9 @@ public class VentaController {
                     }
                 }
 
-                if (cantidadRestante > 0) {
-                    throw new SQLException("No hay suficiente stock para el producto: " + ventaProducto.getProducto().getNombre());
-                }
+                // if (cantidadRestante > 0) {
+                //     throw new SQLException("No hay suficiente stock para el producto: " + ventaProducto.getProducto().getNombre());
+                // }
             }
 
             stmtDetalle.executeBatch();
