@@ -278,12 +278,11 @@ public class VentaController {
         try (Connection conn = dbConnection.getConnection()) {
             // Consulta para cargar productos con sus existencias totales
             String sqlProducto = "SELECT p.id, p.nombre, p.codigo, p.descripcion,\n"+
-                       "p.categoria, p.precio, p.costo,\n"+
-                       "COALESCE(SUM(l.cantidad), 0) AS total_existencias\n"+
-                "FROM producto p\n"+
-                "LEFT JOIN lote l ON p.id = l.id_producto\n"+
-                "GROUP BY p.id, p.nombre, p.codigo, p.descripcion, p.categoria, p.precio, p.costo\n"+
-                "HAVING total_existencias > 0\n";
+                     "p.categoria, p.precio, p.costo,\n"+
+                     "COALESCE(SUM(l.cantidad), 0) AS total_existencias\n"+
+                     "FROM producto p\n"+
+                     "LEFT JOIN lote l ON p.id = l.id_producto\n"+
+                     "GROUP BY p.id, p.nombre, p.codigo, p.descripcion, p.categoria, p.precio, p.costo\n";
     
             Statement stmt = conn.createStatement();
             ResultSet rsProducto = stmt.executeQuery(sqlProducto);
